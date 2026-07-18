@@ -22,13 +22,16 @@ export default function Hero() {
     },
   };
 
+  const bgUrl = hero.images?.heroMain?.url || hero.images?.background?.url || '';
+  const bgAlt = hero.images?.heroMain?.alt || hero.images?.background?.alt || '';
+
   return (
     <section className="relative h-[calc(100vh-5rem)] w-full overflow-hidden bg-rich-black -mt-20">
       <div className="absolute inset-0">
-        {hero.images?.background?.url ? (
+        {bgUrl ? (
           <img
-            src={hero.images.background.url}
-            alt={hero.images.background.alt || ''}
+            src={bgUrl}
+            alt={bgAlt}
             className="w-full h-full object-cover"
           />
         ) : (

@@ -13,14 +13,36 @@ export default function Footer() {
     phone: '+91 99999 99999',
     instagramUrl: 'https://instagram.com',
     facebookUrl: '',
+    logo: { url: '', alt: '' },
+    backgroundFooter: { url: '', alt: '' },
   };
 
+  const hasImage = (url: string) => url && url.trim() !== '';
+
   return (
-    <footer className="bg-rich-black text-white/60">
-      <div className="container-editorial py-20 md:py-28">
+    <footer className="relative bg-rich-black text-white/60 overflow-hidden">
+      {hasImage(footerData.backgroundFooter?.url) && (
+        <div className="absolute inset-0">
+          <img
+            src={footerData.backgroundFooter.url}
+            alt={footerData.backgroundFooter.alt || ''}
+            className="w-full h-full object-cover opacity-10"
+          />
+        </div>
+      )}
+
+      <div className="container-editorial py-20 md:py-28 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
           <div>
-            <p className="font-serif text-xl text-white italic">Indira Thakur</p>
+            {hasImage(footerData.logo?.url) ? (
+              <img
+                src={footerData.logo.url}
+                alt={footerData.logo.alt || 'Indira Thakur Photography'}
+                className="h-12 w-auto mb-3"
+              />
+            ) : (
+              <p className="font-serif text-xl text-white italic">Indira Thakur</p>
+            )}
             <p className="font-mono text-[9px] text-white/30 uppercase tracking-[0.25em] mt-1">{footerData.tagline}</p>
             <p className="font-sans text-sm text-white/40 mt-6 max-w-xs leading-relaxed">
               {footerData.description}

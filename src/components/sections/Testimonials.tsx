@@ -2,32 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useSiteConfig, type SiteConfigData } from '@/hooks/useSiteConfig';
+
+type TestimonialItem = NonNullable<SiteConfigData['testimonials']['testimonials']>[number];
+
+const FALLBACK_ITEMS: TestimonialItem[] = [
+  { quote: 'The photos are amazing and everyone in my family are in awe of all your shots. You made my maternity and baby shoot a very emotional and unforgettable experience.', author: 'Ananya Sharma', role: '', avatar: { url: '', alt: '' } },
+  { quote: 'Thank you so much for the lovely photos! These pictures are going to be treasured and cherished in our lifetime.', author: 'Priya Mehta', role: '', avatar: { url: '', alt: '' } },
+  { quote: 'We captured so many beautiful moments in such a short time. Truly a magical experience.', author: 'Rhea Kapoor', role: '', avatar: { url: '', alt: '' } },
+];
 
 export default function Testimonials() {
   const { config } = useSiteConfig();
   const [current, setCurrent] = useState(0);
 
-  const testimonialsData = config?.testimonials || {
-    testimonials: [
-      { quote: 'The photos are amazing and everyone in my family are in awe of all your shots. You made my maternity and baby shoot a very emotional and unforgettable experience.', author: 'Ananya Sharma', role: '' },
-      { quote: 'Thank you so much for the lovely photos! These pictures are going to be treasured and cherished in our lifetime.', author: 'Priya Mehta', role: '' },
-      { quote: 'We captured so many beautiful moments in such a short time. Truly a magical experience.', author: 'Rhea Kapoor', role: '' },
-    ],
-  };
-
-  const items = testimonialsData.testimonials?.length > 0
-    ? testimonialsData.testimonials
-    : [
-        { quote: 'The photos are amazing and everyone in my family are in awe of all your shots. You made my maternity and baby shoot a very emotional and unforgettable experience.', author: 'Ananya Sharma', role: '' },
-        { quote: 'Thank you so much for the lovely photos! These pictures are going to be treasured and cherished in our lifetime.', author: 'Priya Mehta', role: '' },
-        { quote: 'We captured so many beautiful moments in such a short time. Truly a magical experience.', author: 'Rhea Kapoor', role: '' },
-      ];
+  const items: TestimonialItem[] = (config?.testimonials?.testimonials && config.testimonials.testimonials.length > 0)
+    ? config.testimonials.testimonials
+    : FALLBACK_ITEMS;
 
   useEffect(() => {
     const timer = setInterval(() => setCurrent((prev) => (prev + 1) % items.length), 5000);
     return () => clearInterval(timer);
   }, [items.length]);
+
+  const hasImage = (url: string) => url && url.trim() !== '';
 
   return (
     <section className="py-28 md:py-36 bg-ivory">
@@ -41,6 +39,15 @@ export default function Testimonials() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.8 }}
             >
+              {hasImage(items[current]?.avatar?.url) && (
+                <div className="mb-6">
+                  <img
+                    src={items[current].avatar.url}
+                    alt={items[current].avatar.alt || items[current].author}
+                    className="w-16 h-16 rounded-full object-cover mx-auto border-2 border-cream/40"
+                  />
+                </div>
+              )}
               <p className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black/65 leading-relaxed italic">
                 &ldquo;{items[current]?.quote}&rdquo;
               </p>
@@ -48,6 +55,11 @@ export default function Testimonials() {
               <p className="font-sans text-[11px] text-rich-black/40 uppercase tracking-[0.15em]">
                 {items[current]?.author}
               </p>
+              {items[current]?.role && (
+                <p className="font-sans text-[10px] text-rich-black/25 mt-1">
+                  {items[current].role}
+                </p>
+              )}
             </motion.div>
           </AnimatePresence>
 

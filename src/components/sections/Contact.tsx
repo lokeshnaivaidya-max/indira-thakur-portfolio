@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder';
 
 export default function Contact() {
   const { config } = useSiteConfig();
@@ -13,11 +14,32 @@ export default function Contact() {
     email: 'hello@indirathakur.com',
     phone: '+91 99999 99999',
     location: 'Bangalore, India',
+    bannerImage: { url: '', alt: '' },
+    studioImage: { url: '', alt: '' },
   };
+
+  const hasImage = (url: string) => url && url.trim() !== '';
 
   return (
     <section id="contact" className="py-28 md:py-36 bg-ivory">
       <div className="container-editorial">
+        {/* Banner Image */}
+        {hasImage(contactData.bannerImage?.url) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="mb-16 overflow-hidden"
+          >
+            <img
+              src={contactData.bannerImage.url}
+              alt={contactData.bannerImage.alt || 'Contact Banner'}
+              className="w-full h-[30vh] md:h-[40vh] object-cover"
+            />
+          </motion.div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -54,6 +76,23 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
           >
+            {hasImage(contactData.studioImage?.url) ? (
+              <div className="relative overflow-hidden mb-8">
+                <img
+                  src={contactData.studioImage.url}
+                  alt={contactData.studioImage.alt || 'Studio'}
+                  className="w-full h-[30vh] md:h-[35vh] object-cover"
+                />
+              </div>
+            ) : (
+              <ImagePlaceholder
+                aspect="h-[30vh] md:h-[35vh]"
+                label="Studio Image"
+                icon="camera"
+                className="mb-8"
+              />
+            )}
+
             <form className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" placeholder="Name" className="input-field" />

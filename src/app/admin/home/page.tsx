@@ -143,9 +143,9 @@ export default function AdminHomePage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ImageManager
-              label="Hero Background"
-              description="The main background image of the hero section"
-              helperText="This fills the entire hero area. Use a stunning, high-resolution photo."
+              label="Hero Background (Main)"
+              description="This is the main background image shown on the homepage"
+              helperText="This image fills the entire hero section. Use a stunning, high-resolution photo."
               sectionIndicator="Homepage Hero"
               value={home.images?.heroMain || { url: '', alt: '' }}
               onChange={(img) => updateSection('home', { images: { ...home.images, heroMain: img } })}
@@ -153,9 +153,9 @@ export default function AdminHomePage() {
               folder="home/hero"
             />
             <ImageManager
-              label="Hero Secondary Image"
-              description="An additional image for the hero section"
-              helperText="Used as an accent or overlay image"
+              label="Hero Accent Image"
+              description="An additional accent image for the hero section"
+              helperText="Used as a secondary accent or overlay image"
               sectionIndicator="Homepage Hero"
               value={home.images?.heroSecondary || { url: '', alt: '' }}
               onChange={(img) => updateSection('home', { images: { ...home.images, heroSecondary: img } })}
@@ -163,9 +163,9 @@ export default function AdminHomePage() {
               folder="home/hero"
             />
             <ImageManager
-              label="Background Image"
-              description="Alternative background for the hero section"
-              helperText="If no image is uploaded, a dark gradient is shown instead"
+              label="Fallback Background"
+              description="Alternative background (used only if Main is empty)"
+              helperText="If no main image is uploaded, this will be used. Otherwise ignored."
               sectionIndicator="Homepage Hero"
               value={home.images?.background || { url: '', alt: '' }}
               onChange={(img) => updateSection('home', { images: { ...home.images, background: img } })}
