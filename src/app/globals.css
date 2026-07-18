@@ -1,187 +1,53 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-ivory: #FFFFF0;
-  --color-warm-ivory: #FAF8F5;
-  --color-soft-white: #FFFCF9;
-  --color-cream: #F5F0EB;
-  --color-warm-cream: #F0EBE3;
-  --color-beige: #E8E0D8;
-  --color-warm-beige: #DFD5C8;
-  --color-muted-gold: #C9A96E;
-  --color-warm-gold: #B8944F;
-  --color-earth-brown: #8B7355;
-  --color-warm-brown: #6B5B4F;
+  --color-warm-white: #FFFDF9;
+  --color-cream: #F8F4F0;
+  --color-soft-cream: #F2ECE4;
+  --color-warm-beige: #E8DDD0;
+  --color-muted-gold: #B8956E;
+  --color-warm-brown: #8B7355;
   --color-charcoal: #3D3D3D;
   --color-warm-black: #2C2C2C;
-  --color-soft-rose: #F2E6E6;
-  --color-warm-blush: #F0E0D0;
+  --color-soft-rose: #F5EAE5;
+  --color-light-warm: #FDF8F4;
 
   --font-serif: 'Playfair Display', Georgia, serif;
-  --font-serif-alt: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-sans-alt: 'Manrope', system-ui, sans-serif;
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-warm-ivory text-charcoal font-sans antialiased;
-  }
-
-  h1, h2, h3, h4 {
-    @apply font-serif;
-  }
-
-  ::selection {
-    @apply bg-muted-gold/30 text-warm-black;
-  }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-warm-white text-charcoal font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-serif; }
+  ::selection { @apply bg-muted-gold/20 text-warm-black; }
 }
 
 @layer components {
-  .section-padding {
-    @apply px-6 md:px-12 lg:px-20 xl:px-32 py-24 md:py-32;
+  .section-padding { @apply px-6 md:px-12 lg:px-20 py-20 md:py-28; }
+  .section-title { @apply font-serif text-3xl md:text-4xl lg:text-5xl text-warm-black leading-tight; }
+  .section-subtitle { @apply font-sans-alt text-base md:text-lg text-warm-brown/70; }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-3.5 bg-warm-black text-white font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-brown;
+  }
+  
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-8 py-3.5 border-2 border-warm-black text-warm-black font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-black hover:text-white bg-transparent;
   }
 
-  .section-title {
-    @apply font-serif text-4xl md:text-5xl lg:text-6xl text-warm-black leading-tight;
+  .input-field {
+    @apply w-full px-5 py-3.5 bg-white border border-warm-beige/50 text-charcoal placeholder:text-warm-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 transition-all duration-300;
   }
 
-  .section-subtitle {
-    @apply font-serif-alt text-lg md:text-xl text-earth-brown/80 italic;
+  .textarea-field {
+    @apply w-full px-5 py-3.5 bg-white border border-warm-beige/50 text-charcoal placeholder:text-warm-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 transition-all duration-300 min-h-[130px] resize-none;
   }
 
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .premium-card {
-    @apply bg-soft-white rounded-2xl shadow-sm border border-warm-cream/50 overflow-hidden transition-all duration-500;
-  }
-
-  .premium-card:hover {
-    @apply shadow-lg border-warm-beige/30 -translate-y-1;
-  }
-
-  .premium-button {
-    @apply inline-flex items-center justify-center px-8 py-4 bg-warm-black text-soft-white font-sans-alt text-sm font-medium tracking-widest uppercase transition-all duration-500;
-  }
-
-  .premium-button:hover {
-    @apply bg-earth-brown tracking-[0.15em];
-  }
-
-  .premium-button-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 border-2 border-warm-black text-warm-black font-sans-alt text-sm font-medium tracking-widest uppercase transition-all duration-500 bg-transparent;
-  }
-
-  .premium-button-outline:hover {
-    @apply bg-warm-black text-soft-white;
-  }
-
-  .premium-divider {
-    @apply w-16 h-[1px] bg-muted-gold/60 mx-auto;
-  }
-
-  .premium-input {
-    @apply w-full px-5 py-4 bg-soft-white border border-warm-beige/50 text-warm-black placeholder:text-earth-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 focus:ring-1 focus:ring-muted-gold/20 transition-all duration-300;
-  }
-
-  .premium-textarea {
-    @apply w-full px-5 py-4 bg-soft-white border border-warm-beige/50 text-warm-black placeholder:text-earth-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 focus:ring-1 focus:ring-muted-gold/20 transition-all duration-300 min-h-[140px] resize-none;
-  }
-
-  .glass-card {
-    @apply bg-soft-white/80 backdrop-blur-md border border-white/20 shadow-sm;
-  }
-
-  .image-cover {
-    @apply object-cover w-full h-full;
-  }
-
-  .aspect-3-2 {
-    aspect-ratio: 3 / 2;
-  }
-
-  .aspect-4-5 {
-    aspect-ratio: 4 / 5;
-  }
-
-  .aspect-1-1 {
-    aspect-ratio: 1 / 1;
-  }
-
-  .aspect-16-9 {
-    aspect-ratio: 16 / 9;
-  }
-
-  .grid-masonry {
-    columns: 1;
-    column-gap: 1.5rem;
-  }
-
-  @media (min-width: 640px) {
-    .grid-masonry {
-      columns: 2;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .grid-masonry {
-      columns: 3;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .grid-masonry {
-      columns: 4;
-    }
-  }
-
-  .grid-masonry > * {
-    break-inside: avoid;
-    margin-bottom: 1.5rem;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .anim-fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-
-  .anim-fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .anim-scale-in {
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  .anim-scale-in.visible {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .card {
+    @apply bg-white rounded-sm overflow-hidden transition-all duration-300 hover:shadow-md;
   }
 }
