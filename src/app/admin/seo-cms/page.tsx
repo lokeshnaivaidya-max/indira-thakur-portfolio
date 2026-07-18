@@ -56,6 +56,7 @@ export default function AdminSEOPage() {
         dirty={dirty}
         lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
+        previewHref="/"
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">

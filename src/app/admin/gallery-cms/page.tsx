@@ -67,6 +67,7 @@ export default function AdminGalleryPreviewPage() {
         dirty={dirty}
         lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
+        previewHref="/gallery"
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">

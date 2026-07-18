@@ -73,6 +73,7 @@ export default function AdminServicesPage() {
         dirty={dirty}
         lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
+        previewHref="/#services"
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">

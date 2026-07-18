@@ -87,6 +87,16 @@ export default function AdminSectionsPage() {
   const [originalSections, setOriginalSections] = useState<string>('[]');
   const wasLoadingRef = useRef(true);
 
+  const previewMap: Record<string, string> = {
+    home: '/',
+    about: '/#about',
+    gallery: '/gallery',
+    services: '/#services',
+    testimonials: '/#testimonials',
+    faq: '/#faq',
+    contact: '/#contact',
+  };
+
   useEffect(() => {
     fetchSections();
   }, [pageKey]);
@@ -135,6 +145,7 @@ export default function AdminSectionsPage() {
         success={success}
         dirty={dirty}
         onClearMessages={clearMessages}
+        previewHref={previewMap[pageKey] || '/'}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">

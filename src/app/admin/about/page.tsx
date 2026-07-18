@@ -112,6 +112,7 @@ export default function AdminAboutPage() {
         dirty={dirty}
         lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
+        previewHref="/#about"
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
