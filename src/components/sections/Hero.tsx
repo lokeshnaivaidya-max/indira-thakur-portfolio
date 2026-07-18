@@ -1,59 +1,47 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Hero() {
-  const parallaxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!parallaxRef.current) return;
-      parallaxRef.current.style.transform = `translateY(${window.scrollY * 0.3}px)`;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-rich-black">
-      <div ref={parallaxRef} className="absolute inset-0 will-change-transform">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-ivory/10 z-10" />
-        <div className="w-full h-[120%] bg-gradient-to-br from-[#1A1A1A] via-[#2C2C2C] to-rich-black" />
+    <section className="relative h-screen w-full overflow-hidden bg-ivory">
+      <div className="absolute inset-0">
+        <div className="w-full h-full bg-gradient-to-br from-cream via-ivory to-beige/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ivory/60 via-transparent to-ivory/40" />
       </div>
 
-      <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-6">
-            <span className="font-serif text-sm md:text-base text-white/40 italic tracking-wider">Indira Thakur</span>
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-4">
+            <span className="inline-block font-sans text-[10px] text-magenta/50 uppercase tracking-[0.3em]">Welcome</span>
           </div>
-          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-[1.05] tracking-tight">
-            Every Frame
+          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-rich-black leading-[1.08] tracking-tight">
+            Capturing Life&apos;s
             <br />
-            <span className="italic font-normal">Tells a Story</span>
+            <span className="italic font-normal text-magenta/80">Precious Moments</span>
           </h1>
-          <p className="font-sans text-base md:text-lg text-white/50 mt-6 max-w-md mx-auto leading-relaxed">
-            Newborn &middot; Maternity &middot; Portrait &middot; Events
+          <p className="font-sans text-base md:text-lg text-warm-gray/60 mt-6 max-w-lg mx-auto leading-relaxed">
+            Newborn &middot; Maternity &middot; Portrait &middot; Events &mdash; based in Bangalore
           </p>
-          <div className="mt-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <Link
               href="/#contact"
-              className="group relative inline-flex items-center justify-center px-12 py-5 overflow-hidden"
+              className="inline-flex items-center justify-center px-10 py-4 bg-rich-black text-white font-sans text-xs font-medium uppercase tracking-[0.15em] transition-all duration-500 hover:bg-charcoal"
             >
-              <span className="absolute inset-0 bg-white transition-transform duration-700 ease-out group-hover:scale-105" />
-              <span className="relative font-sans text-[11px] text-rich-black uppercase tracking-[0.2em] font-medium">
-                Begin Your Journey
-              </span>
+              Book Your Session
+            </Link>
+            <Link
+              href="/gallery"
+              className="inline-flex items-center justify-center px-10 py-4 border border-rich-black/15 text-rich-black font-sans text-xs font-medium uppercase tracking-[0.15em] transition-all duration-500 hover:border-rich-black/40 bg-white/50 backdrop-blur-sm"
+            >
+              View Portfolio
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
-        <div className="flex flex-col items-center gap-2">
-          <span className="font-sans text-[9px] text-white/20 uppercase tracking-[0.3em]">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-white/20 to-transparent" />
-        </div>
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
+        <span className="font-sans text-[9px] text-warm-gray/30 uppercase tracking-[0.3em]">Scroll</span>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers } from 'react-icons/hi2';
 
 const sidebarLinks = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: HiHome },
@@ -15,6 +15,7 @@ const sidebarLinks = [
   { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
   { label: 'Contact', href: '/admin/contact', icon: HiEnvelope },
   { label: 'About', href: '/admin/about', icon: HiHeart },
+  { label: 'Users', href: '/admin/users', icon: HiUsers },
   { label: 'SEO', href: '/admin/seo', icon: HiCog6Tooth },
 ];
 
@@ -34,27 +35,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-warm-ivory flex">
+    <div className="min-h-screen bg-ivory flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-warm-black/20 lg:hidden"
+          className="fixed inset-0 z-40 bg-rich-black/20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-soft-white border-r border-warm-cream/50 transform transition-transform duration-300 lg:transform-none ${
+        className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-white border-r border-cream/50 transform transition-transform duration-300 lg:transform-none ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-warm-cream/50">
+          <div className="p-6 border-b border-cream/50">
             <div className="flex items-center justify-between">
-              <Link href="/admin/dashboard" className="font-serif text-xl text-warm-black">
-                Admin <span className="text-muted-gold">Panel</span>
+              <Link href="/admin/dashboard" className="font-serif text-xl text-rich-black">
+                Admin <span className="text-magenta/60">Panel</span>
               </Link>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -74,10 +75,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-sans-alt text-sm transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-sans text-sm transition-all duration-200 ${
                     isActive
-                      ? 'bg-warm-black text-soft-white'
-                      : 'text-earth-brown/70 hover:bg-cream/50 hover:text-warm-black'
+                      ? 'bg-rich-black text-white'
+                      : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -88,17 +89,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
 
           {/* Bottom */}
-          <div className="p-4 border-t border-warm-cream/50 space-y-2">
+          <div className="p-4 border-t border-cream/50 space-y-2">
             <Link
               href="/"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-brown/70 hover:bg-cream/50 hover:text-warm-black font-sans-alt text-sm transition-all"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black font-sans text-sm transition-all"
             >
               <HiHome className="w-4 h-4" />
               View Website
             </Link>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-brown/70 hover:bg-soft-rose/50 hover:text-warm-gold font-sans-alt text-sm transition-all w-full"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-warm-gray/70 hover:bg-magenta/10 hover:text-magenta font-sans text-sm transition-all w-full"
             >
               <HiArrowRightOnRectangle className="w-4 h-4" />
               Logout
@@ -110,7 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <div className="flex-1 min-w-0">
         {/* Top Bar (Mobile) */}
-        <div className="sticky top-0 z-30 lg:hidden bg-soft-white/90 backdrop-blur-md border-b border-warm-cream/50 px-4 py-3">
+        <div className="sticky top-0 z-30 lg:hidden bg-white/90 backdrop-blur-md border-b border-cream/50 px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-warm-brown"

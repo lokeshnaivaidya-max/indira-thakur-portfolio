@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-warm-ivory p-6">
+    <div className="min-h-screen flex items-center justify-center bg-ivory p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -46,44 +46,44 @@ export default function AdminLoginPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-10">
-          <h1 className="font-serif text-4xl text-warm-black">
-            Admin <span className="text-muted-gold">Login</span>
+          <h1 className="font-serif text-4xl text-rich-black">
+            Admin <span className="text-magenta/60">Login</span>
           </h1>
-          <p className="mt-2 font-sans-alt text-sm text-earth-brown/60">
+          <p className="mt-2 font-sans text-sm text-warm-gray/60">
             Indira Thakur Photography
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-soft-white p-8 md:p-10 rounded-sm border border-warm-cream/50 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-sm border border-cream/50 space-y-6">
           {error && (
-            <div className="p-4 bg-soft-rose/50 border border-soft-rose text-warm-gold font-sans-alt text-sm rounded-sm">
+            <div className="p-4 bg-magenta/10 border border-magenta/10 text-magenta font-sans text-sm rounded-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
               Email Address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="premium-input"
+              className="input-field"
               placeholder="admin@indirathakur.com"
               required
             />
           </div>
 
           <div>
-            <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="premium-input"
+              className="input-field"
               placeholder="••••••••"
               required
             />
@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="premium-button w-full disabled:opacity-50"
+            className="btn-primary w-full disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
