@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
 import LoadingScreen from '@/components/premium/LoadingScreen';
 
 export const metadata: Metadata = {
@@ -24,9 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   <body className="bg-ivory text-rich-black font-sans antialiased">
     <LoadingScreen />
     <div className="grain-overlay" />
-    <Navbar />
-    <main className="min-h-screen flex flex-col">{children}</main>
-    <Footer />
+    <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
       </body>
     </html>
   );
