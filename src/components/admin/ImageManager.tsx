@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, HiClipboardDocument } from 'react-icons/hi2';
+import { compressImage, formatBytes, getCompressionRecommendation } from '@/lib/compressImage';
 
 interface SiteImage {
   url: string;
@@ -30,6 +31,7 @@ interface UploadState {
   fileSize: number;
   fileType: string;
   previewUrl: string | null;
+  uploadingText?: string;
 }
 
 export default function ImageManager({
@@ -81,19 +83,16 @@ export default function ImageManager({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setUploadState(prev => ({ ...prev, error: 'Please select an image file (JPEG, PNG, WebP, GIF)' }));
       return;
     }
 
-    // Validate file size
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 10 MB.` }));
+    if (file.size > 15 * 1024 * 1024) {
+      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 15 MB.` }));
       return;
     }
 
-    // Create immediate preview
     const localPreview = URL.createObjectURL(file);
 
     setUploadState({
@@ -107,17 +106,62 @@ export default function ImageManager({
       previewUrl: localPreview,
     });
 
-    // Simulate progress
+    setUploadState(prev => ({ ...prev, progress: 10, uploadingText: 'Preparing image...' }));
+
+    let uploadFile: File = file;
+    try {
+      const rec = getCompressionRecommendation(file.size);
+      if (rec.shouldCompress) {
+        setUploadState(prev => ({ ...prev, progress: 15, uploadingText: 'Compressing image...' }));
+        const result = await compressImage(file, {
+          maxWidth: rec.targetMaxWidth,
+          maxHeight: rec.targetMaxWidth * 0.625,
+          quality: rec.targetQuality,
+          outputType: file.type === 'image/png' ? 'image/png' : 'image/jpeg',
+        });
+        uploadFile = result.file;
+        setUploadState(prev => ({
+          ...prev,
+          fileName: uploadFile.name,
+          fileSize: uploadFile.size,
+          uploadingText: `Compressed ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`,
+        }));
+      }
+    } catch {
+      setUploadState(prev => ({ ...prev, uploadingText: 'Upload using original...' }));
+    }
+
+    if (uploadFile.size > 4 * 1024 * 1024) {
+      try {
+        setUploadState(prev => ({ ...prev, progress: 20, uploadingText: 'Further compressing...' }));
+        const result = await compressImage(uploadFile, {
+          maxWidth: 1024,
+          maxHeight: 640,
+          quality: 0.6,
+          outputType: 'image/jpeg',
+        });
+        uploadFile = result.file;
+        setUploadState(prev => ({
+          ...prev,
+          fileName: uploadFile.name,
+          fileSize: uploadFile.size,
+          uploadingText: `Final size: ${formatBytes(result.compressedSize)}`,
+        }));
+      } catch {
+        // keep original
+      }
+    }
+
     const progressInterval = setInterval(() => {
       setUploadState(prev => {
-        if (prev.progress >= 90) return prev;
-        return { ...prev, progress: prev.progress + 10 };
+        if (prev.progress >= 85) return prev;
+        return { ...prev, progress: prev.progress + 8 };
       });
-    }, 200);
+    }, 300);
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', uploadFile);
       formData.append('folder', folder);
 
       abortControllerRef.current = new AbortController();
@@ -130,7 +174,24 @@ export default function ImageManager({
 
       clearInterval(progressInterval);
 
-      const result = await response.json();
+      let result: any;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          const msg = text.substring(0, 200);
+          if (msg.includes('Request Entity Too Large') || msg.includes('413')) {
+            throw new Error('Image is too large for the server. Please use a smaller image or lower quality.');
+          }
+          if (msg.includes('<!DOCTYPE') || msg.includes('<html')) {
+            throw new Error(`Server error (${response.status}). The image may be too large for the server to process.`);
+          }
+          throw new Error(msg || `Upload failed with status ${response.status}`);
+        }
+        throw new Error('Server returned an unexpected response. Please try again.');
+      }
 
       if (!response.ok) {
         throw new Error(result.error || `Upload failed (${response.status})`);
@@ -140,7 +201,6 @@ export default function ImageManager({
         throw new Error('Upload succeeded but no URL was returned. Please try again.');
       }
 
-      // Clean up local preview
       URL.revokeObjectURL(localPreview);
 
       setUploadState(prev => ({
@@ -157,7 +217,6 @@ export default function ImageManager({
         caption: value.caption || '',
       });
 
-      // Clear success after 3 seconds
       setTimeout(() => {
         setUploadState(prev => ({ ...prev, success: false }));
       }, 3000);
@@ -291,7 +350,7 @@ export default function ImageManager({
               />
             )}
             <div className="w-10 h-10 border-2 border-magenta/30 border-t-magenta rounded-full animate-spin mx-auto mb-3" />
-            <p className="font-sans text-xs text-warm-gray/60 mb-1">Uploading...</p>
+            <p className="font-sans text-xs text-warm-gray/60 mb-1">{uploadState.uploadingText || 'Uploading...'}</p>
             <div className="w-32 h-1.5 bg-cream rounded-full mx-auto overflow-hidden">
               <div
                 className="h-full bg-magenta transition-all duration-300 rounded-full"
@@ -321,7 +380,7 @@ export default function ImageManager({
           <div className="text-center p-4 z-10">
             <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-2" />
             <p className="font-sans text-xs text-warm-gray/50">Click to upload an image</p>
-            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF up to 10 MB</p>
+            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · auto-compressed for upload</p>
           </div>
         )}
       </div>
