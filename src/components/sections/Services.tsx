@@ -5,105 +5,81 @@ import Link from 'next/link';
 
 const services = [
   {
-    title: 'Newborn Photography',
-    tag: '01',
-    description: 'Every tiny detail captured for eternity. The first yawn, the tiny fingers, the peaceful sleep — preserved in the most delicate and artistic way.',
+    title: 'Newborn',
+    subtitle: 'The First Chapter',
+    description: 'Every tiny detail captured for eternity. The first yawn, the tiny fingers, the peaceful sleep — preserved in the most delicate way.',
     gradient: 'from-[#2C2C2C] via-[#3D3D3D] to-[#1A1A1A]',
-    layout: 'image-left',
+    layout: 'wide',
   },
   {
-    title: 'Maternity Photography',
-    tag: '02',
-    description: 'You are changing, creating, and giving. Here is a way to remember the magic your body can do — bathed in golden light and infinite tenderness.',
+    title: 'Maternity',
+    subtitle: 'The Glow Within',
+    description: 'You are changing, creating, and giving. A celebration of the life growing within you, bathed in warmth and tenderness.',
     gradient: 'from-[#3D3D3D] via-[#2C2C2C] to-[#1A1A1A]',
-    layout: 'image-right',
+    layout: 'tall',
   },
   {
     title: 'Portrait & Events',
-    tag: '03',
-    description: 'From personal portraits to brand collaborations, every session is a unique narrative. Cinematic frames that tell your story with elegance and depth.',
+    subtitle: 'Your Story, Your Way',
+    description: 'From personal portraits to brand collaborations. Every session is a unique narrative told through cinematic frames.',
     gradient: 'from-[#1A1A1A] via-[#2C2C2C] to-[#3D3D3D]',
-    layout: 'full-bleed',
+    layout: 'wide',
   },
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="section-spacing bg-cream/30">
+    <section id="services" className="py-28 md:py-36 bg-cream/20">
       <div className="container-editorial">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20 md:mb-28"
+          className="mb-20"
         >
-          <p className="font-mono text-[11px] text-magenta/50 uppercase tracking-[0.25em]">The Chapters</p>
-          <h2 className="heading-lg mt-6">
+          <span className="font-sans text-[10px] text-magenta/40 uppercase tracking-[0.3em]">The Chapters</span>
+          <h2 className="font-serif text-4xl md:text-5xl text-rich-black leading-[1.1] mt-4">
             What I Offer
           </h2>
         </motion.div>
+      </div>
 
-        <div className="space-y-24 md:space-y-32">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+      <div className="space-y-4 md:space-y-6">
+        {services.map((service, i) => (
+          <motion.div
+            key={service.title}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8, delay: i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <Link
+              href="/#contact"
+              className={`group block relative overflow-hidden ${
+                service.layout === 'tall' ? 'aspect-[3/1] md:aspect-[5/1]' : 'aspect-[4/1] md:aspect-[6/1]'
+              }`}
             >
-              {service.layout === 'image-left' && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-                  <div className="lg:col-span-7">
-                    <div className={`aspect-[5/4] bg-gradient-to-br ${service.gradient}`} />
-                  </div>
-                  <div className="lg:col-span-5">
-                    <p className="font-mono text-[10px] text-warm-gray/40 uppercase tracking-[0.15em]">{service.tag}</p>
-                    <h3 className="heading-md mt-3">{service.title}</h3>
-                    <div className="divider-line mt-6" />
-                    <p className="body-md mt-6">{service.description}</p>
-                    <Link href="/#contact" className="btn-outline mt-8 inline-flex">
-                      Enquire
-                    </Link>
-                  </div>
+              <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} transition-transform duration-1000 ease-out group-hover:scale-105`} />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
+              <div className="relative h-full flex items-center px-8 md:px-16 lg:px-24">
+                <div className="max-w-xl">
+                  <p className="font-sans text-[10px] text-white/40 uppercase tracking-[0.25em]">{service.subtitle}</p>
+                  <h3 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mt-2 group-hover:italic transition-all duration-700">
+                    {service.title}
+                  </h3>
+                  <p className="font-sans text-sm md:text-base text-white/50 mt-4 max-w-md leading-relaxed">
+                    {service.description}
+                  </p>
+                  <span className="inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-white/40 uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors duration-500">
+                    Enquire
+                    <span className="w-6 h-px bg-white/30 group-hover:w-8 transition-all duration-500" />
+                  </span>
                 </div>
-              )}
-
-              {service.layout === 'image-right' && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-                  <div className="lg:col-span-5 lg:order-1">
-                    <p className="font-mono text-[10px] text-warm-gray/40 uppercase tracking-[0.15em]">{service.tag}</p>
-                    <h3 className="heading-md mt-3">{service.title}</h3>
-                    <div className="divider-line mt-6" />
-                    <p className="body-md mt-6">{service.description}</p>
-                    <Link href="/#contact" className="btn-outline mt-8 inline-flex">
-                      Enquire
-                    </Link>
-                  </div>
-                  <div className="lg:col-span-7">
-                    <div className={`aspect-[5/4] bg-gradient-to-br ${service.gradient}`} />
-                  </div>
-                </div>
-              )}
-
-              {service.layout === 'full-bleed' && (
-                <div className="relative">
-                  <div className={`aspect-[3/1] bg-gradient-to-br ${service.gradient}`} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                    <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.15em]">{service.tag}</p>
-                    <h3 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mt-3">{service.title}</h3>
-                    <div className="w-12 h-px bg-white/30 mt-6" />
-                    <p className="body-md text-white/60 mt-6 max-w-lg">{service.description}</p>
-                    <Link href="/#contact" className="inline-flex items-center justify-center px-10 py-4 border border-white/20 text-white/80 font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700 hover:border-white/50 hover:text-white mt-8">
-                      Enquire
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

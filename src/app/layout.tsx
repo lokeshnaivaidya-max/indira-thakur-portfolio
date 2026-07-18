@@ -3,7 +3,6 @@ import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LoadingScreen from '@/components/premium/LoadingScreen';
-import CustomCursor from '@/components/premium/CustomCursor';
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +23,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="bg-ivory text-rich-black font-sans antialiased">
         <LoadingScreen />
-        <CustomCursor />
         <div className="grain-overlay" />
         <Navbar />
         <main className="min-h-screen">{children}</main>
