@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
 export default function Footer() {
   const { config } = useSiteConfig();
@@ -23,10 +24,14 @@ export default function Footer() {
     <footer className="relative bg-rich-black text-white/60 overflow-hidden">
       {hasImage(footerData.backgroundFooter?.url) && (
         <div className="absolute inset-0">
-          <img
+          <PolaroidImage
             src={footerData.backgroundFooter.url}
             alt={footerData.backgroundFooter.alt || ''}
-            className="w-full h-full object-cover opacity-10"
+            fill
+            objectFit="cover"
+            sizes="100vw"
+            className="!w-full !h-full opacity-10"
+            containerClassName="!w-full !h-full !absolute !inset-0"
           />
         </div>
       )}
@@ -35,18 +40,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
           <div>
             {hasImage(footerData.logo?.url) ? (
-              <img
+              <PolaroidImage
                 src={footerData.logo.url}
                 alt={footerData.logo.alt || 'Indira Thakur Photography'}
-                className="h-12 w-auto mb-3"
+                width={120}
+                height={48}
+                objectFit="contain"
+                containerClassName="!w-auto !h-12 !mb-3"
+                className="!w-auto !h-12"
               />
             ) : (
               <p className="font-serif text-xl text-white italic">Indira Thakur</p>
             )}
             <p className="font-mono text-[9px] text-white/30 uppercase tracking-[0.25em] mt-1">{footerData.tagline}</p>
-            <p className="font-sans text-sm text-white/40 mt-6 max-w-xs leading-relaxed">
-              {footerData.description}
-            </p>
+            <p className="font-sans text-sm text-white/40 mt-6 max-w-xs leading-relaxed">{footerData.description}</p>
           </div>
 
           <div>

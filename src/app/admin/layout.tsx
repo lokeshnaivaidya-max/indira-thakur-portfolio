@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns } from 'react-icons/hi2';
 
 interface SidebarGroup {
   label: string;
@@ -29,6 +29,7 @@ const sidebarGroups: SidebarGroup[] = [
       { label: 'Contact', href: '/admin/contact-cms', icon: HiEnvelope },
       { label: 'Footer', href: '/admin/footer-cms', icon: HiDocumentText },
       { label: 'SEO', href: '/admin/seo-cms', icon: HiGlobeAlt },
+      { label: 'Page Builder', href: '/admin/sections', icon: HiViewColumns },
     ],
   },
   {

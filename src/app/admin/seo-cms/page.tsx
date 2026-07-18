@@ -8,6 +8,7 @@ import { HiPlus, HiTrash, HiGlobeAlt } from 'react-icons/hi2';
 
 export default function AdminSEOPage() {
   const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
+  const [newKeyword, setNewKeyword] = useState('');
 
   if (loading) {
     return (
@@ -23,7 +24,6 @@ export default function AdminSEOPage() {
   if (!config) return null;
 
   const seo = config.seo || {};
-  const [newKeyword, setNewKeyword] = useState('');
 
   const addKeyword = () => {
     if (!newKeyword.trim()) return;

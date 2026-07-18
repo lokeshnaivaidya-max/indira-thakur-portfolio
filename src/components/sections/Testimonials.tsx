@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteConfig, type SiteConfigData } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
 type TestimonialItem = NonNullable<SiteConfigData['testimonials']['testimonials']>[number];
 
@@ -16,29 +17,39 @@ export default function Testimonials() {
   const { config } = useSiteConfig();
   const [current, setCurrent] = useState(0);
 
-  const items: TestimonialItem[] = (config?.testimonials?.testimonials && config.testimonials.testimonials.length > 0)
-    ? config.testimonials.testimonials
-    : FALLBACK_ITEMS;
+  const items: TestimonialItem[] =
+    config?.testimonials?.testimonials && config.testimonials.testimonials.length > 0
+      ? config.testimonials.testimonials
+      : FALLBACK_ITEMS;
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrent((prev) => (prev + 1) % items.length), 5000);
-    return () => clearInterval(timer);
+  const advance = useCallback(() => {
+    setCurrent((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
-  const hasImage = (url: string) => url && url.trim() !== '';
+  useEffect(() => {
+    const timer = setInterval(advance, 5000);
+    return () => clearInterval(timer);
+  }, [advance]);
 
+  const hasImage = (url: string) => url && url.trim() !== '';
   const bgImage = config?.testimonials?.backgroundImage?.url || '';
 
   return (
     <section className={`relative py-28 md:py-36 ${bgImage ? '' : 'bg-ivory'}`}>
       {bgImage && (
-        <img
+        <PolaroidImage
           src={bgImage}
           alt={config?.testimonials?.backgroundImage?.alt || 'Testimonials background'}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          objectFit="cover"
+          sizes="100vw"
+          priority={false}
+          className="!w-full !h-full"
+          containerClassName="!w-full !h-full !absolute !inset-0"
         />
       )}
       <div className="absolute inset-0 bg-ivory/85" />
+
       <div className="container-editorial relative">
         <div className="max-w-3xl mx-auto text-center">
           <AnimatePresence mode="wait">
@@ -51,10 +62,14 @@ export default function Testimonials() {
             >
               {hasImage(items[current]?.avatar?.url) && (
                 <div className="mb-6">
-                  <img
+                  <PolaroidImage
                     src={items[current].avatar.url}
                     alt={items[current].avatar.alt || items[current].author}
-                    className="w-16 h-16 rounded-full object-cover mx-auto border-2 border-cream/40"
+                    width={64}
+                    height={64}
+                    objectFit="cover"
+                    containerClassName="!w-16 !h-16 !rounded-full !mx-auto !border-2 !border-cream/40"
+                    className="!rounded-full"
                   />
                 </div>
               )}
@@ -66,9 +81,7 @@ export default function Testimonials() {
                 {items[current]?.author}
               </p>
               {items[current]?.role && (
-                <p className="font-sans text-[10px] text-rich-black/25 mt-1">
-                  {items[current].role}
-                </p>
+                <p className="font-sans text-[10px] text-rich-black/25 mt-1">{items[current].role}</p>
               )}
             </motion.div>
           </AnimatePresence>

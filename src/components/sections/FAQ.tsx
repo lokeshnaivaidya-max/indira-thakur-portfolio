@@ -43,10 +43,13 @@ export default function FAQ() {
             const isOpen = openIndex === i;
             return (
               <div key={i} className="border-t border-beige/30 first:border-t-0">
-                <button onClick={() => setOpenIndex(isOpen ? null : i)}
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
                   className="w-full py-5 flex items-center justify-between text-left group"
                 >
-                  <span className="font-sans text-sm text-rich-black/50 group-hover:text-rich-black transition-colors duration-500 pr-4">{faq.question}</span>
+                  <span className="font-sans text-sm text-rich-black/50 group-hover:text-rich-black transition-colors duration-500 pr-4">
+                    {faq.question}
+                  </span>
                   <span className={`flex-shrink-0 w-4 h-4 flex items-center justify-center transition-transform duration-500 ${isOpen ? 'rotate-45' : ''}`}>
                     <span className="w-2.5 h-px bg-warm-gray/30 absolute" />
                     <span className="w-px h-2.5 bg-warm-gray/30 absolute" />
@@ -54,7 +57,13 @@ export default function FAQ() {
                 </button>
                 <AnimatePresence>
                   {isOpen && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                      className="overflow-hidden"
+                    >
                       <p className="font-sans text-sm text-warm-gray/40 pb-5 pr-8 leading-relaxed">{faq.answer}</p>
                     </motion.div>
                   )}

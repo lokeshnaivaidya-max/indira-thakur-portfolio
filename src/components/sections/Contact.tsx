@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder';
 
 export default function Contact() {
@@ -23,19 +24,23 @@ export default function Contact() {
   return (
     <section id="contact" className="py-28 md:py-36 bg-ivory">
       <div className="container-editorial">
-        {/* Banner Image */}
         {hasImage(contactData.bannerImage?.url) && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="mb-16 overflow-hidden"
+            className="mb-16"
           >
-            <img
+            <PolaroidImage
               src={contactData.bannerImage.url}
               alt={contactData.bannerImage.alt || 'Contact Banner'}
-              className="w-full h-[30vh] md:h-[40vh] object-cover"
+              fill
+              objectFit="cover"
+              sizes="100vw"
+              className="!w-full !h-full"
+              containerClassName="!w-full !h-full"
+              style={{ height: '30vh' }}
             />
           </motion.div>
         )}
@@ -48,20 +53,12 @@ export default function Contact() {
             transition={{ duration: 0.8 }}
           >
             <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">{contactData.eyebrow}</span>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-3">
-              {contactData.heading}
-            </h2>
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-3">{contactData.heading}</h2>
             <div className="w-5 h-px bg-magenta/25 mt-6" />
-            <p className="font-sans text-sm text-warm-gray/50 mt-5 max-w-xs leading-relaxed">
-              {contactData.description}
-            </p>
+            <p className="font-sans text-sm text-warm-gray/50 mt-5 max-w-xs leading-relaxed">{contactData.description}</p>
 
             <div className="mt-10 space-y-4">
-              {[
-                contactData.email,
-                contactData.phone,
-                contactData.location,
-              ].filter(Boolean).map((item) => (
+              {[contactData.email, contactData.phone, contactData.location].filter(Boolean).map((item) => (
                 <div key={item} className="flex items-center gap-3">
                   <span className="w-px h-3.5 bg-magenta/15" />
                   <p className="font-sans text-xs text-warm-gray/50">{item}</p>
@@ -77,20 +74,20 @@ export default function Contact() {
             transition={{ duration: 0.8, delay: 0.1 }}
           >
             {hasImage(contactData.studioImage?.url) ? (
-              <div className="relative overflow-hidden mb-8">
-                <img
+              <div className="mb-8">
+                <PolaroidImage
                   src={contactData.studioImage.url}
                   alt={contactData.studioImage.alt || 'Studio'}
-                  className="w-full h-[30vh] md:h-[35vh] object-cover"
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '30vh' }}
                 />
               </div>
             ) : (
-              <ImagePlaceholder
-                aspect="h-[30vh] md:h-[35vh]"
-                label="Studio Image"
-                icon="camera"
-                className="mb-8"
-              />
+              <ImagePlaceholder aspect="h-[30vh] md:h-[35vh]" label="Studio Image" icon="camera" className="mb-8" />
             )}
 
             <form className="space-y-3">

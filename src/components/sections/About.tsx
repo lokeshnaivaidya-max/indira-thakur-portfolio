@@ -1,24 +1,13 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder';
 
 export default function About() {
   const { config } = useSiteConfig();
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const y1 = useTransform(scrollYProgress, [0, 1], [60, -60]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [40, -40]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [30, -30]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   const about = config?.about || {
     eyebrow: 'The Story',
@@ -53,39 +42,31 @@ export default function About() {
   const hasImage = (url: string) => url && url.trim() !== '';
 
   return (
-    <section id="about" ref={sectionRef} className="relative bg-ivory">
-      {/* Section 1: Editorial Hero with Parallax */}
+    <section id="about" className="relative bg-ivory">
+
+      {/* 1. Editorial Hero */}
       <div className="min-h-[90vh] flex items-end relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cream via-ivory to-beige/20" />
-
         <div className="container-editorial relative z-10 w-full pb-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-0">
-            {/* Left: Large Image */}
             <div className="lg:col-span-7 lg:h-[85vh] relative">
-              <motion.div style={{ y: y1 }} className="w-full h-full">
-                {hasImage(about.images.founderPortrait.url) ? (
-                  <div className="relative w-full h-full overflow-hidden">
-                    <img
-                      src={about.images.founderPortrait.url}
-                      alt={about.images.founderPortrait.alt || 'Indira Thakur - Portrait'}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ivory/30 via-transparent to-transparent" />
-                  </div>
-                ) : (
-                  <div className="w-full h-full">
-                    <ImagePlaceholder
-                      aspect="h-full"
-                      label="Founder Portrait"
-                      icon="portrait"
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
-              </motion.div>
+              {hasImage(about.images.founderPortrait.url) ? (
+                <PolaroidImage
+                  src={about.images.founderPortrait.url}
+                  alt={about.images.founderPortrait.alt || 'Indira Thakur - Portrait'}
+                  fill
+                  objectFit="cover"
+                  objectPosition="top"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                />
+              ) : (
+                <ImagePlaceholder aspect="h-full" label="Founder Portrait" icon="portrait" className="w-full h-full" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-ivory/30 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* Right: Text Content */}
             <div className="lg:col-span-5 flex items-end pb-12 md:pb-20 pl-0 lg:pl-14 pt-8 lg:pt-0">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -93,12 +74,8 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.3 }}
               >
-                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                  {about.eyebrow}
-                </span>
-                <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-4 max-w-sm">
-                  {about.heading}
-                </h2>
+                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">{about.eyebrow}</span>
+                <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-4 max-w-sm">{about.heading}</h2>
                 <div className="w-5 h-px bg-magenta/25 mt-6" />
                 <p className="font-sans text-sm text-warm-gray/50 mt-5 max-w-xs leading-relaxed">
                   {about.specializations?.slice(0, 3).join(' · ') || 'Newborn · Maternity · Portrait'}
@@ -116,11 +93,10 @@ export default function About() {
         </div>
       </div>
 
-      {/* Section 2: Story - Editorial Split */}
+      {/* 2. Story */}
       <div className="py-24 md:py-32 lg:py-40 bg-white">
         <div className="container-editorial">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            {/* Left: Story Text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -128,51 +104,44 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="lg:col-span-5 flex flex-col justify-center"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                My Story
-              </span>
+              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">My Story</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
-                From Words to{' '}
-                <span className="italic font-normal text-warm-gray/60">Frames</span>
+                From Words to <span className="italic font-normal text-warm-gray/60">Frames</span>
               </h3>
               <div className="w-5 h-px bg-magenta/25 mt-6" />
-              <p className="font-sans text-sm text-warm-gray/50 mt-6 leading-[1.8]">
-                {about.story}
-              </p>
+              <p className="font-sans text-sm text-warm-gray/50 mt-6 leading-[1.8]">{about.story}</p>
               {about.storyContinued && (
-                <p className="font-sans text-sm text-warm-gray/50 mt-4 leading-[1.8]">
-                  {about.storyContinued}
-                </p>
+                <p className="font-sans text-sm text-warm-gray/50 mt-4 leading-[1.8]">{about.storyContinued}</p>
               )}
             </motion.div>
 
-            {/* Right: Editorial Image */}
             <motion.div
-              style={{ y: y2 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.15 }}
               className="lg:col-span-7 relative"
             >
               {hasImage(about.images.storyImage.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.storyImage.url}
-                    alt={about.images.storyImage.alt || 'Story - Photography Journey'}
-                    className="w-full h-[50vh] md:h-[65vh] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-                </div>
-              ) : (
-                <ImagePlaceholder
-                  aspect="h-[50vh] md:h-[65vh]"
-                  label="Story Image"
-                  icon="landscape"
+                <PolaroidImage
+                  src={about.images.storyImage.url}
+                  alt={about.images.storyImage.alt || 'Story - Photography Journey'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '50vh' }}
                 />
+              ) : (
+                <ImagePlaceholder aspect="h-[50vh] md:h-[65vh]" label="Story Image" icon="landscape" />
               )}
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Section 3: Philosophy - Centered Editorial */}
+      {/* 3. Philosophy */}
       <div className="py-24 md:py-32 bg-cream/15">
         <div className="container-editorial">
           <div className="max-w-4xl mx-auto">
@@ -183,25 +152,17 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="text-center"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                Philosophy
-              </span>
+              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Philosophy</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
-                Every Session is a{' '}
-                <span className="italic font-normal text-warm-gray/60">Love Story</span>
+                Every Session is a <span className="italic font-normal text-warm-gray/60">Love Story</span>
               </h3>
               <div className="w-5 h-px bg-magenta/25 mt-6 mx-auto" />
-              <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-6 leading-[1.8] max-w-2xl mx-auto">
-                {about.philosophy}
-              </p>
+              <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-6 leading-[1.8] max-w-2xl mx-auto">{about.philosophy}</p>
               {about.philosophyContinued && (
-                <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-4 leading-[1.8] max-w-2xl mx-auto">
-                  {about.philosophyContinued}
-                </p>
+                <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-4 leading-[1.8] max-w-2xl mx-auto">{about.philosophyContinued}</p>
               )}
             </motion.div>
 
-            {/* Specializations */}
             {about.specializations && about.specializations.length > 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -224,36 +185,34 @@ export default function About() {
         </div>
       </div>
 
-      {/* Section 4: Journey - Parallax Editorial */}
+      {/* 4. Journey */}
       <div className="py-24 md:py-32 lg:py-40 bg-rich-black relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1A1110] via-[#2C1810] to-rich-black opacity-80" />
-
         <div className="container-editorial relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Left: Image */}
             <motion.div
-              style={{ y: y3 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
               className="lg:col-span-6 order-2 lg:order-1"
             >
               {hasImage(about.images.journeyImage.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.journeyImage.url}
-                    alt={about.images.journeyImage.alt || 'Journey - Creative Path'}
-                    className="w-full h-[40vh] md:h-[55vh] object-cover"
-                  />
-                </div>
-              ) : (
-                <ImagePlaceholder
-                  aspect="h-[40vh] md:h-[55vh]"
-                  label="Journey Image"
-                  icon="film"
-                  className="[&_*]:!text-white/10"
+                <PolaroidImage
+                  src={about.images.journeyImage.url}
+                  alt={about.images.journeyImage.alt || 'Journey - Creative Path'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '40vh' }}
                 />
+              ) : (
+                <ImagePlaceholder aspect="h-[40vh] md:h-[55vh]" label="Journey Image" icon="film" className="[&_*]:!text-white/10" />
               )}
             </motion.div>
 
-            {/* Right: Text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -261,24 +220,16 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:col-span-6 order-1 lg:order-2"
             >
-              <span className="font-mono text-[8px] text-white/30 uppercase tracking-[0.35em]">
-                The Journey
-              </span>
+              <span className="font-mono text-[8px] text-white/30 uppercase tracking-[0.35em]">The Journey</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-white leading-[1.15] mt-4">
-                Capturing{' '}
-                <span className="italic font-normal text-white/50">Milestones</span>
+                Capturing <span className="italic font-normal text-white/50">Milestones</span>
               </h3>
               <div className="w-5 h-px bg-white/15 mt-6" />
-              <p className="font-sans text-sm text-white/40 mt-6 leading-[1.8]">
-                {about.journey}
-              </p>
+              <p className="font-sans text-sm text-white/40 mt-6 leading-[1.8]">{about.journey}</p>
               {about.journeyContinued && (
-                <p className="font-sans text-sm text-white/40 mt-4 leading-[1.8]">
-                  {about.journeyContinued}
-                </p>
+                <p className="font-sans text-sm text-white/40 mt-4 leading-[1.8]">{about.journeyContinued}</p>
               )}
 
-              {/* Stats */}
               {about.stats && about.stats.length > 0 && (
                 <div className="mt-10 grid grid-cols-3 gap-6">
                   {about.stats.map((stat: { label: string; value: string }, i: number) => (
@@ -294,7 +245,7 @@ export default function About() {
         </div>
       </div>
 
-      {/* Section 5: Achievements - Editorial Grid */}
+      {/* 5. Achievements */}
       {about.achievements && about.achievements.length > 0 && (
         <div className="py-24 md:py-32 bg-ivory">
           <div className="container-editorial">
@@ -305,12 +256,9 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="text-center mb-16"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                Milestones
-              </span>
+              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Milestones</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
-                Proud{' '}
-                <span className="italic font-normal text-warm-gray/60">Moments</span>
+                Proud <span className="italic font-normal text-warm-gray/60">Moments</span>
               </h3>
               <div className="w-5 h-px bg-magenta/25 mt-6 mx-auto" />
             </motion.div>
@@ -326,9 +274,7 @@ export default function About() {
                   className="p-8 bg-white border border-cream/40 hover:border-magenta/15 transition-colors duration-500"
                 >
                   {ach.year && (
-                    <p className="font-mono text-[9px] text-magenta/30 uppercase tracking-[0.2em] mb-3">
-                      {ach.year}
-                    </p>
+                    <p className="font-mono text-[9px] text-magenta/30 uppercase tracking-[0.2em] mb-3">{ach.year}</p>
                   )}
                   <h4 className="font-serif text-lg text-rich-black">{ach.title}</h4>
                   <div className="w-4 h-px bg-magenta/15 mt-3 mb-3" />
@@ -340,7 +286,7 @@ export default function About() {
         </div>
       )}
 
-      {/* Section 6: Editorial Gallery - 2 Images */}
+      {/* 6. Editorial Gallery */}
       <div className="py-12 md:py-16 bg-cream/15">
         <div className="container-editorial">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -351,19 +297,18 @@ export default function About() {
               transition={{ duration: 0.8 }}
             >
               {hasImage(about.images.editorial1.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.editorial1.url}
-                    alt={about.images.editorial1.alt || 'Editorial - Behind the Scenes'}
-                    className="w-full h-[35vh] md:h-[45vh] object-cover"
-                  />
-                </div>
-              ) : (
-                <ImagePlaceholder
-                  aspect="h-[35vh] md:h-[45vh]"
-                  label="Editorial Image"
-                  icon="camera"
+                <PolaroidImage
+                  src={about.images.editorial1.url}
+                  alt={about.images.editorial1.alt || 'Editorial - Behind the Scenes'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '35vh' }}
                 />
+              ) : (
+                <ImagePlaceholder aspect="h-[35vh] md:h-[45vh]" label="Editorial Image" icon="camera" />
               )}
             </motion.div>
 
@@ -374,26 +319,25 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.1 }}
             >
               {hasImage(about.images.behindTheScenes.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.behindTheScenes.url}
-                    alt={about.images.behindTheScenes.alt || 'Behind the Scenes'}
-                    className="w-full h-[35vh] md:h-[45vh] object-cover"
-                  />
-                </div>
-              ) : (
-                <ImagePlaceholder
-                  aspect="h-[35vh] md:h-[45vh]"
-                  label="Behind The Scenes"
-                  icon="film"
+                <PolaroidImage
+                  src={about.images.behindTheScenes.url}
+                  alt={about.images.behindTheScenes.alt || 'Behind the Scenes'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '35vh' }}
                 />
+              ) : (
+                <ImagePlaceholder aspect="h-[35vh] md:h-[45vh]" label="Behind The Scenes" icon="film" />
               )}
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Section 7: Values */}
+      {/* 7. Values */}
       {about.values && about.values.length > 0 && (
         <div className="py-24 md:py-32 bg-ivory">
           <div className="container-editorial">
@@ -405,12 +349,9 @@ export default function About() {
                 transition={{ duration: 0.8 }}
                 className="text-center mb-14"
               >
-                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                  Core Values
-                </span>
+                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Core Values</span>
                 <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
-                  What{' '}
-                  <span className="italic font-normal text-warm-gray/60">Drives Us</span>
+                  What <span className="italic font-normal text-warm-gray/60">Drives Us</span>
                 </h3>
                 <div className="w-5 h-px bg-magenta/25 mt-6 mx-auto" />
               </motion.div>
@@ -438,11 +379,10 @@ export default function About() {
         </div>
       )}
 
-      {/* Section 8: Welcome CTA */}
+      {/* 8. Welcome CTA */}
       <div className="py-24 md:py-32 bg-cream/15 relative overflow-hidden">
         <div className="container-editorial">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Left: Text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -450,25 +390,17 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="lg:col-span-6"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">
-                Welcome
-              </span>
+              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Welcome</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
-                Join the{' '}
-                <span className="italic font-normal text-warm-gray/60">Family</span>
+                Join the <span className="italic font-normal text-warm-gray/60">Family</span>
               </h3>
               <div className="w-5 h-px bg-magenta/25 mt-6" />
-              <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-6 leading-[1.8]">
-                {about.welcomeMessage}
-              </p>
+              <p className="font-sans text-sm md:text-base text-warm-gray/50 mt-6 leading-[1.8]">{about.welcomeMessage}</p>
 
-              {/* Signature */}
               {about.signature && (
                 <div className="mt-8">
                   <p className="font-serif text-xl italic text-rich-black/70">{about.signature}</p>
-                  <p className="font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em] mt-1">
-                    Indira Thakur Photography
-                  </p>
+                  <p className="font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em] mt-1">Indira Thakur Photography</p>
                 </div>
               )}
 
@@ -488,7 +420,6 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Right: Welcome Image */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -497,29 +428,29 @@ export default function About() {
               className="lg:col-span-6"
             >
               {hasImage(about.images.welcomeImage.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.welcomeImage.url}
-                    alt={about.images.welcomeImage.alt || 'Welcome to Indira Thakur Photography'}
-                    className="w-full h-[40vh] md:h-[55vh] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-                </div>
-              ) : hasImage(about.images.achievementImage.url) ? (
-                <div className="relative overflow-hidden">
-                  <img
-                    src={about.images.achievementImage.url}
-                    alt={about.images.achievementImage.alt || 'Indira Thakur Photography'}
-                    className="w-full h-[40vh] md:h-[55vh] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-                </div>
-              ) : (
-                <ImagePlaceholder
-                  aspect="h-[40vh] md:h-[55vh]"
-                  label="Welcome Image"
-                  icon="portrait"
+                <PolaroidImage
+                  src={about.images.welcomeImage.url}
+                  alt={about.images.welcomeImage.alt || 'Welcome to Indira Thakur Photography'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '40vh' }}
                 />
+              ) : hasImage(about.images.achievementImage.url) ? (
+                <PolaroidImage
+                  src={about.images.achievementImage.url}
+                  alt={about.images.achievementImage.alt || 'Indira Thakur Photography'}
+                  fill
+                  objectFit="cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="!w-full !h-full"
+                  containerClassName="!w-full !h-full"
+                  style={{ height: '40vh' }}
+                />
+              ) : (
+                <ImagePlaceholder aspect="h-[40vh] md:h-[55vh]" label="Welcome Image" icon="portrait" />
               )}
             </motion.div>
           </div>
