@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import About from '@/models/About';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDatabase();
@@ -15,19 +17,14 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const body = await request.json();
 
-    const about = await About.findOneAndUpdate(
-      {},
-      body,
-      { new: true, upsert: true }
-    );
-
+    const about = await About.findOneAndUpdate({}, body, { new: true, upsert: true });
     return NextResponse.json(about);
   } catch (error) {
     console.error('About PUT error:', error);

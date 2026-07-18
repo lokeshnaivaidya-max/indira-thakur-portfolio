@@ -1,31 +1,36 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
-import { put, list, del } from '@vercel/blob';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const user = requireAuth(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const user = requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const folder = searchParams.get('folder') || 'uploads';
 
-    // List from Vercel Blob
-    const blobFiles = await list({ prefix: folder + '/' });
-    
-    // For Cloudinary images, we'd need to list from Cloudinary API
-    // For now, we'll also track files in MongoDB
-    
+    let blobFiles: { blobs: Array<{ url: string; pathname: string; size: number; uploadedAt: Date }> } = { blobs: [] };
+
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      try {
+        const { list } = await import('@vercel/blob');
+        blobFiles = await list({ prefix: folder + '/' });
+      } catch {
+        blobFiles = { blobs: [] };
+      }
+    }
+
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
     const dbFiles = await FileRecord.find({ folder: new RegExp(`^${folder}`) }).sort({ createdAt: -1 }).lean();
 
-    // Combine and deduplicate
-    const fileMap = new Map();
-    
+    const fileMap = new Map<string, Record<string, unknown>>();
+
     for (const file of dbFiles) {
       fileMap.set(file.url, {
         _id: file._id.toString(),
@@ -51,7 +56,7 @@ export async function GET(request: Request) {
           filename: blob.pathname.split('/').pop() || '',
           originalName: blob.pathname.split('/').pop() || '',
           size: blob.size,
-          type: (blob as any).contentType || 'application/octet-stream',
+          type: 'application/octet-stream',
           folder: folder,
           createdAt: blob.uploadedAt,
           updatedAt: blob.uploadedAt,
@@ -67,15 +72,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = requireAuth(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const user = requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN not configured' }, { status: 500 });
+    }
+
+    const { put } = await import('@vercel/blob');
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'uploads';
+    const folder = (formData.get('folder') as string) || 'uploads';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -90,7 +100,6 @@ export async function POST(request: Request) {
       addRandomSuffix: true,
     });
 
-    // Save to database
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
     await FileRecord.create({
@@ -117,12 +126,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const user = requireAuth(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const user = requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
     const publicId = searchParams.get('publicId');
@@ -131,11 +140,15 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Missing file identifier' }, { status: 400 });
     }
 
-    if (url) {
-      await del(url);
+    if (url && process.env.BLOB_READ_WRITE_TOKEN) {
+      try {
+        const { del } = await import('@vercel/blob');
+        await del(url);
+      } catch {
+        // continue even if blob delete fails
+      }
     }
 
-    // Remove from database
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
     await FileRecord.deleteOne({ $or: [{ url }, { publicId }] });

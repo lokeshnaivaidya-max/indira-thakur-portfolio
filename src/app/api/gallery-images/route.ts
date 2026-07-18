@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import GalleryImage from '@/models/GalleryImage';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDatabase();
@@ -15,10 +17,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -47,12 +49,13 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
-    const { id, ...updateData } = await request.json();
+    const body = await request.json();
+    const { id, ...updateData } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Image ID is required' }, { status: 400 });
@@ -71,12 +74,13 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
-    const { id } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json({ error: 'Image ID is required' }, { status: 400 });

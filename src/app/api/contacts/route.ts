@@ -3,11 +3,13 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Contact from '@/models/Contact';
 import { requireAuth } from '@/lib/auth';
 
-export async function GET(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export const dynamic = 'force-dynamic';
 
+export async function GET(request: Request) {
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const contacts = await Contact.find({}).sort({ createdAt: -1 });
     return NextResponse.json(contacts);
@@ -18,14 +20,14 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const body = await request.json();
-
     const { id, ...updateData } = body;
+
     if (!id) {
       return NextResponse.json({ error: 'Contact ID is required' }, { status: 400 });
     }

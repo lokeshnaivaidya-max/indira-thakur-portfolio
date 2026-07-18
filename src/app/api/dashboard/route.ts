@@ -2,21 +2,13 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDatabase();
-    const stats = {
-      totalImages: 0,
-      totalServices: 0,
-      totalTestimonials: 0,
-      totalReviews: 0,
-      totalFAQs: 0,
-      recentContacts: 0,
-      pendingBookings: 0,
-      unreadMessages: 0,
-    };
 
-    const Gallery = (await import('@/models/Gallery')).default;
+    const GalleryImage = (await import('@/models/GalleryImage')).default;
     const Service = (await import('@/models/Service')).default;
     const Testimonial = (await import('@/models/Testimonial')).default;
     const Review = (await import('@/models/Review')).default;
@@ -24,20 +16,36 @@ export async function GET() {
     const Booking = (await import('@/models/Booking')).default;
     const Contact = (await import('@/models/Contact')).default;
 
-    stats.totalImages = await Gallery.countDocuments();
-    stats.totalServices = await Service.countDocuments();
-    stats.totalTestimonials = await Testimonial.countDocuments();
-    stats.totalReviews = await Review.countDocuments();
-    stats.totalFAQs = await FAQ.countDocuments();
+    const [
+      totalImages,
+      totalServices,
+      totalTestimonials,
+      totalReviews,
+      totalFAQs,
+      recentContacts,
+      pendingBookings,
+      unreadMessages,
+    ] = await Promise.all([
+      GalleryImage.countDocuments(),
+      Service.countDocuments(),
+      Testimonial.countDocuments(),
+      Review.countDocuments(),
+      FAQ.countDocuments(),
+      Contact.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
+      Booking.countDocuments({ status: 'pending' }),
+      Contact.countDocuments({ read: false }),
+    ]);
 
-    stats.recentContacts = await Contact.countDocuments({
-      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+    return NextResponse.json({
+      totalImages,
+      totalServices,
+      totalTestimonials,
+      totalReviews,
+      totalFAQs,
+      recentContacts,
+      pendingBookings,
+      unreadMessages,
     });
-
-    stats.pendingBookings = await Booking.countDocuments({ status: 'pending' });
-    stats.unreadMessages = await Contact.countDocuments({ read: false });
-
-    return NextResponse.json(stats);
   } catch (error) {
     console.error('Dashboard GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch dashboard statistics' }, { status: 500 });
@@ -45,10 +53,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { action, data } = await request.json();
 
     switch (action) {

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
+export const dynamic = 'force-dynamic';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
 
 export async function GET(request: Request) {

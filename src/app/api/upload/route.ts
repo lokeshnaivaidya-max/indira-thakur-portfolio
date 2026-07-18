@@ -1,79 +1,68 @@
 import { NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
 import { requireAuth } from '@/lib/auth';
 
-const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
-const AUDIO_TYPES = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp3'];
-const DOCUMENT_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/zip',
-  'application/x-zip-compressed',
-];
+export const dynamic = 'force-dynamic';
 
-const ALLOWED_TYPES = [...IMAGE_TYPES, ...VIDEO_TYPES, ...AUDIO_TYPES, ...DOCUMENT_TYPES];
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 
 export async function POST(request: Request) {
-  const user = requireAuth(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const user = requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'uploads';
+    const folder = (formData.get('folder') as string) || 'uploads';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!file.type.startsWith('image/')) {
       return NextResponse.json({ error: 'File type not allowed' }, { status: 400 });
     }
 
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: 'File size exceeds 50MB limit' }, { status: 400 });
+      return NextResponse.json({ error: 'File size exceeds 10MB limit' }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const isImage = IMAGE_TYPES.includes(file.type);
-    let url: string;
-    let publicId: string;
 
     if (isImage && process.env.CLOUDINARY_CLOUD_NAME) {
-      // Upload images to Cloudinary
       const { uploadImageBuffer } = await import('@/lib/cloudinary');
       const result = await uploadImageBuffer(buffer, `indira-thakur/${folder}`);
-      url = result.url;
-      publicId = result.publicId;
-    } else {
-      // Upload other files to Vercel Blob
+      return NextResponse.json({
+        url: result.url,
+        publicId: result.publicId,
+        filename: file.name,
+        size: file.size,
+        type: file.type,
+      });
+    }
+
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import('@vercel/blob');
       const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const blob = await put(filename, buffer, {
         access: 'public',
         addRandomSuffix: true,
       });
-      url = blob.url;
-      publicId = blob.pathname;
+      return NextResponse.json({
+        url: blob.url,
+        publicId: blob.pathname,
+        filename: file.name,
+        size: file.size,
+        type: file.type,
+      });
     }
 
-    return NextResponse.json({
-      url,
-      publicId,
-      filename: file.name,
-      size: file.size,
-      type: file.type,
-    });
+    return NextResponse.json({ error: 'No upload provider configured. Set CLOUDINARY or BLOB_READ_WRITE_TOKEN.' }, { status: 500 });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
@@ -81,12 +70,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const user = requireAuth(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const user = requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
     const publicId = searchParams.get('publicId');
@@ -99,7 +88,7 @@ export async function DELETE(request: Request) {
     if (isImage && publicId && process.env.CLOUDINARY_CLOUD_NAME) {
       const { deleteImage } = await import('@/lib/cloudinary');
       await deleteImage(publicId);
-    } else if (!isImage && url) {
+    } else if (!isImage && url && process.env.BLOB_READ_WRITE_TOKEN) {
       const { del } = await import('@vercel/blob');
       await del(url);
     }

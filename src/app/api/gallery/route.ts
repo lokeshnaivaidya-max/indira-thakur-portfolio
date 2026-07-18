@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Gallery from '@/models/Gallery';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDatabase();
@@ -15,10 +17,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const user = requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const body = await request.json();
 

@@ -2,19 +2,24 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { createHash } from 'crypto';
 
+export const dynamic = 'force-dynamic';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
-    const hashedPassword = createHash('sha256').update(password).digest('hex');
 
-    // Try database authentication if MongoDB is configured
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
+    }
+
     if (process.env.MONGODB_URI) {
       try {
         const { connectToDatabase } = await import('@/lib/mongodb');
         const User = (await import('@/models/User')).default;
         await connectToDatabase();
+        const hashedPassword = createHash('sha256').update(password).digest('hex');
         const user = await User.findOne({ email: email.toLowerCase(), password: hashedPassword });
         if (user) {
           const token = jwt.sign(
@@ -37,7 +42,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Fallback to .env credentials
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@indirathakur.com';
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
