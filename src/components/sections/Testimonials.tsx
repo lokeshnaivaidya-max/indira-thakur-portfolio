@@ -27,9 +27,19 @@ export default function Testimonials() {
 
   const hasImage = (url: string) => url && url.trim() !== '';
 
+  const bgImage = config?.testimonials?.backgroundImage?.url || '';
+
   return (
-    <section className="py-28 md:py-36 bg-ivory">
-      <div className="container-editorial">
+    <section className={`relative py-28 md:py-36 ${bgImage ? '' : 'bg-ivory'}`}>
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt={config?.testimonials?.backgroundImage?.alt || 'Testimonials background'}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+      <div className="absolute inset-0 bg-ivory/85" />
+      <div className="container-editorial relative">
         <div className="max-w-3xl mx-auto text-center">
           <AnimatePresence mode="wait">
             <motion.div
