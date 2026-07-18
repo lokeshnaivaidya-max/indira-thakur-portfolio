@@ -1,22 +1,93 @@
 import { NextResponse } from 'next/server';
-
-const testimonials = [
-  { id: '1', name: 'Priya Sharma', role: 'Newborn Session', content: 'Indira has a magical way with babies...', rating: 5, featured: true, order: 1 },
-  { id: '2', name: 'Ananya Patel', role: 'Maternity Session', content: 'My maternity shoot with Indira was the most beautiful experience...', rating: 5, featured: true, order: 2 },
-  { id: '3', name: 'Rohan & Meera Kapoor', role: 'Family Portrait', content: 'We wanted natural, candid family photos...', rating: 5, featured: true, order: 3 },
-];
+import { connectToDatabase } from '@/lib/mongodb';
+import Testimonial from '@/models/Testimonial';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
-  return NextResponse.json(testimonials);
+  try {
+    await connectToDatabase();
+    const testimonials = await Testimonial.find({}).sort({ order: 1, createdAt: -1 });
+    return NextResponse.json(testimonials);
+  } catch (error) {
+    console.error('Testimonial GET error:', error);
+    return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
+  const user = requireAuth(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
+    await connectToDatabase();
     const body = await request.json();
-    const newItem = { id: String(Date.now()), ...body };
-    testimonials.push(newItem);
-    return NextResponse.json(newItem, { status: 201 });
-  } catch {
+
+    if (!body.name || !body.content) {
+      return NextResponse.json({ error: 'Name and content are required' }, { status: 400 });
+    }
+
+    const testimonial = await Testimonial.create({
+      name: body.name,
+      role: body.role || '',
+      content: body.content,
+      rating: body.rating || 5,
+      featured: body.featured || false,
+      order: body.order || 0,
+      image: body.image || '',
+      publicId: body.publicId || '',
+    });
+
+    return NextResponse.json(testimonial, { status: 201 });
+  } catch (error) {
+    console.error('Testimonial POST error:', error);
     return NextResponse.json({ error: 'Failed to create testimonial' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  const user = requireAuth(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    await connectToDatabase();
+    const { id, ...updateData } = await request.json();
+
+    if (!id) {
+      return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
+    }
+
+    const testimonial = await Testimonial.findByIdAndUpdate(id, updateData, { new: true });
+    if (!testimonial) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(testimonial);
+  } catch (error) {
+    console.error('Testimonial PUT error:', error);
+    return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const user = requireAuth(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    await connectToDatabase();
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
+    }
+
+    const testimonial = await Testimonial.findByIdAndDelete(id);
+    if (!testimonial) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Testimonial deleted successfully' });
+  } catch (error) {
+    console.error('Testimonial DELETE error:', error);
+    return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
   }
 }

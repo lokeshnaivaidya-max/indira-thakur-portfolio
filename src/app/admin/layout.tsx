@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText } from 'react-icons/hi2';
 
 const sidebarLinks = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: HiHome },
@@ -13,7 +13,7 @@ const sidebarLinks = [
   { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
   { label: 'FAQ', href: '/admin/faq', icon: HiQuestionMarkCircle },
   { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
-  { label: 'Contact', href: '/admin/contact', icon: HiEnvelope },
+  { label: 'Contacts', href: '/admin/contact', icon: HiEnvelope },
   { label: 'About', href: '/admin/about', icon: HiHeart },
   { label: 'Users', href: '/admin/users', icon: HiUsers },
   { label: 'SEO', href: '/admin/seo', icon: HiCog6Tooth },
@@ -21,6 +21,7 @@ const sidebarLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -35,39 +36,61 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-ivory flex">
-      {/* Mobile overlay */}
+    <div className="min-h-screen bg-ivory flex overflow-hidden">
+      {/* Mobile overlay - z-40 */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-rich-black/20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - z-50, fixed height */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-white border-r border-cream/50 transform transition-transform duration-300 lg:transform-none ${
+        className={`fixed lg:sticky top-0 z-50 h-screen w-72 bg-white border-r border-cream/50 transition-all duration-300 flex flex-col ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        } ${sidebarCollapsed ? 'lg:w-20' : ''}`}
+        role="navigation"
+        aria-label="Admin sidebar"
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Logo */}
-          <div className="p-6 border-b border-cream/50">
+          <div className="p-4 border-b border-cream/50 flex-shrink-0">
             <div className="flex items-center justify-between">
-              <Link href="/admin/dashboard" className="font-serif text-xl text-rich-black">
-                Admin <span className="text-magenta/60">Panel</span>
-              </Link>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="lg:hidden text-warm-brown"
+              <Link 
+                href="/admin/dashboard" 
+                className="font-serif text-xl text-rich-black flex items-center gap-2"
+                aria-label="Admin Panel Home"
               >
-                <HiXMark className="w-5 h-5" />
-              </button>
+                {!sidebarCollapsed && (
+                  <span>Admin <span className="text-magenta/60">Panel</span></span>
+                )}
+                {sidebarCollapsed && <span className="text-magenta/60">AP</span>}
+              </Link>
+              {!sidebarCollapsed && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden text-warm-brown p-1"
+                  aria-label="Close sidebar"
+                >
+                  <HiXMark className="w-5 h-5" />
+                </button>
+              )}
             </div>
+            {!sidebarCollapsed && (
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors flex items-center justify-center gap-2"
+              >
+                <HiBars3 className="w-4 h-4" />
+                <span>Collapse</span>
+              </button>
+            )}
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+          <nav className="flex-1 overflow-y-auto py-4 space-y-1" role="navigation">
             {sidebarLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -75,55 +98,66 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-sans text-sm transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-sans text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-rich-black text-white'
                       : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
                   }`}
+                  aria-current={isActive ? 'page' : undefined}
+                  title={sidebarCollapsed ? link.label : undefined}
                 >
-                  <Icon className="w-4 h-4" />
-                  {link.label}
+                  <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                  {!sidebarCollapsed && <span className="truncate">{link.label}</span>}
                 </Link>
               );
             })}
           </nav>
 
           {/* Bottom */}
-          <div className="p-4 border-t border-cream/50 space-y-2">
+          <div className="py-4 border-t border-cream/50 space-y-2 flex-shrink-0">
             <Link
               href="/"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black font-sans text-sm transition-all"
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black font-sans text-sm transition-all ${
+                sidebarCollapsed ? 'justify-center' : ''
+              }`}
+              title={sidebarCollapsed ? 'View Website' : undefined}
             >
-              <HiHome className="w-4 h-4" />
-              View Website
+              <HiHome className="w-5 h-5 flex-shrink-0" />
+              {!sidebarCollapsed && <span>View Website</span>}
             </Link>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-warm-gray/70 hover:bg-magenta/10 hover:text-magenta font-sans text-sm transition-all w-full"
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-warm-gray/70 hover:bg-magenta/10 hover:text-magenta font-sans text-sm transition-all w-full ${
+                sidebarCollapsed ? 'justify-center' : ''
+              }`}
+              title={sidebarCollapsed ? 'Logout' : undefined}
             >
-              <HiArrowRightOnRectangle className="w-4 h-4" />
-              Logout
+              <HiArrowRightOnRectangle className="w-5 h-5 flex-shrink-0" />
+              {!sidebarCollapsed && <span>Logout</span>}
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 min-w-0">
-        {/* Top Bar (Mobile) */}
-        <div className="sticky top-0 z-30 lg:hidden bg-white/90 backdrop-blur-md border-b border-cream/50 px-4 py-3">
+      {/* Main Content - full height with single scrollbar */}
+      <main className="flex-1 min-w-0 lg:ml-0 flex flex-col">
+        {/* Mobile Top Bar - sticky */}
+        <header className="sticky top-0 z-30 lg:hidden bg-white/95 backdrop-blur-sm border-b border-cream/50 px-4 py-3 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-warm-brown"
+            className="text-warm-brown p-2"
+            aria-label="Open sidebar"
+            aria-expanded={sidebarOpen}
           >
             <HiBars3 className="w-6 h-6" />
           </button>
-        </div>
+        </header>
 
-        <main className="p-6 md:p-8 lg:p-10">
+        {/* Content area - scrollable, single scrollbar on main */}
+        <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10 lg:ml-0">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

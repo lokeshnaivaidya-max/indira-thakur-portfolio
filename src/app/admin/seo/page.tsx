@@ -1,48 +1,184 @@
-'use client';
+"use client";
+
+import { useState, useEffect } from 'react';
+import { HiXMark, HiArrowRightOnRectangle } from 'react-icons/hi2';
 
 export default function AdminSEOPage() {
+  const [seo, setSeo] = useState({
+    title: '',
+    description: '',
+    keywords: '',
+    ogImage: '',
+    twitterHandle: '',
+    canonicalUrl: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const fetchSEO = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/seo');
+      if (!response.ok) throw new Error('Failed to fetch SEO settings');
+      const data = await response.json();
+      setSeo(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSEO();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch('/api/seo', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(seo),
+      });
+
+      if (!response.ok) throw new Error('Failed to save');
+      
+      setSuccess('SEO settings saved successfully!');
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setSeo(prev => ({ ...prev, [field]: value }));
+  };
+
+  if (loading) return <div className="flex items-center justify-center h-64">Loading...</div>;
+
   return (
-    <div>
-      <h1 className="font-serif text-3xl md:text-4xl text-rich-black mb-2">SEO Settings</h1>
-      <p className="font-sans text-sm text-warm-gray/60 mb-10">Manage your website&apos;s SEO and metadata.</p>
-
-      <div className="max-w-3xl space-y-6">
-        <div>
-          <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Site Title</label>
-          <input type="text" className="input-field" defaultValue="" />
-        </div>
-
-        <div>
-          <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Meta Description</label>
-          <textarea className="premium-textarea" defaultValue="" rows={3} />
-        </div>
-
-        <div>
-          <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Keywords</label>
-          <input type="text" className="input-field" defaultValue="" />
-          <p className="font-sans text-xs text-warm-gray/40 mt-1">Separate keywords with commas</p>
-        </div>
-
-        <div>
-          <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">OG Image URL</label>
-          <input type="text" className="input-field" defaultValue="" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Twitter Handle</label>
-            <input type="text" className="input-field" defaultValue="" />
-          </div>
-          <div>
-            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Canonical URL</label>
-            <input type="text" className="input-field" defaultValue="" />
-          </div>
-        </div>
-
-        <div className="pt-4">
-          <button className="btn-primary">Save SEO Settings</button>
-        </div>
+    <div className="h-full flex flex-col">
+      <div className="mb-6">
+        <h1 className="font-serif text-3xl md:text-4xl text-rich-black mb-2">SEO Settings</h1>
+        <p className="font-sans text-sm text-warm-gray/60">Manage your website's SEO and metadata</p>
       </div>
+
+      {(error || success) && (
+        <div className={`mb-6 p-4 rounded-lg flex items-center justify-between ${
+          error ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-green-50 border border-green-200 text-green-700'
+        }`}>
+          <span className="font-sans text-sm">{error || success}</span>
+          <button onClick={() => { setError(null); setSuccess(null); }} className="text-current opacity-70 hover:opacity-100">
+            <HiXMark className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleSave} className="flex-1 overflow-y-auto max-w-3xl mx-auto w-full p-4">
+        <div className="bg-white border border-cream/50 rounded-lg p-6 space-y-6">
+          <div>
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+              Site Title
+            </label>
+            <input
+              type="text"
+              value={seo.title}
+              onChange={(e) => handleChange('title', e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40"
+              placeholder="Indira Thakur Photography"
+            />
+          </div>
+
+          <div>
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+              Meta Description
+            </label>
+            <textarea
+              value={seo.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40 resize-none"
+              placeholder="Professional photography services by Indira Thakur..."
+            />
+            <p className="font-sans text-xs text-warm-gray/40 mt-1">Max 160 characters for optimal SEO</p>
+          </div>
+
+          <div>
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+              Keywords
+            </label>
+            <input
+              type="text"
+              value={seo.keywords}
+              onChange={(e) => handleChange('keywords', e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40"
+              placeholder="photography, portraits, wedding, newborn, maternity"
+            />
+            <p className="font-sans text-xs text-warm-gray/40 mt-1">Separate keywords with commas</p>
+          </div>
+
+          <div>
+            <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+              Open Graph Image URL
+            </label>
+            <input
+              type="url"
+              value={seo.ogImage}
+              onChange={(e) => handleChange('ogImage', e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40"
+              placeholder="https://example.com/og-image.jpg"
+            />
+            <p className="font-sans text-xs text-warm-gray/40 mt-1">Recommended: 1200x630px</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+                Twitter Handle
+              </label>
+              <input
+                type="text"
+                value={seo.twitterHandle}
+                onChange={(e) => handleChange('twitterHandle', e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40"
+                placeholder="@indirathakur"
+              />
+            </div>
+
+            <div>
+              <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
+                Canonical URL
+              </label>
+              <input
+                type="url"
+                value={seo.canonicalUrl}
+                onChange={(e) => handleChange('canonicalUrl', e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40"
+                placeholder="https://indirathakur.com"
+              />
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-cream">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full max-w-md mx-auto px-8 py-4 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save SEO Settings'}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -108,25 +108,25 @@ export default function UsersPage() {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-sans text-xs text-warm-gray/60 uppercase tracking-wider mb-1">Name</label>
-              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" required />
+              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40" required />
             </div>
             <div>
               <label className="block font-sans text-xs text-warm-gray/60 uppercase tracking-wider mb-1">Email</label>
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required />
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40" required />
             </div>
             <div>
               <label className="block font-sans text-xs text-warm-gray/60 uppercase tracking-wider mb-1">Password {editingId && '(leave blank to keep current)'}</label>
-              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required={!editingId} />
+              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all focus:outline-none focus:border-magenta/40" required={!editingId} />
             </div>
             <div>
               <label className="block font-sans text-xs text-warm-gray/60 uppercase tracking-wider mb-1">Role</label>
-              <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="input-field appearance-none bg-white">
+              <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="w-full px-4 py-3 bg-white border border-cream/60 text-rich-black font-sans text-sm appearance-none bg-white transition-all focus:outline-none focus:border-magenta/40">
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
               </select>
             </div>
             <div className="md:col-span-2">
-              <button type="submit" className="btn-primary">
+              <button type="submit" className="w-full max-w-md mx-auto px-8 py-4 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all">
                 {editingId ? 'Update User' : 'Create User'}
               </button>
             </div>
