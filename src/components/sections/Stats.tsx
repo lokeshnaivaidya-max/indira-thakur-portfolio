@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 const stats = [
   { value: 15, suffix: '+', label: 'Years Experience', icon: '✦' },
@@ -38,7 +39,7 @@ function Counter({ target, suffix, inView }: { target: number; suffix: string; i
 }
 
 export default function Stats() {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
+  const [ref, inView] = useInView({ threshold: 0.3 });
 
   return (
     <section ref={ref} className="py-20 bg-warm-black text-soft-white relative overflow-hidden">
