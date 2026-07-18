@@ -579,7 +579,12 @@ export default function DynamicSectionRenderer({ pageKey, className = '' }: Dyna
     );
   }
 
-  if (error || sections.length === 0) return null;
+  if (error) return (
+    <div className="py-8 text-center">
+      <p className="text-warm-gray/40 font-sans text-sm">Some content could not be loaded.</p>
+    </div>
+  );
+  if (sections.length === 0) return null;
 
   return (
     <div className={className}>

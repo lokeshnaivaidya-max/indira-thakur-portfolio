@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSectionsBuilder, Section, SectionType, SectionImage, SectionButton, SectionItem } from '@/hooks/useSectionsBuilder';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
@@ -84,10 +84,19 @@ export default function AdminSectionsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [originalSections, setOriginalSections] = useState<string>('[]');
+  const wasLoadingRef = useRef(true);
 
   useEffect(() => {
     fetchSections();
   }, [pageKey]);
+
+  useEffect(() => {
+    if (wasLoadingRef.current && !loading) {
+      setOriginalSections(JSON.stringify(sections));
+    }
+    wasLoadingRef.current = loading;
+  }, [loading, sections]);
 
   const handlePageChange = useCallback((newPageKey: string) => {
     setPageKey(newPageKey);
@@ -112,9 +121,10 @@ export default function AdminSectionsPage() {
 
   const handleSave = useCallback(async () => {
     await saveSections();
-  }, [saveSections]);
+    setOriginalSections(JSON.stringify(sections));
+  }, [saveSections, sections]);
 
-  const dirty = sections.length > 0;
+  const dirty = JSON.stringify(sections) !== originalSections;
 
   return (
     <div className="h-full flex flex-col">

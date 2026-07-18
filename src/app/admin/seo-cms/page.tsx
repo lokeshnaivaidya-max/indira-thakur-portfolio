@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiGlobeAlt } from 'react-icons/hi2';
 
 export default function AdminSEOPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
+  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
   const [newKeyword, setNewKeyword] = useState('');
 
   if (loading) {
@@ -20,6 +20,15 @@ export default function AdminSEOPage() {
       </div>
     );
   }
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-64 gap-4">
+      <p className="text-red-500 font-sans text-sm">{error}</p>
+      <button onClick={() => fetchConfig()} className="px-4 py-2 bg-rich-black text-white text-xs uppercase tracking-wider rounded">
+        Retry
+      </button>
+    </div>
+  );
 
   if (!config) return null;
 
@@ -52,7 +61,13 @@ export default function AdminSEOPage() {
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         <Section title="Meta Tags" defaultOpen icon={<HiGlobeAlt className="w-5 h-5" />}>
           <FieldInput label="Page Title" value={seo.title || ''} onChange={(v) => updateSection('seo', { title: v })} placeholder="Indira Thakur Photography" helperText="The title that appears in browser tabs and Google search results" />
-          <FieldTextarea label="Meta Description" value={seo.description || ''} onChange={(v) => updateSection('seo', { description: v })} rows={3} placeholder="SEO description..." helperText="A brief description shown in search engine results (150-160 characters recommended)" />
+          <div>
+            <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">Meta Description</label>
+            <textarea value={seo.description || ''} onChange={(e) => updateSection('seo', { description: e.target.value })} rows={3} placeholder="SEO description..." className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors resize-none" />
+            <p className={`font-sans text-[10px] mt-1 ${seo.description.length > 160 ? 'text-red-500' : 'text-warm-gray/40'}`}>
+              {seo.description.length}/160 characters {seo.description.length > 160 ? '(too long for search results)' : ''}
+            </p>
+          </div>
         </Section>
 
         <Section title="Keywords" icon={<HiGlobeAlt className="w-5 h-5" />}>

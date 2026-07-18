@@ -62,7 +62,7 @@ export default function Hero() {
         className="absolute top-0 left-0 right-0 z-20 flex items-start justify-between px-8 md:px-16 lg:px-24 pt-8 md:pt-12"
       >
         <span className="font-serif text-base md:text-lg text-white/80 italic tracking-wide">
-          Indira Thakur
+          {config?.home?.tagline || 'Indira Thakur'}
         </span>
 
         <div className="hidden md:block text-right">

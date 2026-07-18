@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiQuestionMarkCircle } from 'react-icons/hi2';
 
 export default function AdminFAQPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
+  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -18,6 +18,15 @@ export default function AdminFAQPage() {
       </div>
     );
   }
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-64 gap-4">
+      <p className="text-red-500 font-sans text-sm">{error}</p>
+      <button onClick={() => fetchConfig()} className="px-4 py-2 bg-rich-black text-white text-xs uppercase tracking-wider rounded">
+        Retry
+      </button>
+    </div>
+  );
 
   if (!config) return null;
 

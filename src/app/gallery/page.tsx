@@ -59,7 +59,7 @@ function mapGalleryImages(images: GalleryImage[]): GalleryItem[] {
   return images
     .filter((img) => img?.src)
     .map((img) => ({
-      id: img.id || img._id || String(Math.random()),
+      id: img.id || img._id || `img-${img.src.split('/').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'unknown'}`,
       src: img.src,
       alt: img.alt || '',
       width: img.width || 800,
@@ -277,13 +277,17 @@ export default function GalleryPage() {
             </div>
 
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {filtered.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIndex(i)}
-                  className={`transition-all duration-500 ${i === currentIndex ? 'w-6 h-px bg-white' : 'w-3 h-px bg-white/20'}`}
-                />
-              ))}
+              {filtered.length > 15 ? (
+                <span className="font-sans text-[10px] text-white/50">Image {currentIndex + 1} of {filtered.length}</span>
+              ) : (
+                filtered.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`transition-all duration-500 ${i === currentIndex ? 'w-6 h-px bg-white' : 'w-3 h-px bg-white/20'}`}
+                  />
+                ))
+              )}
             </div>
           </motion.div>
         )}

@@ -94,6 +94,51 @@ function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
+export function validateSections(sections: Section[]): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  sections.forEach((section, index) => {
+    const label = section.title || `Section ${index + 1}`;
+
+    if (!section.title || section.title.trim() === '') {
+      errors.push(`${label}: Section title is required.`);
+    }
+
+    switch (section.type) {
+      case 'hero':
+        if (!section.heading && !section.primaryImage) {
+          errors.push(`${label}: Hero section must have a heading or primary image.`);
+        }
+        break;
+      case 'banner':
+        if (!section.heading && !section.primaryImage) {
+          errors.push(`${label}: Banner section must have a heading or primary image.`);
+        }
+        break;
+      case 'cta':
+        if (!section.heading) {
+          errors.push(`${label}: CTA section must have a heading.`);
+        }
+        if (!section.buttons || section.buttons.length === 0) {
+          errors.push(`${label}: CTA section must have at least one button.`);
+        }
+        break;
+      case 'faq':
+        if (!section.items || section.items.length === 0) {
+          errors.push(`${label}: FAQ section must have at least one item.`);
+        }
+        break;
+      case 'text-image':
+        if (!section.heading && !section.body && !section.primaryImage) {
+          errors.push(`${label}: Text-image section must have a heading, body, or primary image.`);
+        }
+        break;
+    }
+  });
+
+  return { valid: errors.length === 0, errors };
+}
+
 export function useSectionsBuilder(initialPageKey: string = 'home') {
   const [pageKey, setPageKey] = useState(initialPageKey);
   const [sections, setSections] = useState<Section[]>([]);
@@ -142,6 +187,13 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
 
       if (successTimerRef.current) {
         clearTimeout(successTimerRef.current);
+      }
+
+      const validation = validateSections(payload);
+      if (!validation.valid) {
+        setSaving(false);
+        setError(validation.errors.join(' '));
+        return null;
       }
 
       const orderedSections = payload.map((s, i) => ({ ...s, order: i }));

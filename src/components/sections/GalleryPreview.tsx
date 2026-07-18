@@ -42,43 +42,45 @@ export default function GalleryPreview() {
         </motion.div>
       </div>
 
-      <div className="px-6 md:px-12 lg:px-20">
-        <div className="max-w-7xl mx-auto columns-2 md:columns-3 gap-4 space-y-4">
-          {images.map((img: any, i: number) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: i * 0.08 }}
-              className="break-inside-avoid"
-            >
-              {hasImage(img.url) ? (
-                <PolaroidImage
-                  src={img.url}
-                  alt={img.alt || `Featured ${i + 1}`}
-                  fill
-                  objectFit="cover"
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                  className="!w-full"
-                  containerClassName="relative w-full"
-                  style={{
-                    aspectRatio: i % 3 === 0 ? '3/4' : i % 3 === 1 ? '4/3' : '1/1',
-                  }}
-                />
-              ) : (
-                <ImagePlaceholder
-                  aspect={
-                    i % 3 === 0 ? 'aspect-[3/4]' : i % 3 === 1 ? 'aspect-[4/3]' : 'aspect-square'
-                  }
-                  label={`Featured ${i + 1}`}
-                  icon={i % 2 === 0 ? 'camera' : 'portrait'}
-                />
-              )}
-            </motion.div>
-          ))}
+      {images.length > 0 && images.some((img: any) => img.url) ? (
+        <div className="px-6 md:px-12 lg:px-20">
+          <div className="max-w-7xl mx-auto columns-2 md:columns-3 gap-4 space-y-4">
+            {images.map((img: any, i: number) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: i * 0.08 }}
+                className="break-inside-avoid"
+              >
+                {hasImage(img.url) ? (
+                  <PolaroidImage
+                    src={img.url}
+                    alt={img.alt || `Featured ${i + 1}`}
+                    fill
+                    objectFit="cover"
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="!w-full"
+                    containerClassName="relative w-full"
+                    style={{
+                      aspectRatio: i % 3 === 0 ? '3/4' : i % 3 === 1 ? '4/3' : '1/1',
+                    }}
+                  />
+                ) : (
+                  <ImagePlaceholder
+                    aspect={
+                      i % 3 === 0 ? 'aspect-[3/4]' : i % 3 === 1 ? 'aspect-[4/3]' : 'aspect-square'
+                    }
+                    label={`Featured ${i + 1}`}
+                    icon={i % 2 === 0 ? 'camera' : 'portrait'}
+                  />
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="flex justify-center mt-10">
         <Link

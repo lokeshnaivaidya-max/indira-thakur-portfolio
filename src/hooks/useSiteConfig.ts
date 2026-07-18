@@ -100,6 +100,13 @@ export interface SiteConfigData {
     backgroundFooter: SiteImage;
     logo: SiteImage;
   };
+  booking: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    bannerImage: SiteImage;
+    sectionImage: SiteImage;
+  };
   seo: {
     title: string;
     description: string;
@@ -108,26 +115,38 @@ export interface SiteConfigData {
   };
 }
 
+let cachedConfig: SiteConfigData | null = null;
+let fetchPromise: Promise<SiteConfigData | null> | null = null;
+
 export function useSiteConfig() {
-  const [config, setConfig] = useState<SiteConfigData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState<SiteConfigData | null>(cachedConfig);
+  const [loading, setLoading] = useState(!cachedConfig);
 
   useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const response = await fetch('/api/site-config');
-        if (response.ok) {
-          const data = await response.json();
-          setConfig(data);
-        }
-      } catch {
-        // silently fail - use defaults
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (cachedConfig) {
+      setConfig(cachedConfig);
+      setLoading(false);
+      return;
+    }
 
-    fetchConfig();
+    if (!fetchPromise) {
+      fetchPromise = fetch('/api/site-config')
+        .then((response) => {
+          if (response.ok) return response.json();
+          return null;
+        })
+        .catch(() => null)
+        .then((data) => {
+          if (data) cachedConfig = data;
+          fetchPromise = null;
+          return data;
+        });
+    }
+
+    fetchPromise.then((data) => {
+      setConfig(data);
+      setLoading(false);
+    });
   }, []);
 
   return { config, loading };

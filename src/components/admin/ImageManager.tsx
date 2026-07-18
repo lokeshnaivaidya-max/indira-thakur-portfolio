@@ -26,6 +26,7 @@ interface UploadState {
   uploading: boolean;
   progress: number;
   error: string | null;
+  warning: string | null;
   success: boolean;
   fileName: string;
   fileSize: number;
@@ -48,6 +49,7 @@ export default function ImageManager({
     uploading: false,
     progress: 0,
     error: null,
+    warning: null,
     success: false,
     fileName: '',
     fileSize: 0,
@@ -71,6 +73,7 @@ export default function ImageManager({
       uploading: false,
       progress: 0,
       error: null,
+      warning: null,
       success: false,
       fileName: '',
       fileSize: 0,
@@ -88,10 +91,12 @@ export default function ImageManager({
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 15 MB.` }));
+    if (file.size > 4 * 1024 * 1024) {
+      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 4 MB.` }));
       return;
     }
+
+    const sizeWarning = file.size < 100 * 1024 ? 'This image may be low quality.' : null;
 
     const localPreview = URL.createObjectURL(file);
 
@@ -99,6 +104,7 @@ export default function ImageManager({
       uploading: true,
       progress: 0,
       error: null,
+      warning: sizeWarning,
       success: false,
       fileName: file.name,
       fileSize: file.size,
@@ -208,6 +214,7 @@ export default function ImageManager({
         uploading: false,
         progress: 100,
         success: true,
+        warning: null,
         previewUrl: null,
       }));
 
@@ -230,6 +237,7 @@ export default function ImageManager({
           uploading: false,
           progress: 0,
           error: 'Upload was cancelled',
+          warning: null,
           previewUrl: null,
         }));
         URL.revokeObjectURL(localPreview);
@@ -243,6 +251,7 @@ export default function ImageManager({
         uploading: false,
         progress: 0,
         error: errorMessage,
+        warning: null,
         previewUrl: localPreview,
       }));
     } finally {
@@ -411,6 +420,23 @@ export default function ImageManager({
             type="button"
             onClick={clearUploadState}
             className="text-red-400 hover:text-red-600 flex-shrink-0"
+          >
+            <HiXMark className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Warning */}
+      {uploadState.warning && !uploadState.error && (
+        <div className="flex items-start gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded">
+          <HiExclamationCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="font-sans text-[11px] text-amber-600">{uploadState.warning}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setUploadState(prev => ({ ...prev, warning: null }))}
+            className="text-amber-400 hover:text-amber-600 flex-shrink-0"
           >
             <HiXMark className="w-3 h-3" />
           </button>
