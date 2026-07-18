@@ -2,11 +2,10 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import SectionHeading from '@/components/ui/SectionHeading';
-import Button from '@/components/ui/Button';
+import { motion } from 'framer-motion';
 import { HiArrowLeft } from 'react-icons/hi2';
 
-const servicesData: Record<string, { title: string; description: string; heroGradient: string }> = {};
+const servicesData: Record<string, { title: string; description: string; heroGradient: string; details: string[] }> = {};
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -15,27 +14,81 @@ export default function ServiceDetailPage() {
 
   if (!service) {
     return (
-      <div className="pt-20 md:pt-24 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="font-serif text-3xl text-warm-black mb-4">Service details coming soon</h1>
-          <Link href="/#services" className="text-muted-gold underline font-sans-alt">Back to Services</Link>
+      <div className="min-h-screen flex items-center justify-center bg-ivory">
+        <div className="text-center px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p className="font-mono text-[11px] text-magenta/50 uppercase tracking-[0.25em]">Coming Soon</p>
+            <h1 className="heading-md mt-6">This service page is being crafted</h1>
+            <p className="body-md mt-4 max-w-md mx-auto">Each service is a unique experience. We&apos;re putting the finishing touches on this one.</p>
+            <Link
+              href="/#services"
+              className="btn-outline mt-10 inline-flex items-center gap-2"
+            >
+              <HiArrowLeft className="w-4 h-4" /> Back to Services
+            </Link>
+          </motion.div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pt-20 md:pt-24">
-      <section className={`py-16 md:py-24 bg-gradient-to-br ${service.heroGradient}`}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-          <Link href="/#services" className="inline-flex items-center gap-2 text-warm-brown/60 hover:text-warm-black font-sans-alt text-sm transition-colors mb-6">
-            <HiArrowLeft className="w-4 h-4" /> Back to Services
-          </Link>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-warm-black leading-tight">{service.title}</h1>
-          <p className="mt-4 max-w-2xl text-warm-brown/80 font-sans-alt text-lg">{service.description}</p>
-          <div className="mt-8"><Button href="/#contact">Book This Session</Button></div>
+    <div className="pt-28 md:pt-36">
+      <section className={`min-h-[60vh] bg-gradient-to-br ${service.heroGradient} flex items-center`}>
+        <div className="container-editorial w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Link
+              href="/#services"
+              className="inline-flex items-center gap-2 text-white/50 hover:text-white font-sans text-xs tracking-[0.1em] uppercase transition-colors duration-500 mb-8"
+            >
+              <HiArrowLeft className="w-3 h-3" /> All Services
+            </Link>
+            <h1 className="heading-xl text-white max-w-3xl">{service.title}</h1>
+            <p className="body-lg text-white/60 mt-6 max-w-2xl">{service.description}</p>
+            <a
+              href="/#contact"
+              className="inline-flex items-center justify-center px-10 py-4 bg-white text-rich-black font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700 hover:bg-white/90 mt-10"
+            >
+              Book This Session
+            </a>
+          </motion.div>
         </div>
       </section>
+
+      {service.details && service.details.length > 0 && (
+        <section className="section-spacing">
+          <div className="container-editorial">
+            <div className="max-w-3xl mx-auto">
+              <p className="font-mono text-[11px] text-magenta/50 uppercase tracking-[0.25em]">The Experience</p>
+              <h2 className="heading-md mt-6">What to Expect</h2>
+              <div className="divider-line mt-8" />
+              <ul className="mt-10 space-y-6">
+                {service.details.map((detail, i) => (
+                  <motion.li
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="flex gap-4 items-start"
+                  >
+                    <span className="font-mono text-[10px] text-magenta/40 mt-1">{String(i + 1).padStart(2, '0')}</span>
+                    <p className="body-md text-warm-gray/70">{detail}</p>
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

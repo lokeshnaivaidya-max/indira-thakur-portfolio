@@ -4,39 +4,103 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 const services = [
-  { title: 'Newborn Photography', slug: 'newborn', description: 'Preserve the purest moments of your little one\'s first days with gentle, artistic newborn photography.', gradient: 'from-cream to-soft-cream' },
-  { title: 'Maternity Photography', slug: 'maternity', description: 'Celebrate the beauty of motherhood with elegant maternity sessions that glow with love and anticipation.', gradient: 'from-soft-cream to-cream' },
-  { title: 'Portrait Photography', slug: 'portrait', description: 'Timeless portraits that capture your unique personality and natural beauty with artistic flair.', gradient: 'from-cream to-warm-white' },
-  { title: 'Personal & Corporate Events', slug: 'events', description: 'From family gatherings to corporate galas, document your special moments with cinematic storytelling.', gradient: 'from-soft-cream to-warm-white' },
-  { title: 'Brand Collaborations', slug: 'brand', description: 'Creative visual content for brands looking to tell their story through stunning, professional photography.', gradient: 'from-cream to-soft-cream' },
+  {
+    title: 'Newborn Photography',
+    tag: '01',
+    description: 'Every tiny detail captured for eternity. The first yawn, the tiny fingers, the peaceful sleep — preserved in the most delicate and artistic way.',
+    gradient: 'from-[#2C2C2C] via-[#3D3D3D] to-[#1A1A1A]',
+    layout: 'image-left',
+  },
+  {
+    title: 'Maternity Photography',
+    tag: '02',
+    description: 'You are changing, creating, and giving. Here is a way to remember the magic your body can do — bathed in golden light and infinite tenderness.',
+    gradient: 'from-[#3D3D3D] via-[#2C2C2C] to-[#1A1A1A]',
+    layout: 'image-right',
+  },
+  {
+    title: 'Portrait & Events',
+    tag: '03',
+    description: 'From personal portraits to brand collaborations, every session is a unique narrative. Cinematic frames that tell your story with elegance and depth.',
+    gradient: 'from-[#1A1A1A] via-[#2C2C2C] to-[#3D3D3D]',
+    layout: 'full-bleed',
+  },
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="section-padding bg-cream/30">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-14">
-          <span className="font-sans-alt text-sm text-muted-gold tracking-wider uppercase">What I Offer</span>
-          <h2 className="section-title mt-3">Photography Services</h2>
-          <p className="mt-4 text-warm-brown/70 font-sans-alt max-w-xl mx-auto">Every session is a unique experience designed to capture your most cherished moments.</p>
-        </div>
+    <section id="services" className="section-spacing bg-cream/30">
+      <div className="container-editorial">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20 md:mb-28"
+        >
+          <p className="font-mono text-[11px] text-magenta/50 uppercase tracking-[0.25em]">The Chapters</p>
+          <h2 className="heading-lg mt-6">
+            What I Offer
+          </h2>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-24 md:space-y-32">
           {services.map((service, i) => (
             <motion.div
-              key={service.slug}
-              initial={{ opacity: 0, y: 20 }}
+              key={service.title}
+              initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <Link href={`/services/${service.slug}`} className="card block group">
-                <div className={`aspect-4-3 bg-gradient-to-br ${service.gradient}`} />
-                <div className="p-6">
-                  <h3 className="font-serif text-xl text-warm-black group-hover:text-muted-gold transition-colors">{service.title}</h3>
-                  <p className="mt-2 text-warm-brown/70 font-sans-alt text-sm leading-relaxed">{service.description}</p>
+              {service.layout === 'image-left' && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+                  <div className="lg:col-span-7">
+                    <div className={`aspect-[5/4] bg-gradient-to-br ${service.gradient}`} />
+                  </div>
+                  <div className="lg:col-span-5">
+                    <p className="font-mono text-[10px] text-warm-gray/40 uppercase tracking-[0.15em]">{service.tag}</p>
+                    <h3 className="heading-md mt-3">{service.title}</h3>
+                    <div className="divider-line mt-6" />
+                    <p className="body-md mt-6">{service.description}</p>
+                    <Link href="/#contact" className="btn-outline mt-8 inline-flex">
+                      Enquire
+                    </Link>
+                  </div>
                 </div>
-              </Link>
+              )}
+
+              {service.layout === 'image-right' && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+                  <div className="lg:col-span-5 lg:order-1">
+                    <p className="font-mono text-[10px] text-warm-gray/40 uppercase tracking-[0.15em]">{service.tag}</p>
+                    <h3 className="heading-md mt-3">{service.title}</h3>
+                    <div className="divider-line mt-6" />
+                    <p className="body-md mt-6">{service.description}</p>
+                    <Link href="/#contact" className="btn-outline mt-8 inline-flex">
+                      Enquire
+                    </Link>
+                  </div>
+                  <div className="lg:col-span-7">
+                    <div className={`aspect-[5/4] bg-gradient-to-br ${service.gradient}`} />
+                  </div>
+                </div>
+              )}
+
+              {service.layout === 'full-bleed' && (
+                <div className="relative">
+                  <div className={`aspect-[3/1] bg-gradient-to-br ${service.gradient}`} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                    <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.15em]">{service.tag}</p>
+                    <h3 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mt-3">{service.title}</h3>
+                    <div className="w-12 h-px bg-white/30 mt-6" />
+                    <p className="body-md text-white/60 mt-6 max-w-lg">{service.description}</p>
+                    <Link href="/#contact" className="inline-flex items-center justify-center px-10 py-4 border border-white/20 text-white/80 font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700 hover:border-white/50 hover:text-white mt-8">
+                      Enquire
+                    </Link>
+                  </div>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

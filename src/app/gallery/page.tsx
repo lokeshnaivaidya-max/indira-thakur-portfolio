@@ -4,16 +4,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 
-const categories = ['All', 'Newborn', 'Maternity', 'Portrait', 'Events'];
+const categories = [
+  { id: 'all', label: 'All Work' },
+  { id: 'newborn', label: 'Newborn' },
+  { id: 'maternity', label: 'Maternity' },
+  { id: 'portrait', label: 'Portrait' },
+  { id: 'events', label: 'Events' },
+];
 
-const galleryImages: { id: number; category: string; gradient: string; aspect: string }[] = [];
+const galleryImages: { id: number; category: string; gradient: string; span?: string }[] = [];
 
 export default function GalleryPage() {
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const filtered = activeCategory === 'All' ? galleryImages : galleryImages.filter((img) => img.category === activeCategory);
+  const filtered = activeCategory === 'all' ? galleryImages : galleryImages.filter((img) => img.category === activeCategory);
 
   const openLightbox = (index: number) => { setCurrentIndex(index); setLightboxOpen(true); };
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
@@ -33,56 +39,117 @@ export default function GalleryPage() {
 
   return (
     <>
-      <div className="pt-20 md:pt-24 section-padding">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14">
-            <span className="font-sans-alt text-sm text-muted-gold tracking-wider uppercase">My Portfolio</span>
-            <h1 className="font-serif text-4xl md:text-5xl text-warm-black mt-3">Gallery</h1>
-            <p className="mt-4 text-warm-brown/70 font-sans-alt max-w-xl mx-auto">A curated collection of moments, emotions, and stories captured through my lens.</p>
-          </div>
+      <div className="pt-28 md:pt-36 pb-24">
+        <div className="container-editorial">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <p className="font-mono text-[11px] text-magenta/50 uppercase tracking-[0.25em]">Portfolio</p>
+            <h1 className="heading-lg mt-6">The Gallery</h1>
+            <p className="body-md mt-4 max-w-lg mx-auto text-warm-gray/60">
+              A curated collection of moments, emotions, and stories — each frame a chapter in a larger narrative.
+            </p>
+          </motion.div>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-16">
             {categories.map((cat) => (
-              <button key={cat} onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2.5 font-sans-alt text-xs tracking-wider uppercase transition-all duration-300 ${activeCategory === cat ? 'bg-warm-black text-white' : 'bg-transparent text-warm-brown/60 hover:text-warm-black border border-warm-beige/30'}`}>
-                {cat}
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-6 py-3 font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 ${
+                  activeCategory === cat.id
+                    ? 'bg-rich-black text-white'
+                    : 'text-warm-gray/50 hover:text-rich-black'
+                }`}
+              >
+                {cat.label}
               </button>
             ))}
           </div>
+        </div>
 
-          {galleryImages.length === 0 ? (
-            <div className="text-center p-16 bg-cream/30 rounded-sm">
-              <p className="text-warm-brown/60 font-sans-alt">Gallery images coming soon.</p>
+        {galleryImages.length === 0 ? (
+          <div className="container-editorial">
+            <div className="text-center py-32 border-t border-beige/30">
+              <p className="font-mono text-xs text-warm-gray/30 uppercase tracking-[0.2em]">Gallery coming soon</p>
             </div>
-          ) : (
+          </div>
+        ) : (
+          <div className="px-4 md:px-8 lg:px-16">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <AnimatePresence mode="popLayout">
                 {filtered.map((img, index) => (
                   <motion.div
-                    key={img.id} layout
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    key={img.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                     onClick={() => openLightbox(index)}
-                    className={`relative overflow-hidden rounded-sm bg-gradient-to-br ${img.gradient} ${img.aspect} group cursor-pointer`}
+                    className={`relative overflow-hidden bg-gradient-to-br ${img.gradient} ${img.span || 'aspect-square'} group cursor-pointer`}
                   >
-                    <div className="absolute inset-0 bg-warm-black/0 group-hover:bg-warm-black/20 transition-all duration-300" />
+                    <div className="absolute inset-0 bg-rich-black/0 group-hover:bg-rich-black/20 transition-all duration-700" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700">
+                      <span className="font-sans text-[10px] text-white uppercase tracking-[0.2em]">View</span>
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>
         {lightboxOpen && filtered.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-warm-black/95 flex items-center justify-center"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[9999] bg-rich-black/98 flex items-center justify-center"
           >
-            <button onClick={closeLightbox} className="absolute top-6 right-6 z-10 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20"><HiXMark className="w-5 h-5" /></button>
-            <button onClick={goPrev} className="absolute left-6 z-10 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20"><HiArrowLeft className="w-5 h-5" /></button>
-            <button onClick={goNext} className="absolute right-6 z-10 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20"><HiArrowRight className="w-5 h-5" /></button>
-            <div className="max-w-4xl w-full px-6">
-              <div className={`aspect-3-2 bg-gradient-to-br ${filtered[currentIndex]?.gradient || 'from-cream to-soft-cream'} rounded-sm`} />
+            <button
+              onClick={closeLightbox}
+              className="absolute top-8 right-8 z-10 w-12 h-12 flex items-center justify-center text-white/50 hover:text-white transition-colors duration-500"
+            >
+              <HiXMark className="w-6 h-6" />
+            </button>
+            <button
+              onClick={goPrev}
+              className="absolute left-8 z-10 w-12 h-12 flex items-center justify-center text-white/30 hover:text-white transition-colors duration-500"
+            >
+              <HiArrowLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={goNext}
+              className="absolute right-8 z-10 w-12 h-12 flex items-center justify-center text-white/30 hover:text-white transition-colors duration-500"
+            >
+              <HiArrowRight className="w-6 h-6" />
+            </button>
+
+            <div className="max-w-5xl w-full px-8">
+              <div
+                className={`aspect-[3/2] bg-gradient-to-br ${
+                  filtered[currentIndex]?.gradient || 'from-cream to-beige'
+                }`}
+              />
+            </div>
+
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+              {filtered.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
+                    i === currentIndex ? 'bg-white w-6' : 'bg-white/20 hover:bg-white/40'
+                  }`}
+                />
+              ))}
             </div>
           </motion.div>
         )}

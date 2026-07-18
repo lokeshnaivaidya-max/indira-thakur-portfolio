@@ -3,17 +3,20 @@ import Link from 'next/link';
 interface ButtonProps {
   children: React.ReactNode;
   href?: string;
-  variant?: 'primary' | 'outline';
+  variant?: 'primary' | 'outline' | 'white';
   className?: string;
   onClick?: () => void;
   type?: 'button' | 'submit';
 }
 
 export default function Button({ children, href, variant = 'primary', className = '', onClick, type = 'button' }: ButtonProps) {
-  const classes = variant === 'primary'
-    ? `inline-flex items-center justify-center px-8 py-3.5 bg-warm-black text-white font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-brown ${className}`
-    : `inline-flex items-center justify-center px-8 py-3.5 border-2 border-warm-black text-warm-black font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-black hover:text-white bg-transparent ${className}`;
+  const base = 'inline-flex items-center justify-center px-10 py-4 font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700';
+  const styles = {
+    primary: `${base} bg-rich-black text-white hover:bg-charcoal ${className}`,
+    outline: `${base} border border-rich-black/20 text-rich-black hover:border-magenta hover:text-magenta bg-transparent ${className}`,
+    white: `${base} bg-white text-rich-black hover:bg-white/90 ${className}`,
+  };
 
-  if (href) return <Link href={href} className={classes}>{children}</Link>;
-  return <button type={type} className={classes} onClick={onClick}>{children}</button>;
+  if (href) return <Link href={href} className={styles[variant]}>{children}</Link>;
+  return <button type={type} className={styles[variant]} onClick={onClick}>{children}</button>;
 }

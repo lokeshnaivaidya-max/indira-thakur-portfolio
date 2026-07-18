@@ -1,53 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-warm-white: #FFFDF9;
-  --color-cream: #F8F4F0;
-  --color-soft-cream: #F2ECE4;
-  --color-warm-beige: #E8DDD0;
-  --color-muted-gold: #B8956E;
-  --color-warm-brown: #8B7355;
-  --color-charcoal: #3D3D3D;
-  --color-warm-black: #2C2C2C;
-  --color-soft-rose: #F5EAE5;
-  --color-light-warm: #FDF8F4;
+  --color-rich-black: #111111;
+  --color-charcoal: #222222;
+  --color-magenta: #C2186A;
+  --color-raspberry: #9D1457;
+  --color-ivory: #F8F5F1;
+  --color-cream: #F4EEE7;
+  --color-beige: #E7DDD2;
+  --color-warm-gray: #6E655D;
+  --color-pure-white: #FFFFFF;
 
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', system-ui, sans-serif;
-  --font-sans-alt: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --animate-fade-in: fade-in 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-reveal: reveal 1.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-shimmer: shimmer 3s ease-in-out infinite;
+  --animate-float: float 8s ease-in-out infinite;
 }
 
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes reveal { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
 @layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply bg-warm-white text-charcoal font-sans antialiased; }
-  h1, h2, h3, h4 { @apply font-serif; }
-  ::selection { @apply bg-muted-gold/20 text-warm-black; }
+  html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--color-magenta) var(--color-ivory); }
+  body { @apply bg-ivory text-rich-black font-sans antialiased; }
+  ::selection { @apply bg-magenta/15 text-rich-black; }
+  h1, h2, h3, h4 { @apply font-serif leading-tight; }
 }
 
 @layer components {
-  .section-padding { @apply px-6 md:px-12 lg:px-20 py-20 md:py-28; }
-  .section-title { @apply font-serif text-3xl md:text-4xl lg:text-5xl text-warm-black leading-tight; }
-  .section-subtitle { @apply font-sans-alt text-base md:text-lg text-warm-brown/70; }
-  
+  .container-editorial { @apply mx-auto max-w-[1440px] px-8 md:px-16 lg:px-24; }
+  .section-spacing { @apply py-24 md:py-32 lg:py-40; }
+  .heading-xl { @apply font-serif text-5xl md:text-7xl lg:text-8xl text-rich-black leading-[1.05] tracking-tight; }
+  .heading-lg { @apply font-serif text-4xl md:text-5xl lg:text-6xl text-rich-black leading-[1.1] tracking-tight; }
+  .heading-md { @apply font-serif text-3xl md:text-4xl text-rich-black leading-[1.15]; }
+  .body-lg { @apply font-sans text-lg md:text-xl text-warm-gray leading-relaxed; }
+  .body-md { @apply font-sans text-base md:text-lg text-warm-gray leading-relaxed; }
+  .body-sm { @apply font-sans text-sm md:text-base text-warm-gray leading-relaxed; }
+  .caption { @apply font-mono text-xs text-warm-gray/60 uppercase tracking-[0.15em]; }
+  .eyebrow { @apply font-mono text-[11px] text-warm-gray/50 uppercase tracking-[0.2em]; }
+
   .btn-primary {
-    @apply inline-flex items-center justify-center px-8 py-3.5 bg-warm-black text-white font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-brown;
+    @apply inline-flex items-center justify-center px-10 py-4 bg-rich-black text-white font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700 ease-out hover:bg-charcoal;
   }
-  
   .btn-outline {
-    @apply inline-flex items-center justify-center px-8 py-3.5 border-2 border-warm-black text-warm-black font-sans-alt text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:bg-warm-black hover:text-white bg-transparent;
+    @apply inline-flex items-center justify-center px-10 py-4 border border-rich-black/20 text-rich-black font-sans text-xs font-medium tracking-[0.15em] uppercase transition-all duration-700 ease-out hover:border-magenta hover:text-magenta bg-transparent;
   }
 
   .input-field {
-    @apply w-full px-5 py-3.5 bg-white border border-warm-beige/50 text-charcoal placeholder:text-warm-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 transition-all duration-300;
+    @apply w-full px-6 py-4 bg-white border border-beige/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all duration-500 focus:outline-none focus:border-magenta/40;
   }
-
   .textarea-field {
-    @apply w-full px-5 py-3.5 bg-white border border-warm-beige/50 text-charcoal placeholder:text-warm-brown/40 font-sans text-sm focus:outline-none focus:border-muted-gold/60 transition-all duration-300 min-h-[130px] resize-none;
+    @apply w-full px-6 py-4 bg-white border border-beige/60 text-rich-black placeholder:text-warm-gray/40 font-sans text-sm transition-all duration-500 focus:outline-none focus:border-magenta/40 min-h-[140px] resize-none;
   }
 
-  .card {
-    @apply bg-white rounded-sm overflow-hidden transition-all duration-300 hover:shadow-md;
+  .image-reveal {
+    @apply relative overflow-hidden;
   }
+  .image-reveal img {
+    @apply transition-all duration-[1500ms] ease-out;
+  }
+
+  .divider-line {
+    @apply w-12 h-px bg-magenta/30;
+  }
+  .divider-full {
+    @apply w-full h-px bg-beige/60;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-700 ease-out hover:-translate-y-1;
+  }
+  .hover-magenta {
+    @apply transition-colors duration-500 ease-out hover:text-magenta;
+  }
+
+  .grain-overlay::after {
+    content: '';
+    @apply pointer-events-none fixed inset-0 z-[9999] opacity-[0.03];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heading-xl { font-size: 2.5rem; line-height: 1.1; }
+  .heading-lg { font-size: 2.25rem; }
 }
