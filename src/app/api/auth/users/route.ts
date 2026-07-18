@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/User';
 import jwt from 'jsonwebtoken';
+import { createHash } from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
 
@@ -16,15 +15,42 @@ function getTokenUser(request: Request) {
   }
 }
 
+function dbAvailable() {
+  return !!process.env.MONGODB_URI;
+}
+
+async function withDb() {
+  const { connectToDatabase } = await import('@/lib/mongodb');
+  const User = (await import('@/models/User')).default;
+  await connectToDatabase();
+  return User;
+}
+
 export async function GET(request: Request) {
   const tokenUser = getTokenUser(request);
   if (!tokenUser || tokenUser.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await connectToDatabase();
-  const users = await User.find({}).select('-password').sort({ createdAt: -1 });
-  return NextResponse.json({ users });
+  if (!dbAvailable()) {
+    return NextResponse.json({
+      users: [{
+        _id: 'env-admin',
+        name: 'Admin',
+        email: process.env.ADMIN_EMAIL || 'admin@indirathakur.com',
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+      }],
+    });
+  }
+
+  try {
+    const User = await withDb();
+    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+    return NextResponse.json({ users });
+  } catch {
+    return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -33,22 +59,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  if (!dbAvailable()) {
+    return NextResponse.json({ error: 'Database not configured. Set MONGODB_URI to enable user management.' }, { status: 400 });
+  }
+
   try {
     const { name, email, password, role } = await request.json();
     if (!name || !email || !password) {
       return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
     }
 
-    await connectToDatabase();
+    const User = await withDb();
 
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
       return NextResponse.json({ error: 'A user with this email already exists' }, { status: 409 });
     }
 
-    const { createHash } = await import('crypto');
     const hashedPassword = createHash('sha256').update(password).digest('hex');
-
     const user = await User.create({ name, email: email.toLowerCase(), password: hashedPassword, role: role || 'editor' });
 
     return NextResponse.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
@@ -63,18 +91,21 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  if (!dbAvailable()) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 400 });
+  }
+
   try {
     const { id, name, email, password, role } = await request.json();
     if (!id) return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
 
-    await connectToDatabase();
+    const User = await withDb();
 
     const updateData: Record<string, string> = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email.toLowerCase();
     if (role) updateData.role = role;
     if (password) {
-      const { createHash } = await import('crypto');
       updateData.password = createHash('sha256').update(password).digest('hex');
     }
 
@@ -93,11 +124,15 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  if (!dbAvailable()) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 400 });
+  }
+
   try {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
 
-    await connectToDatabase();
+    const User = await withDb();
     await User.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch {
