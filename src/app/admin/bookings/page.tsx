@@ -1,11 +1,6 @@
 'use client';
 
-const bookings = [
-  { id: '1', client: 'Priya Sharma', email: 'priya@example.com', service: 'Newborn', date: 'Aug 15, 2026', status: 'confirmed' },
-  { id: '2', client: 'Ananya Patel', email: 'ananya@example.com', service: 'Maternity', date: 'Aug 20, 2026', status: 'pending' },
-  { id: '3', client: 'Rohan Kapoor', email: 'rohan@example.com', service: 'Portrait', date: 'Aug 25, 2026', status: 'confirmed' },
-  { id: '4', client: 'Sunita Verma', email: 'sunita@example.com', service: 'Events', date: 'Sep 1, 2026', status: 'pending' },
-];
+const bookings: { id: string; client: string; email: string; service: string; date: string; status: string }[] = [];
 
 export default function AdminBookingsPage() {
   return (

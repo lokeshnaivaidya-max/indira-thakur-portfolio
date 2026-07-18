@@ -1,11 +1,6 @@
 'use client';
 
-const messages = [
-  { id: '1', name: 'Neha Singh', email: 'neha@example.com', subject: 'Newborn Session Inquiry', date: '2 days ago', read: false },
-  { id: '2', name: 'Vikram Mehta', email: 'vikram@example.com', subject: 'Corporate Event', date: '3 days ago', read: false },
-  { id: '3', name: 'Lakshmi Iyer', email: 'lakshmi@example.com', subject: 'Maternity Package', date: '5 days ago', read: true },
-  { id: '4', name: 'Arjun Desai', email: 'arjun@example.com', subject: 'Portfolio Review', date: '1 week ago', read: true },
-];
+const messages: any[] = [];
 
 export default function AdminContactPage() {
   return (

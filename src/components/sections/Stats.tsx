@@ -4,12 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
-const stats = [
-  { value: 15, suffix: '+', label: 'Years Experience', icon: '✦' },
-  { value: 500, suffix: '+', label: 'Happy Families', icon: '✦' },
-  { value: 2000, suffix: '+', label: 'Photoshoots', icon: '✦' },
-  { value: 50, suffix: '+', label: 'Awards & Recognition', icon: '✦' },
-];
+const stats: { value: number; suffix: string; label: string; icon: string }[] = [];
 
 function Counter({ target, suffix, inView }: { target: number; suffix: string; inView: boolean }) {
   const [count, setCount] = useState(0);

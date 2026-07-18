@@ -8,16 +8,7 @@ import { HiArrowRight } from 'react-icons/hi2';
 
 const categories = ['All', 'Newborn', 'Maternity', 'Portrait', 'Events'];
 
-const galleryImages = [
-  { id: 1, category: 'Newborn', gradient: 'from-soft-rose to-warm-blush', aspect: 'aspect-4-5', span: 'row-span-2' },
-  { id: 2, category: 'Maternity', gradient: 'from-warm-blush to-cream', aspect: 'aspect-1-1', span: '' },
-  { id: 3, category: 'Portrait', gradient: 'from-cream to-beige', aspect: 'aspect-3-2', span: '' },
-  { id: 4, category: 'Events', gradient: 'from-warm-cream to-beige', aspect: 'aspect-4-5', span: '' },
-  { id: 5, category: 'Newborn', gradient: 'from-soft-rose to-cream', aspect: 'aspect-1-1', span: '' },
-  { id: 6, category: 'Maternity', gradient: 'from-warm-blush to-beige', aspect: 'aspect-3-2', span: '' },
-  { id: 7, category: 'Portrait', gradient: 'from-cream to-warm-cream', aspect: 'aspect-4-5', span: 'row-span-2' },
-  { id: 8, category: 'Events', gradient: 'from-warm-cream to-soft-rose', aspect: 'aspect-1-1', span: '' },
-];
+const galleryImages: any[] = [];
 
 export default function GalleryPreview() {
   const [activeCategory, setActiveCategory] = useState('All');

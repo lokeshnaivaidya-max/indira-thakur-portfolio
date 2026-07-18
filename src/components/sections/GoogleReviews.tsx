@@ -5,32 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import SectionHeading from '@/components/ui/SectionHeading';
 import RatingStars from '@/components/ui/RatingStars';
 
-const reviews = [
-  {
-    name: 'Vikram Mehta',
-    rating: 5,
-    content: 'Absolutely outstanding photographer! Indira captured our family moments with such natural beauty and emotion. Highly recommend her services to anyone looking for premium photography.',
-    date: '2 months ago',
-  },
-  {
-    name: 'Lakshmi Iyer',
-    rating: 5,
-    content: 'Indira is incredibly talented and so easy to work with. She made our newborn shoot a wonderful experience. The photos are breathtaking!',
-    date: '1 month ago',
-  },
-  {
-    name: 'Rahul Deshmukh',
-    rating: 5,
-    content: 'We hired Indira for our corporate event and the results were phenomenal. Professional, unobtrusive, and the images perfectly captured the essence of our event.',
-    date: '3 months ago',
-  },
-  {
-    name: 'Neelam Joshi',
-    rating: 5,
-    content: 'The maternity shoot with Indira was an unforgettable experience. She has a gift for making you feel beautiful and comfortable. The photos are pure magic.',
-    date: '2 weeks ago',
-  },
-];
+const reviews: any[] = [];
 
 const containerVariants = {
   hidden: { opacity: 0 },

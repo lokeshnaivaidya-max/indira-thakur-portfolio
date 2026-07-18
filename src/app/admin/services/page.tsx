@@ -4,14 +4,7 @@ import { motion } from 'framer-motion';
 import { HiPlus, HiTrash, HiPencil } from 'react-icons/hi2';
 import { useState } from 'react';
 
-const initialServices = [
-  { id: '1', title: 'Newborn Photography', slug: 'newborn', price: 'From $450', featured: true, order: 1 },
-  { id: '2', title: 'Maternity Photography', slug: 'maternity', price: 'From $350', featured: true, order: 2 },
-  { id: '3', title: 'Portrait Photography', slug: 'portrait', price: 'From $300', featured: true, order: 3 },
-  { id: '4', title: 'Personal Events', slug: 'events', price: 'From $600', featured: false, order: 4 },
-  { id: '5', title: 'Corporate Events', slug: 'corporate', price: 'From $800', featured: false, order: 5 },
-  { id: '6', title: 'Brand Collaborations', slug: 'brand', price: 'Custom Quote', featured: false, order: 6 },
-];
+const initialServices: any[] = [];
 
 export default function AdminServicesPage() {
   const [services] = useState(initialServices);

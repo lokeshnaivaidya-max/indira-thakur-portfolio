@@ -3,18 +3,14 @@
 import { motion } from 'framer-motion';
 import { HiPhoto, HiCalendarDays, HiUserGroup, HiEnvelope } from 'react-icons/hi2';
 
-const stats = [
-  { label: 'Gallery Images', value: '24', icon: HiPhoto, change: '+3 this month' },
-  { label: 'Active Bookings', value: '8', icon: HiCalendarDays, change: '+2 this week' },
-  { label: 'Testimonials', value: '12', icon: HiUserGroup, change: '+1 this month' },
-  { label: 'New Messages', value: '5', icon: HiEnvelope, change: '3 unread' },
-];
+const stats: {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  change: string;
+}[] = [];
 
-const recentBookings = [
-  { name: 'Priya Sharma', service: 'Newborn Session', date: 'Aug 15, 2026', status: 'confirmed' },
-  { name: 'Ananya Patel', service: 'Maternity Session', date: 'Aug 20, 2026', status: 'pending' },
-  { name: 'Rohan Kapoor', service: 'Family Portrait', date: 'Aug 25, 2026', status: 'confirmed' },
-];
+const recentBookings: { name: string; service: string; date: string; status: string }[] = [];
 
 export default function DashboardPage() {
   return (

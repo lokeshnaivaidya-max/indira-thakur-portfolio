@@ -8,14 +8,7 @@ import { HiXMark, HiArrowLeft, HiArrowRight, HiMagnifyingGlassPlus, HiShare } fr
 
 const categories = ['All', 'Newborn', 'Maternity', 'Portrait', 'Events', 'Corporate', 'Brand'];
 
-const galleryImages = Array.from({ length: 24 }, (_, i) => ({
-  id: i + 1,
-  category: categories[Math.floor(Math.random() * (categories.length - 1)) + 1],
-  gradient: ['from-soft-rose to-warm-blush', 'from-warm-blush to-cream', 'from-cream to-beige', 'from-warm-cream to-beige', 'from-warm-blush to-beige', 'from-soft-rose to-cream', 'from-cream to-warm-cream', 'from-beige to-warm-beige'][i % 8],
-  aspect: ['aspect-3-2', 'aspect-4-5', 'aspect-1-1', 'aspect-16-9'][i % 4],
-  title: `Beautiful Moment ${i + 1}`,
-  description: 'A precious memory captured with love and artistry.',
-}));
+const galleryImages: any[] = [];
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('All');

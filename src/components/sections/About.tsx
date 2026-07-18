@@ -46,14 +46,8 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="space-y-6"
             >
-              <p className="font-serif-alt text-lg text-earth-brown/90 leading-relaxed italic">
-                &ldquo;Photography is not just about taking pictures. It&apos;s about capturing feelings, freezing moments of pure emotion, and creating visual poetry that speaks to the heart.&rdquo;
-              </p>
               <p className="text-earth-brown/70 font-sans-alt leading-relaxed">
-                I&apos;m Indira Thakur, a photographer who believes that every moment holds a story waiting to be told. With over 15 years of experience, I&apos;ve had the privilege of documenting some of life&apos;s most beautiful chapters &mdash; from the first breath of a newborn to the joyous celebration of love and family.
-              </p>
-              <p className="text-earth-brown/70 font-sans-alt leading-relaxed">
-                My approach is simple: create a space where you feel completely yourself. When you&apos;re comfortable, your true beauty shines through, and that&apos;s when the magic happens. I don&apos;t just take photos; I create an experience that you&apos;ll treasure forever.
+                About section content coming soon.
               </p>
             </motion.div>
 
@@ -66,17 +60,7 @@ export default function About() {
               <Button href="/#contact">Let&apos;s Create Together</Button>
             </motion.div>
 
-            {/* Signature / Philosophy */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="pt-8 border-t border-warm-cream/60"
-            >
-              <p className="font-serif-alt italic text-muted-gold text-lg">
-                &mdash; Indira Thakur
-              </p>
-            </motion.div>
+
           </div>
         </div>
       </div>

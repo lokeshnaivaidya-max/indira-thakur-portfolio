@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { HiPlus, HiTrash, HiPencil } from 'react-icons/hi2';
 
-const initialFaqs = [
-  { id: '1', question: 'How do I book a session?', answer: 'Simply fill out the contact form...', category: 'Booking', order: 1 },
-  { id: '2', question: 'How long does a session last?', answer: 'Session lengths vary...', category: 'Session', order: 2 },
-  { id: '3', question: 'What should I wear?', answer: 'I recommend solid colors...', category: 'Preparation', order: 3 },
-];
+const initialFaqs: any[] = [];
 
 export default function AdminFAQPage() {
   const [faqs] = useState(initialFaqs);

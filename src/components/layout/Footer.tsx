@@ -49,19 +49,19 @@ export default function Footer() {
               Indira <span className="text-muted-gold">Thakur</span>
             </Link>
             <p className="mt-4 text-earth-brown/70 font-serif-alt text-lg italic leading-relaxed">
-              Capturing life&apos;s most precious moments with elegance, emotion, and artistry.
+              Photography by Indira Thakur
             </p>
             <div className="flex gap-4 mt-6">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
+              <a href="#" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
                 <FaInstagram className="w-4 h-4" />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
+              <a href="#" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
                 <FaFacebook className="w-4 h-4" />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
+              <a href="#" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
                 <FaYoutube className="w-4 h-4" />
               </a>
-              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
+              <a href="#" className="w-10 h-10 rounded-full border border-earth-brown/30 flex items-center justify-center text-earth-brown hover:text-muted-gold hover:border-muted-gold transition-all duration-300">
                 <FaPinterest className="w-4 h-4" />
               </a>
             </div>
@@ -99,12 +99,7 @@ export default function Footer() {
           <div>
             <h4 className="font-sans-alt text-xs tracking-[0.2em] uppercase text-muted-gold mb-6">Get In Touch</h4>
             <div className="space-y-4 text-earth-brown/70 font-sans-alt text-sm">
-              <p>hello@indirathakur.com</p>
-              <p>+1 (555) 123-4567</p>
-              <p>123 Photography Lane<br />Creative District, CA 90210</p>
-              <p className="text-xs tracking-wider uppercase mt-4">
-                Mon - Sat: 9:00 AM - 7:00 PM
-              </p>
+              <p>Contact information coming soon</p>
             </div>
           </div>
         </div>
@@ -115,7 +110,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Indira Thakur Photography. All rights reserved.
           </p>
           <p className="text-earth-brown/50 text-xs font-sans-alt">
-            Crafted with love and artistry.
+            All rights reserved.
           </p>
         </div>
       </div>

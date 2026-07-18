@@ -18,7 +18,7 @@ export default function AdminAboutPage() {
           <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">Personal Story</label>
           <textarea
             className="premium-textarea"
-            defaultValue="I'm Indira Thakur, a photographer who believes that every moment holds a story waiting to be told..."
+            defaultValue=""
             rows={6}
           />
         </div>
@@ -27,7 +27,7 @@ export default function AdminAboutPage() {
           <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">Philosophy</label>
           <textarea
             className="premium-textarea"
-            defaultValue="Photography is not just about taking pictures. It's about capturing feelings..."
+            defaultValue=""
             rows={4}
           />
         </div>
@@ -35,11 +35,11 @@ export default function AdminAboutPage() {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">Years Experience</label>
-            <input type="text" className="premium-input" defaultValue="15+" />
+            <input type="text" className="premium-input" defaultValue="" />
           </div>
           <div>
             <label className="block font-sans-alt text-xs tracking-wider uppercase text-earth-brown/60 mb-2">Happy Clients</label>
-            <input type="text" className="premium-input" defaultValue="500+" />
+            <input type="text" className="premium-input" defaultValue="" />
           </div>
         </div>
 

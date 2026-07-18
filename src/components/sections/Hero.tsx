@@ -70,26 +70,7 @@ export default function Hero() {
               </Link>
             </motion.div>
 
-            {/* Trust indicators */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="flex items-center gap-8 pt-8 border-t border-warm-cream/60"
-            >
-              <div className="text-center">
-                <p className="font-serif text-3xl text-warm-black">15+</p>
-                <p className="font-sans-alt text-xs text-earth-brown/60 tracking-wider uppercase mt-1">Years Experience</p>
-              </div>
-              <div className="text-center">
-                <p className="font-serif text-3xl text-warm-black">500+</p>
-                <p className="font-sans-alt text-xs text-earth-brown/60 tracking-wider uppercase mt-1">Happy Clients</p>
-              </div>
-              <div className="text-center">
-                <p className="font-serif text-3xl text-warm-black">2K+</p>
-                <p className="font-sans-alt text-xs text-earth-brown/60 tracking-wider uppercase mt-1">Photoshoots</p>
-              </div>
-            </motion.div>
+
           </div>
 
           {/* Right Image */}

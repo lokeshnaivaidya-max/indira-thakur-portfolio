@@ -6,50 +6,7 @@ import Link from 'next/link';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { HiArrowRight } from 'react-icons/hi2';
 
-const services = [
-  {
-    title: 'Newborn Photography',
-    slug: 'newborn',
-    description: 'Preserve the purest moments of your little one\'s first days with gentle, artistic newborn photography.',
-    gradient: 'from-soft-rose via-warm-blush to-cream',
-    icon: '✦',
-  },
-  {
-    title: 'Maternity Photography',
-    slug: 'maternity',
-    description: 'Celebrate the beauty of motherhood with elegant and emotional maternity sessions that glow with love.',
-    gradient: 'from-warm-blush via-cream to-beige',
-    icon: '✦',
-  },
-  {
-    title: 'Portrait Photography',
-    slug: 'portrait',
-    description: 'Timeless portraits that capture your unique personality and natural beauty with artistic flair.',
-    gradient: 'from-cream via-beige to-warm-beige',
-    icon: '✦',
-  },
-  {
-    title: 'Personal Events',
-    slug: 'events',
-    description: 'From birthdays to family gatherings, document your special moments with cinematic storytelling.',
-    gradient: 'from-warm-cream via-beige to-soft-rose',
-    icon: '✦',
-  },
-  {
-    title: 'Corporate Events',
-    slug: 'corporate',
-    description: 'Professional event coverage that captures the essence of your brand and corporate culture.',
-    gradient: 'from-cream via-warm-cream to-beige',
-    icon: '✦',
-  },
-  {
-    title: 'Brand Collaborations',
-    slug: 'brand',
-    description: 'Creative visual content for brands looking to tell their story through stunning photography.',
-    gradient: 'from-warm-beige via-cream to-warm-cream',
-    icon: '✦',
-  },
-];
+const services: any[] = [];
 
 const containerVariants = {
   hidden: { opacity: 0 },

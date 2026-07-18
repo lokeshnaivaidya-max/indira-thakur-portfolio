@@ -4,38 +4,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import SectionHeading from '@/components/ui/SectionHeading';
 
-const journeyItems = [
-  {
-    year: '2008',
-    title: 'The Beginning',
-    description: 'Fell in love with photography, picked up my first camera, and discovered the magic of capturing light and emotion.',
-  },
-  {
-    year: '2012',
-    title: 'Professional Launch',
-    description: 'Opened my first photography studio and began turning my passion into a profession, serving my first clients.',
-  },
-  {
-    year: '2015',
-    title: 'Award Recognition',
-    description: 'Received my first international photography award, affirming my commitment to artistic excellence.',
-  },
-  {
-    year: '2018',
-    title: 'Studio Expansion',
-    description: 'Expanded to a larger, beautifully designed studio space to accommodate growing clientele and creative vision.',
-  },
-  {
-    year: '2021',
-    title: '1000th Session',
-    description: 'Celebrated a milestone of 1000 sessions, each one a unique story and a treasured memory.',
-  },
-  {
-    year: '2024',
-    title: 'Continuing the Journey',
-    description: 'Still capturing moments with the same passion, love, and dedication as day one. Every session is a new story.',
-  },
-];
+const journeyItems: any[] = [];
 
 export default function Journey() {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });

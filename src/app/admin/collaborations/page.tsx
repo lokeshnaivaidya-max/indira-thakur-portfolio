@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { HiPlus, HiTrash } from 'react-icons/hi2';
 
-const initialCollaborations = [
-  { id: '1', name: 'Baby Couture', description: 'Luxury baby products brand', featured: true },
-  { id: '2', name: 'Mama Glow', description: 'Maternity wellness brand', featured: true },
-  { id: '3', name: 'Tiny Tots', description: 'Children\'s apparel', featured: false },
-];
+const initialCollaborations: any[] = [];
 
 export default function AdminCollaborationsPage() {
   const [collaborations] = useState(initialCollaborations);

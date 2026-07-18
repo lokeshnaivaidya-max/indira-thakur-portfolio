@@ -5,50 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import SectionHeading from '@/components/ui/SectionHeading';
 import RatingStars from '@/components/ui/RatingStars';
 
-const testimonials = [
-  {
-    name: 'Priya Sharma',
-    role: 'Newborn Session',
-    content: 'Indira has a magical way with babies. She captured the most precious moments of our newborn\'s first days with such gentleness and artistry. These photographs are treasures we will cherish forever.',
-    rating: 5,
-    gradient: 'from-soft-rose to-warm-blush',
-  },
-  {
-    name: 'Ananya Patel',
-    role: 'Maternity Session',
-    content: 'My maternity shoot with Indira was the most beautiful experience. She made me feel so comfortable and confident. The photos are breathtaking — she truly captured the glow of motherhood.',
-    rating: 5,
-    gradient: 'from-warm-blush to-cream',
-  },
-  {
-    name: 'Rohan & Meera Kapoor',
-    role: 'Family Portrait',
-    content: 'We wanted natural, candid family photos and Indira delivered beyond our expectations. She has an incredible ability to make everyone feel at ease. The results are pure magic.',
-    rating: 5,
-    gradient: 'from-cream to-beige',
-  },
-  {
-    name: 'Sunita Verma',
-    role: 'Wedding Event',
-    content: 'Indira captured our daughter\'s wedding with such grace and artistry. Every photo tells a story. She was professional, unobtrusive, and the images are absolutely stunning.',
-    rating: 5,
-    gradient: 'from-soft-rose to-cream',
-  },
-  {
-    name: 'Arjun & Neha Singh',
-    role: 'Newborn Session',
-    content: 'From the first consultation to the final gallery, everything was perfect. Indira\'s patience with our newborn was remarkable. The images are works of art that we will treasure.',
-    rating: 5,
-    gradient: 'from-warm-blush to-beige',
-  },
-  {
-    name: 'Deepa Nair',
-    role: 'Portrait Session',
-    content: 'I was nervous about having my portrait taken, but Indira created such a warm and welcoming environment. She guided me through every step and the results are stunning. I feel beautiful!',
-    rating: 5,
-    gradient: 'from-cream to-warm-cream',
-  },
-];
+const testimonials: any[] = [];
 
 const containerVariants = {
   hidden: { opacity: 0 },

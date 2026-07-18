@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { HiTrash } from 'react-icons/hi2';
 
-const initialReviews = [
-  { id: '1', name: 'Vikram Mehta', rating: 5, source: 'Google', content: 'Absolutely outstanding photographer!', featured: true },
-  { id: '2', name: 'Lakshmi Iyer', rating: 5, source: 'Google', content: 'Incredibly talented and so easy to work with.', featured: true },
-  { id: '3', name: 'Rahul Deshmukh', rating: 5, source: 'Facebook', content: 'Professional and phenomenal results.', featured: false },
-];
+const initialReviews: any[] = [];
 
 export default function AdminReviewsPage() {
   const [reviews] = useState(initialReviews);

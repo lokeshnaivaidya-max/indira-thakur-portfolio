@@ -4,12 +4,7 @@ import { motion } from 'framer-motion';
 import { HiPlus, HiTrash, HiPencil, HiPhoto } from 'react-icons/hi2';
 import { useState } from 'react';
 
-const initialImages = [
-  { id: '1', category: 'Newborn', gradient: 'from-soft-rose to-warm-blush', title: 'Newborn Session', featured: true },
-  { id: '2', category: 'Maternity', gradient: 'from-warm-blush to-cream', title: 'Maternity Glow', featured: true },
-  { id: '3', category: 'Portrait', gradient: 'from-cream to-beige', title: 'Portrait Beauty', featured: false },
-  { id: '4', category: 'Events', gradient: 'from-warm-cream to-beige', title: 'Family Joy', featured: false },
-];
+const initialImages: any[] = [];
 
 export default function AdminGalleryPage() {
   const [images, setImages] = useState(initialImages);

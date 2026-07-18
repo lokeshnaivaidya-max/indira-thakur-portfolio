@@ -5,14 +5,7 @@ import Footer from '@/components/layout/Footer';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { HiArrowRight } from 'react-icons/hi2';
 
-const allServices = [
-  { title: 'Newborn Photography', slug: 'newborn', gradient: 'from-soft-rose to-warm-blush', description: 'Gentle, artistic newborn photography capturing the precious first days of your little one.' },
-  { title: 'Maternity Photography', slug: 'maternity', gradient: 'from-warm-blush to-cream', description: 'Elegant maternity sessions celebrating the beauty and glow of motherhood.' },
-  { title: 'Portrait Photography', slug: 'portrait', gradient: 'from-cream to-beige', description: 'Timeless portraits that capture your unique personality and natural beauty.' },
-  { title: 'Personal Events', slug: 'events', gradient: 'from-warm-cream to-beige', description: 'Cinematic coverage of your most cherished personal celebrations.' },
-  { title: 'Corporate Events', slug: 'corporate', gradient: 'from-cream to-warm-cream', description: 'Professional event photography that elevates your brand presence.' },
-  { title: 'Brand Collaborations', slug: 'brand', gradient: 'from-warm-beige to-cream', description: 'Creative visual content that tells your brand\'s unique story.' },
-];
+const allServices: any[] = [];
 
 export default function ServicesPage() {
   return (

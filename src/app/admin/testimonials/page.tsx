@@ -4,11 +4,7 @@ import { motion } from 'framer-motion';
 import { HiPlus, HiTrash, HiPencil, HiStar } from 'react-icons/hi2';
 import { useState } from 'react';
 
-const initialTestimonials = [
-  { id: '1', name: 'Priya Sharma', role: 'Newborn Session', content: 'Indira has a magical way with babies...', rating: 5, featured: true },
-  { id: '2', name: 'Ananya Patel', role: 'Maternity Session', content: 'My maternity shoot was beautiful...', rating: 5, featured: true },
-  { id: '3', name: 'Rohan & Meera Kapoor', role: 'Family Portrait', content: 'Natural, candid family photos...', rating: 5, featured: false },
-];
+const initialTestimonials: any[] = [];
 
 export default function AdminTestimonialsPage() {
   const [testimonials] = useState(initialTestimonials);

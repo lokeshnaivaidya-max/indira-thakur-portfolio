@@ -55,41 +55,7 @@ export default function Contact() {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="space-y-8"
           >
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-warm-blush/50 flex items-center justify-center flex-shrink-0">
-                  <HiEnvelope className="w-5 h-5 text-muted-gold" />
-                </div>
-                <div>
-                  <p className="font-serif text-lg text-warm-black">Email</p>
-                  <p className="font-sans-alt text-sm text-earth-brown/70 mt-1">hello@indirathakur.com</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-warm-blush/50 flex items-center justify-center flex-shrink-0">
-                  <HiPhone className="w-5 h-5 text-muted-gold" />
-                </div>
-                <div>
-                  <p className="font-serif text-lg text-warm-black">Phone</p>
-                  <p className="font-sans-alt text-sm text-earth-brown/70 mt-1">+1 (555) 123-4567</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-warm-blush/50 flex items-center justify-center flex-shrink-0">
-                  <HiMapPin className="w-5 h-5 text-muted-gold" />
-                </div>
-                <div>
-                  <p className="font-serif text-lg text-warm-black">Studio Address</p>
-                  <p className="font-sans-alt text-sm text-earth-brown/70 mt-1">123 Photography Lane<br />Creative District, CA 90210</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-warm-cream/60 pt-6">
-              <p className="font-serif text-lg text-warm-black mb-2">Business Hours</p>
-              <p className="font-sans-alt text-sm text-earth-brown/70">Monday - Saturday: 9:00 AM - 7:00 PM</p>
-              <p className="font-sans-alt text-sm text-earth-brown/70">Sunday: By appointment only</p>
-            </div>
+            <p className="font-sans-alt text-sm text-earth-brown/70">Contact information coming soon.</p>
 
             <div className="border-t border-warm-cream/60 pt-6">
               <p className="font-serif text-lg text-warm-black mb-4">Follow the Journey</p>

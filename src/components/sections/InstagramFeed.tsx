@@ -5,14 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { FaInstagram } from 'react-icons/fa6';
 
-const posts = [
-  { id: 1, gradient: 'from-soft-rose to-warm-blush' },
-  { id: 2, gradient: 'from-warm-blush to-cream' },
-  { id: 3, gradient: 'from-cream to-beige' },
-  { id: 4, gradient: 'from-warm-cream to-beige' },
-  { id: 5, gradient: 'from-warm-blush to-beige' },
-  { id: 6, gradient: 'from-soft-rose to-cream' },
-];
+const posts: any[] = [];
 
 const containerVariants = {
   hidden: { opacity: 0 },
