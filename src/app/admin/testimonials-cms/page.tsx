@@ -4,10 +4,10 @@ import { useCMS } from '@/hooks/useCMS';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { useState } from 'react';
-import { HiPlus, HiTrash } from 'react-icons/hi2';
+import { HiPlus, HiTrash, HiUserGroup } from 'react-icons/hi2';
 
 export default function AdminTestimonialsPage() {
-  const { config, loading, saving, error, success, updateSection, saveConfig, clearMessages } = useCMS();
+  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
 
   if (loading) {
     return (
@@ -53,14 +53,16 @@ export default function AdminTestimonialsPage() {
         description="Manage client testimonials and quotes"
         error={error}
         success={success}
+        dirty={dirty}
+        lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
-        <Section title="Section Header" defaultOpen>
+        <Section title="Section Header" defaultOpen icon={<HiUserGroup className="w-5 h-5" />}>
           <div className="grid grid-cols-2 gap-4">
-            <FieldInput label="Eyebrow" value={t.eyebrow || ''} onChange={(v) => updateSection('testimonials', { eyebrow: v })} placeholder="e.g., Kind Words" />
-            <FieldInput label="Heading" value={t.heading || ''} onChange={(v) => updateSection('testimonials', { heading: v })} placeholder="e.g., What Families Say" />
+            <FieldInput label="Eyebrow" value={t.eyebrow || ''} onChange={(v) => updateSection('testimonials', { eyebrow: v })} placeholder="e.g., Kind Words" helperText="Tiny text above the heading" />
+            <FieldInput label="Heading" value={t.heading || ''} onChange={(v) => updateSection('testimonials', { heading: v })} placeholder="e.g., What Families Say" helperText="The main title of this section" />
           </div>
           <ImageManager
             label="Background Image"
@@ -69,10 +71,12 @@ export default function AdminTestimonialsPage() {
             onChange={(img) => updateSection('testimonials', { backgroundImage: img })}
             aspect="aspect-[16/9]"
             folder="testimonials/background"
+            sectionIndicator="Testimonials"
+            helperText="Optional background for this section"
           />
         </Section>
 
-        <Section title={`Testimonials (${(t.testimonials || []).length})`} defaultOpen>
+        <Section title={`Testimonials (${(t.testimonials || []).length})`} defaultOpen icon={<HiUserGroup className="w-5 h-5" />}>
           <div className="space-y-6">
             {(t.testimonials || []).map((item: any, i: number) => (
               <div key={i} className="p-5 bg-ivory/50 border border-cream/40 rounded-lg space-y-4">
@@ -84,6 +88,7 @@ export default function AdminTestimonialsPage() {
                 </div>
                 <div>
                   <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">Quote</label>
+                  <p className="font-sans text-[10px] text-warm-gray/50 mb-1.5">The exact words your client shared about their experience</p>
                   <textarea
                     value={item.quote || ''}
                     onChange={(e) => handleTestimonialChange(i, 'quote', e.target.value)}
@@ -93,8 +98,8 @@ export default function AdminTestimonialsPage() {
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <FieldInput label="Author Name" value={item.author || ''} onChange={(v) => handleTestimonialChange(i, 'author', v)} placeholder="e.g., Ananya Sharma" />
-                  <FieldInput label="Role (optional)" value={item.role || ''} onChange={(v) => handleTestimonialChange(i, 'role', v)} placeholder="e.g., New Mom" />
+                  <FieldInput label="Author Name" value={item.author || ''} onChange={(v) => handleTestimonialChange(i, 'author', v)} placeholder="e.g., Ananya Sharma" helperText="The person who gave this testimonial" />
+                  <FieldInput label="Role (optional)" value={item.role || ''} onChange={(v) => handleTestimonialChange(i, 'role', v)} placeholder="e.g., New Mom" helperText="Their relationship to you (e.g., New Mom)" />
                 </div>
                 <ImageManager
                   label="Client Photo (optional)"
@@ -102,6 +107,7 @@ export default function AdminTestimonialsPage() {
                   onChange={(img) => handleAvatarChange(i, img)}
                   aspect="aspect-square"
                   folder="testimonials/avatars"
+                  sectionIndicator="Testimonials"
                 />
               </div>
             ))}
@@ -113,20 +119,24 @@ export default function AdminTestimonialsPage() {
 
         <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
           <button type="button" onClick={() => saveConfig()} disabled={saving} className="w-full max-w-md mx-auto px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2">
-            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>) : 'Save All Changes'}
+            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving to database...</>) : (dirty ? 'Save Changes' : 'Save All Changes')}
           </button>
+          {lastSavedAt && <p className="text-center font-sans text-[10px] text-warm-gray/30 mt-2">Last saved: {lastSavedAt.toLocaleTimeString()}</p>}
         </div>
       </div>
     </div>
   );
 }
 
-function Section({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+function Section({ title, defaultOpen = false, icon, children }: { title: string; defaultOpen?: boolean; icon?: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="bg-white border border-cream/50 rounded-lg overflow-hidden">
       <button type="button" onClick={() => setOpen(!open)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-cream/20 transition-colors">
-        <h2 className="font-serif text-lg text-rich-black">{title}</h2>
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 className="font-serif text-lg text-rich-black">{title}</h2>
+        </div>
         <span className={`w-4 h-4 flex items-center justify-center transition-transform duration-300 ${open ? 'rotate-45' : ''}`}>
           <span className="w-3 h-px bg-warm-gray/40 absolute" />
           <span className="w-px h-3 bg-warm-gray/40 absolute" />
@@ -137,10 +147,11 @@ function Section({ title, defaultOpen = false, children }: { title: string; defa
   );
 }
 
-function FieldInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function FieldInput({ label, value, onChange, placeholder, helperText }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; helperText?: string }) {
   return (
     <div>
       <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">{label}</label>
+      {helperText && <p className="font-sans text-[10px] text-warm-gray/50 mb-1.5">{helperText}</p>}
       <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors" />
     </div>
   );

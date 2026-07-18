@@ -4,17 +4,17 @@ import { useCMS } from '@/hooks/useCMS';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { useState } from 'react';
-import { HiPlus, HiTrash } from 'react-icons/hi2';
+import { HiPlus, HiTrash, HiCommandLine, HiPhoto } from 'react-icons/hi2';
 
 export default function AdminServicesPage() {
-  const { config, loading, saving, error, success, updateSection, saveConfig, clearMessages } = useCMS();
+  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-magenta/30 border-t-magenta rounded-full animate-spin mx-auto mb-3" />
-          <p className="font-sans text-sm text-warm-gray/50">Loading...</p>
+          <p className="font-sans text-sm text-warm-gray/50">Loading your Services...</p>
         </div>
       </div>
     );
@@ -47,42 +47,50 @@ export default function AdminServicesPage() {
   };
 
   const gradients = [
-    'from-[#1A1110] via-[#2C1810] to-[#1A1A1A]',
-    'from-[#2C1810] via-[#3D2C25] to-[#1A1110]',
-    'from-[#1A1A1A] via-[#2C1810] to-[#3D2C25]',
-    'from-[#3D2C25] via-[#2C1810] to-[#2C2C2C]',
-    'from-[#2C2C2C] via-[#1A1A1A] to-rich-black',
+    { value: 'from-[#1A1110] via-[#2C1810] to-[#1A1A1A]', label: 'Dark Warm' },
+    { value: 'from-[#2C1810] via-[#3D2C25] to-[#1A1110]', label: 'Amber' },
+    { value: 'from-[#1A1A1A] via-[#2C1810] to-[#3D2C25]', label: 'Charcoal' },
+    { value: 'from-[#3D2C25] via-[#2C1810] to-[#2C2C2C]', label: 'Deep Brown' },
+    { value: 'from-[#2C2C2C] via-[#1A1A1A] to-rich-black', label: 'Midnight' },
   ];
 
   return (
     <div className="h-full flex flex-col">
       <AdminPageHeader
         title="Services"
-        description="Manage services section content and images"
+        description="Showcase the types of photography you offer"
         error={error}
         success={success}
+        dirty={dirty}
+        lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         {/* Section Header */}
-        <Section title="Section Header" defaultOpen>
-          <div className="grid grid-cols-2 gap-4">
-            <FieldInput label="Eyebrow" value={services.eyebrow || ''} onChange={(v) => updateSection('services', { eyebrow: v })} placeholder="e.g., What I Offer" />
-            <FieldInput label="Heading" value={services.heading || ''} onChange={(v) => updateSection('services', { heading: v })} placeholder="e.g., Services" />
-          </div>
+        <CollapsibleSection title="Section Header" icon={<HiCommandLine className="w-5 h-5" />} defaultOpen>
+          <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
+            The heading that appears above your services list.
+          </p>
+          <FieldInput label="Small Heading" helperText="Tiny text above the main heading" value={services.eyebrow || ''} onChange={(v) => updateSection('services', { eyebrow: v })} placeholder="e.g., What I Offer" />
+          <FieldInput label="Main Heading" helperText="The large title of this section" value={services.heading || ''} onChange={(v) => updateSection('services', { heading: v })} placeholder="e.g., Services" />
           <ImageManager
             label="Banner Image"
-            description="Services section banner"
+            description="Optional banner image for the services section"
+            helperText="A wide image that spans the top of the services area"
+            sectionIndicator="Services Banner"
             value={services.bannerImage || { url: '', alt: '' }}
             onChange={(img) => updateSection('services', { bannerImage: img })}
             aspect="aspect-[16/9]"
             folder="services/banner"
           />
-        </Section>
+        </CollapsibleSection>
 
         {/* Service Items */}
-        <Section title={`Services (${(services.services || []).length})`} defaultOpen>
+        <CollapsibleSection title={`Your Services (${(services.services || []).length})`} icon={<HiCommandLine className="w-5 h-5" />} defaultOpen>
+          <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
+            Each service appears as a full-width section with an image and description.
+          </p>
           <div className="space-y-6">
             {(services.services || []).map((svc: any, i: number) => (
               <div key={i} className="p-5 bg-ivory/50 border border-cream/40 rounded-lg space-y-4">
@@ -92,26 +100,33 @@ export default function AdminServicesPage() {
                     <HiTrash className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldInput label="Title" value={svc.title || ''} onChange={(v) => handleServiceChange(i, 'title', v)} placeholder="e.g., Newborn Photography" />
-                  <FieldInput label="Subtitle" value={svc.subtitle || ''} onChange={(v) => handleServiceChange(i, 'subtitle', v)} placeholder="e.g., 01" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <FieldInput label="Service Name" helperText="The name of this service" value={svc.title || ''} onChange={(v) => handleServiceChange(i, 'title', v)} placeholder="e.g., Newborn Photography" />
+                  <FieldInput label="Number Label" helperText="The number shown (e.g., 01, 02, 03)" value={svc.subtitle || ''} onChange={(v) => handleServiceChange(i, 'subtitle', v)} placeholder="e.g., 01" />
                 </div>
-                <FieldTextarea label="Description" value={svc.description || ''} onChange={(v) => handleServiceChange(i, 'description', v)} rows={3} placeholder="Service description..." />
+                <FieldTextarea label="Service Description" helperText="A brief description of this service" value={svc.description || ''} onChange={(v) => handleServiceChange(i, 'description', v)} rows={3} placeholder="Describe this service..." />
                 <div>
-                  <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">Gradient</label>
+                  <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">Background Style</label>
+                  <p className="font-sans text-[10px] text-warm-gray/40 mb-2 italic">Choose a color style if no image is uploaded</p>
                   <div className="flex flex-wrap gap-2">
                     {gradients.map((g) => (
                       <button
-                        key={g}
+                        key={g.value}
                         type="button"
-                        onClick={() => handleServiceChange(i, 'gradient', g)}
-                        className={`w-12 h-8 rounded bg-gradient-to-br ${g} border-2 transition-colors ${svc.gradient === g ? 'border-magenta' : 'border-transparent hover:border-cream'}`}
-                      />
+                        onClick={() => handleServiceChange(i, 'gradient', g.value)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded border transition-colors ${svc.gradient === g.value ? 'border-magenta bg-magenta/5' : 'border-cream/60 hover:border-cream'}`}
+                      >
+                        <div className={`w-4 h-4 rounded bg-gradient-to-br ${g.value}`} />
+                        <span className="font-sans text-[10px] text-warm-gray/60">{g.label}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
                 <ImageManager
                   label="Service Image"
+                  description={`Photo for ${svc.title || 'this service'}`}
+                  helperText="Upload a stunning image that represents this service"
+                  sectionIndicator={`Services - ${svc.title || 'Item'}`}
                   value={svc.image || { url: '', alt: '' }}
                   onChange={(img) => handleServiceImageChange(i, img)}
                   aspect="aspect-[16/9]"
@@ -120,28 +135,34 @@ export default function AdminServicesPage() {
               </div>
             ))}
             <button type="button" onClick={addService} className="flex items-center gap-2 text-magenta font-sans text-xs hover:text-raspberry transition-colors">
-              <HiPlus className="w-4 h-4" /> Add Service
+              <HiPlus className="w-4 h-4" /> Add Another Service
             </button>
           </div>
-        </Section>
+        </CollapsibleSection>
 
-        {/* Save */}
+        {/* Save Button */}
         <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
           <button type="button" onClick={() => saveConfig()} disabled={saving} className="w-full max-w-md mx-auto px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2">
-            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>) : 'Save All Changes'}
+            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving to database...</>) : dirty ? 'Save Changes' : 'Save All Changes'}
           </button>
+          {lastSavedAt && (
+            <p className="text-center font-sans text-[10px] text-warm-gray/30 mt-2">
+              Last saved: {lastSavedAt.toLocaleTimeString()}
+            </p>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function Section({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+function CollapsibleSection({ title, icon, defaultOpen = false, children }: { title: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="bg-white border border-cream/50 rounded-lg overflow-hidden">
-      <button type="button" onClick={() => setOpen(!open)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-cream/20 transition-colors">
-        <h2 className="font-serif text-lg text-rich-black">{title}</h2>
+      <button type="button" onClick={() => setOpen(!open)} className="w-full px-6 py-4 flex items-center gap-3 hover:bg-cream/20 transition-colors">
+        {icon && <span className="text-magenta/50">{icon}</span>}
+        <h2 className="font-serif text-lg text-rich-black flex-1 text-left">{title}</h2>
         <span className={`w-4 h-4 flex items-center justify-center transition-transform duration-300 ${open ? 'rotate-45' : ''}`}>
           <span className="w-3 h-px bg-warm-gray/40 absolute" />
           <span className="w-px h-3 bg-warm-gray/40 absolute" />
@@ -152,19 +173,21 @@ function Section({ title, defaultOpen = false, children }: { title: string; defa
   );
 }
 
-function FieldInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function FieldInput({ label, helperText, value, onChange, placeholder }: { label: string; helperText?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">{label}</label>
+      <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1">{label}</label>
+      {helperText && <p className="font-sans text-[10px] text-warm-gray/40 mb-1.5 italic">{helperText}</p>}
       <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors" />
     </div>
   );
 }
 
-function FieldTextarea({ label, value, onChange, rows = 4, placeholder }: { label: string; value: string; onChange: (v: string) => void; rows?: number; placeholder?: string }) {
+function FieldTextarea({ label, helperText, value, onChange, rows = 4, placeholder }: { label: string; helperText?: string; value: string; onChange: (v: string) => void; rows?: number; placeholder?: string }) {
   return (
     <div>
-      <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">{label}</label>
+      <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1">{label}</label>
+      {helperText && <p className="font-sans text-[10px] text-warm-gray/40 mb-1.5 italic">{helperText}</p>}
       <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} placeholder={placeholder} className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors resize-none" />
     </div>
   );

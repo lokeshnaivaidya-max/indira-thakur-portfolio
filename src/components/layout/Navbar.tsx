@@ -25,48 +25,57 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          scrolled ? 'bg-ivory/90 backdrop-blur-md' : 'bg-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled ? 'bg-ivory/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.04)]' : 'bg-transparent'
         }`}
       >
-        <div className="flex items-center justify-between px-8 md:px-16 lg:px-24 h-20">
-          <Link href="/" className="group">
-            <span className="font-serif text-lg text-rich-black italic tracking-tight">Indira Thakur</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-8">
-            {links.slice(0, -1).map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="font-sans text-[10px] text-warm-gray/60 uppercase tracking-[0.2em] hover:text-rich-black transition-colors duration-500"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/#contact"
-              className="font-sans text-[10px] text-white uppercase tracking-[0.2em] bg-rich-black px-5 py-2.5 hover:bg-charcoal transition-all duration-500"
-            >
-              Book Now
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-20">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0">
+              <span className="font-serif text-lg text-rich-black italic tracking-tight">Indira Thakur</span>
             </Link>
-          </nav>
 
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="md:hidden w-10 h-10 flex items-center justify-center text-rich-black"
-            aria-label="Open menu"
-          >
-            <span className="sr-only">Menu</span>
-            <div className="w-5 h-3.5 flex flex-col justify-between">
-              <span className="w-full h-px bg-rich-black" />
-              <span className="w-full h-px bg-rich-black" />
-              <span className="w-full h-px bg-rich-black" />
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-10">
+              {links.slice(0, -1).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="font-sans text-[10px] text-warm-gray/60 uppercase tracking-[0.2em] hover:text-rich-black transition-colors duration-500 py-2"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Book Now Button */}
+            <div className="hidden md:flex items-center">
+              <Link
+                href="/#contact"
+                className="inline-flex items-center justify-center px-6 py-2.5 bg-rich-black text-white font-sans text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500"
+              >
+                Book Now
+              </Link>
             </div>
-          </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMenuOpen(true)}
+              className="md:hidden w-10 h-10 flex items-center justify-center text-rich-black"
+              aria-label="Open menu"
+            >
+              <div className="w-5 h-3.5 flex flex-col justify-between">
+                <span className="w-full h-px bg-rich-black" />
+                <span className="w-full h-px bg-rich-black" />
+                <span className="w-full h-px bg-rich-black" />
+              </div>
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -81,7 +90,6 @@ export default function Navbar() {
               className="absolute top-8 right-8 w-10 h-10 flex items-center justify-center text-rich-black"
               aria-label="Close menu"
             >
-              <span className="sr-only">Close</span>
               <div className="w-5 h-5 relative">
                 <span className="absolute top-1/2 left-0 w-full h-px bg-rich-black -translate-y-1/2 rotate-45" />
                 <span className="absolute top-1/2 left-0 w-full h-px bg-rich-black -translate-y-1/2 -rotate-45" />
@@ -106,6 +114,21 @@ export default function Navbar() {
                 </motion.div>
               ))}
             </nav>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: links.length * 0.08, duration: 0.5 }}
+              className="mt-8"
+            >
+              <Link
+                href="/#contact"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex items-center justify-center px-8 py-3 bg-rich-black text-white font-sans text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500"
+              >
+                Book Now
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

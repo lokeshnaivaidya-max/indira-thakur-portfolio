@@ -7,6 +7,8 @@ interface AdminPageHeaderProps {
   description: string;
   error: string | null;
   success: string | null;
+  dirty?: boolean;
+  lastSavedAt?: Date | null;
   onClearMessages: () => void;
 }
 
@@ -15,12 +17,24 @@ export default function AdminPageHeader({
   description,
   error,
   success,
+  dirty,
+  lastSavedAt,
   onClearMessages,
 }: AdminPageHeaderProps) {
   return (
     <div className="mb-8">
-      <h1 className="font-serif text-3xl md:text-4xl text-rich-black mb-2">{title}</h1>
-      <p className="font-sans text-sm text-warm-gray/60">{description}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="font-serif text-3xl md:text-4xl text-rich-black mb-2">{title}</h1>
+          <p className="font-sans text-sm text-warm-gray/60">{description}</p>
+        </div>
+        {dirty && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full font-sans text-[10px] text-amber-700 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+            Unsaved changes
+          </span>
+        )}
+      </div>
 
       {(error || success) && (
         <div

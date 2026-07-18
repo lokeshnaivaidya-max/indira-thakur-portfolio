@@ -15,7 +15,7 @@ export default function PublicLayoutWrapper({ children }: { children: React.Reac
   return (
     <>
       <Navbar />
-      <main className="min-h-screen flex flex-col">{children}</main>
+      <main className="min-h-screen flex flex-col pt-20">{children}</main>
       <Footer />
     </>
   );

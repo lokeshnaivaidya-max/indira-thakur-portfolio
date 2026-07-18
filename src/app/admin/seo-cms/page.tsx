@@ -4,10 +4,10 @@ import { useCMS } from '@/hooks/useCMS';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { useState } from 'react';
-import { HiPlus, HiTrash } from 'react-icons/hi2';
+import { HiPlus, HiTrash, HiGlobeAlt } from 'react-icons/hi2';
 
 export default function AdminSEOPage() {
-  const { config, loading, saving, error, success, updateSection, saveConfig, clearMessages } = useCMS();
+  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages } = useCMS();
 
   if (loading) {
     return (
@@ -44,16 +44,19 @@ export default function AdminSEOPage() {
         description="Manage meta tags, descriptions, and social sharing"
         error={error}
         success={success}
+        dirty={dirty}
+        lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
-        <Section title="Meta Tags" defaultOpen>
-          <FieldInput label="Page Title" value={seo.title || ''} onChange={(v) => updateSection('seo', { title: v })} placeholder="Indira Thakur Photography" />
-          <FieldTextarea label="Meta Description" value={seo.description || ''} onChange={(v) => updateSection('seo', { description: v })} rows={3} placeholder="SEO description..." />
+        <Section title="Meta Tags" defaultOpen icon={<HiGlobeAlt className="w-5 h-5" />}>
+          <FieldInput label="Page Title" value={seo.title || ''} onChange={(v) => updateSection('seo', { title: v })} placeholder="Indira Thakur Photography" helperText="The title that appears in browser tabs and Google search results" />
+          <FieldTextarea label="Meta Description" value={seo.description || ''} onChange={(v) => updateSection('seo', { description: v })} rows={3} placeholder="SEO description..." helperText="A brief description shown in search engine results (150-160 characters recommended)" />
         </Section>
 
-        <Section title="Keywords">
+        <Section title="Keywords" icon={<HiGlobeAlt className="w-5 h-5" />}>
+          <p className="font-sans text-[10px] text-warm-gray/40 mb-2">Words people might search to find your photography business</p>
           <div className="flex flex-wrap gap-2 mb-3">
             {(seo.keywords || []).map((kw: string, i: number) => (
               <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 bg-cream/50 border border-cream/60 rounded-full font-sans text-xs text-rich-black">
@@ -68,7 +71,7 @@ export default function AdminSEOPage() {
           </div>
         </Section>
 
-        <Section title="Open Graph Image">
+        <Section title="Open Graph Image" icon={<HiGlobeAlt className="w-5 h-5" />}>
           <ImageManager
             label="OG Image"
             description="Image shown when shared on social media"
@@ -76,25 +79,28 @@ export default function AdminSEOPage() {
             onChange={(img) => updateSection('seo', { ogImage: img })}
             aspect="aspect-[1200/630]"
             folder="seo"
+            sectionIndicator="SEO"
+            helperText="The image shown when your website is shared on social media (1200x630 pixels recommended)"
           />
         </Section>
 
         <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
           <button type="button" onClick={() => saveConfig()} disabled={saving} className="w-full max-w-md mx-auto px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2">
-            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>) : 'Save All Changes'}
+            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving to database...</>) : dirty ? 'Save Changes' : 'Save All Changes'}
           </button>
+          {lastSavedAt && <p className="text-center font-sans text-[10px] text-warm-gray/30 mt-2">Last saved: {lastSavedAt.toLocaleTimeString()}</p>}
         </div>
       </div>
     </div>
   );
 }
 
-function Section({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+function Section({ title, defaultOpen = false, icon, children }: { title: string; defaultOpen?: boolean; icon?: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="bg-white border border-cream/50 rounded-lg overflow-hidden">
       <button type="button" onClick={() => setOpen(!open)} className="w-full px-6 py-4 flex items-center justify-between hover:bg-cream/20 transition-colors">
-        <h2 className="font-serif text-lg text-rich-black">{title}</h2>
+        <h2 className="font-serif text-lg text-rich-black flex items-center gap-2">{icon}{title}</h2>
         <span className={`w-4 h-4 flex items-center justify-center transition-transform duration-300 ${open ? 'rotate-45' : ''}`}>
           <span className="w-3 h-px bg-warm-gray/40 absolute" />
           <span className="w-px h-3 bg-warm-gray/40 absolute" />
@@ -105,20 +111,22 @@ function Section({ title, defaultOpen = false, children }: { title: string; defa
   );
 }
 
-function FieldInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function FieldInput({ label, value, onChange, placeholder, helperText }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; helperText?: string }) {
   return (
     <div>
       <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">{label}</label>
       <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors" />
+      {helperText && <p className="font-sans text-[10px] text-warm-gray/40 mt-1">{helperText}</p>}
     </div>
   );
 }
 
-function FieldTextarea({ label, value, onChange, rows = 4, placeholder }: { label: string; value: string; onChange: (v: string) => void; rows?: number; placeholder?: string }) {
+function FieldTextarea({ label, value, onChange, rows = 4, placeholder, helperText }: { label: string; value: string; onChange: (v: string) => void; rows?: number; placeholder?: string; helperText?: string }) {
   return (
     <div>
       <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1.5">{label}</label>
       <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} placeholder={placeholder} className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors resize-none" />
+      {helperText && <p className="font-sans text-[10px] text-warm-gray/40 mt-1">{helperText}</p>}
     </div>
   );
 }

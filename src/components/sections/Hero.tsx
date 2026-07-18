@@ -23,7 +23,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-rich-black">
+    <section className="relative h-[calc(100vh-5rem)] w-full overflow-hidden bg-rich-black -mt-20">
       <div className="absolute inset-0">
         {hero.images?.background?.url ? (
           <img

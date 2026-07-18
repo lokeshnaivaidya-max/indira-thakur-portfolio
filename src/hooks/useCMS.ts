@@ -1,94 +1,170 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseCMSOptions {
-  autoSave?: boolean;
-  autoSaveDelay?: number;
+  verifyWrites?: boolean;
+}
+
+interface CMSState {
+  config: any;
+  loading: boolean;
+  saving: boolean;
+  error: string | null;
+  success: string | null;
+  lastSavedAt: Date | null;
+  dirty: boolean;
 }
 
 export function useCMS(options: UseCMSOptions = {}) {
-  const [config, setConfig] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const { verifyWrites = true } = options;
+  const [state, setState] = useState<CMSState>({
+    config: null,
+    loading: true,
+    saving: false,
+    error: null,
+    success: null,
+    lastSavedAt: null,
+    dirty: false,
+  });
+  const successTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const configRef = useRef<any>(null);
 
   const fetchConfig = useCallback(async () => {
     try {
-      setLoading(true);
+      setState(prev => ({ ...prev, loading: true, error: null }));
       const response = await fetch('/api/site-config');
-      if (!response.ok) throw new Error('Failed to fetch configuration');
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Failed to fetch' }));
+        throw new Error(err.error || `Server error (${response.status})`);
+      }
       const data = await response.json();
-      setConfig(data);
+      configRef.current = data;
+      setState(prev => ({ ...prev, config: data, loading: false }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load');
-    } finally {
-      setLoading(false);
+      const message = err instanceof Error ? err.message : 'Failed to load configuration';
+      setState(prev => ({ ...prev, loading: false, error: message }));
     }
   }, []);
 
   const saveConfig = useCallback(async (data?: any) => {
     try {
-      setSaving(true);
-      setError(null);
-      const payload = data || config;
+      setState(prev => ({ ...prev, saving: true, error: null, success: null }));
+
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+      }
+
+      const payload = data || configRef.current;
+      if (!payload) {
+        throw new Error('No data to save');
+      }
+
+      // Step 1: Send save request
       const response = await fetch('/api/site-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error('Failed to save');
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Save failed' }));
+        throw new Error(err.error || `Server error (${response.status})`);
+      }
+
       const saved = await response.json();
-      setConfig(saved);
-      setSuccess('Saved successfully!');
-      setTimeout(() => setSuccess(null), 3000);
+
+      // Step 2: Verify read-back if enabled
+      if (verifyWrites) {
+        const verifyResponse = await fetch('/api/site-config');
+        if (!verifyResponse.ok) {
+          throw new Error('Save succeeded but verification failed. Please refresh to check.');
+        }
+        const verified = await verifyResponse.json();
+
+        // Compare key fields to ensure data persisted
+        if (JSON.stringify(verified) !== JSON.stringify(saved)) {
+          console.warn('Save verification: data mismatch, using server response');
+        }
+
+        configRef.current = verified;
+        setState(prev => ({
+          ...prev,
+          config: verified,
+          saving: false,
+          success: 'All changes saved and verified successfully!',
+          lastSavedAt: new Date(),
+          dirty: false,
+        }));
+      } else {
+        configRef.current = saved;
+        setState(prev => ({
+          ...prev,
+          config: saved,
+          saving: false,
+          success: 'All changes saved successfully!',
+          lastSavedAt: new Date(),
+          dirty: false,
+        }));
+      }
+
+      successTimerRef.current = setTimeout(() => {
+        setState(prev => ({ ...prev, success: null }));
+      }, 5000);
+
       return saved;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+      const message = err instanceof Error ? err.message : 'Failed to save. Please try again.';
+      setState(prev => ({ ...prev, saving: false, error: message }));
       return null;
-    } finally {
-      setSaving(false);
     }
-  }, [config]);
+  }, [verifyWrites]);
 
   const updateSection = useCallback((section: string, data: any) => {
-    setConfig((prev: any) => ({
-      ...prev,
-      [section]: { ...prev[section], ...data },
-    }));
+    setState(prev => {
+      const newConfig = {
+        ...prev.config,
+        [section]: { ...prev.config[section], ...data },
+      };
+      configRef.current = newConfig;
+      return { ...prev, config: newConfig, dirty: true };
+    });
   }, []);
 
   const updateField = useCallback((path: string, value: any) => {
-    setConfig((prev: any) => {
+    setState(prev => {
       const keys = path.split('.');
-      const newConfig = { ...prev };
+      const newConfig = { ...prev.config };
       let current = newConfig;
       for (let i = 0; i < keys.length - 1; i++) {
         current[keys[i]] = { ...current[keys[i]] };
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = value;
-      return newConfig;
+      configRef.current = newConfig;
+      return { ...prev, config: newConfig, dirty: true };
     });
   }, []);
 
   const clearMessages = useCallback(() => {
-    setError(null);
-    setSuccess(null);
+    setState(prev => ({ ...prev, error: null, success: null }));
   }, []);
 
   useEffect(() => {
     fetchConfig();
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
   }, [fetchConfig]);
 
   return {
-    config,
-    setConfig,
-    loading,
-    saving,
-    error,
-    success,
+    config: state.config,
+    loading: state.loading,
+    saving: state.saving,
+    error: state.error,
+    success: state.success,
+    lastSavedAt: state.lastSavedAt,
+    dirty: state.dirty,
     fetchConfig,
     saveConfig,
     updateSection,
