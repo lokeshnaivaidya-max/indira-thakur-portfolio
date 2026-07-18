@@ -1,27 +1,47 @@
 import { NextResponse } from 'next/server';
-
-const galleryItems = [
-  { id: '1', src: '', alt: 'Newborn Session', category: 'Newborn', width: 800, height: 1000, featured: true, order: 1 },
-  { id: '2', src: '', alt: 'Maternity Glow', category: 'Maternity', width: 800, height: 800, featured: true, order: 2 },
-  { id: '3', src: '', alt: 'Portrait Beauty', category: 'Portrait', width: 1200, height: 800, featured: true, order: 3 },
-  { id: '4', src: '', alt: 'Family Joy', category: 'Events', width: 800, height: 1000, featured: false, order: 4 },
-];
+import { connectToDatabase } from '@/lib/mongodb';
+import Gallery from '@/models/Gallery';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
-  return NextResponse.json(galleryItems);
+  try {
+    await connectToDatabase();
+    const items = await Gallery.find({}).sort({ order: 1, createdAt: -1 });
+    return NextResponse.json(items);
+  } catch (error) {
+    console.error('Gallery GET error:', error);
+    return NextResponse.json({ error: 'Failed to fetch gallery images' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
+  const user = requireAuth(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   try {
+    await connectToDatabase();
     const body = await request.json();
-    const newItem = {
-      id: String(Date.now()),
-      ...body,
-      createdAt: new Date().toISOString(),
-    };
-    galleryItems.push(newItem);
-    return NextResponse.json(newItem, { status: 201 });
-  } catch {
+
+    if (!body.src) {
+      return NextResponse.json({ error: 'Image is required' }, { status: 400 });
+    }
+
+    const item = await Gallery.create({
+      src: body.src,
+      publicId: body.publicId || '',
+      alt: body.alt || body.title || '',
+      title: body.title || '',
+      description: body.description || '',
+      width: body.width || 800,
+      height: body.height || 1000,
+      category: body.category || 'Portrait',
+      featured: !!body.featured,
+      order: body.order ?? 0,
+    });
+
+    return NextResponse.json(item, { status: 201 });
+  } catch (error) {
+    console.error('Gallery POST error:', error);
     return NextResponse.json({ error: 'Failed to create gallery item' }, { status: 500 });
   }
 }
