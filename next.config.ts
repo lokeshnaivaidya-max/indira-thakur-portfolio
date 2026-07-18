@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['mongoose'],
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion'],
   },

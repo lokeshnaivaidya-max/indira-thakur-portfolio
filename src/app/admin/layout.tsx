@@ -3,20 +3,52 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt } from 'react-icons/hi2';
 
-const sidebarLinks = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: HiHome },
-  { label: 'Gallery', href: '/admin/gallery', icon: HiPhoto },
-  { label: 'Services', href: '/admin/services', icon: HiCommandLine },
-  { label: 'Testimonials', href: '/admin/testimonials', icon: HiUserGroup },
-  { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
-  { label: 'FAQ', href: '/admin/faq', icon: HiQuestionMarkCircle },
-  { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
-  { label: 'Contacts', href: '/admin/contact', icon: HiEnvelope },
-  { label: 'About', href: '/admin/about', icon: HiHeart },
-  { label: 'Users', href: '/admin/users', icon: HiUsers },
-  { label: 'SEO', href: '/admin/seo', icon: HiCog6Tooth },
+interface SidebarGroup {
+  label: string;
+  links: { label: string; href: string; icon: any }[];
+}
+
+const sidebarGroups: SidebarGroup[] = [
+  {
+    label: 'Overview',
+    links: [
+      { label: 'Dashboard', href: '/admin/dashboard', icon: HiHome },
+    ],
+  },
+  {
+    label: 'Website Content',
+    links: [
+      { label: 'Home', href: '/admin/home', icon: HiHome },
+      { label: 'About', href: '/admin/about', icon: HiHeart },
+      { label: 'Services', href: '/admin/services-cms', icon: HiCommandLine },
+      { label: 'Gallery Preview', href: '/admin/gallery-cms', icon: HiPhoto },
+      { label: 'Testimonials', href: '/admin/testimonials-cms', icon: HiUserGroup },
+      { label: 'FAQ', href: '/admin/faq-cms', icon: HiQuestionMarkCircle },
+      { label: 'Contact', href: '/admin/contact-cms', icon: HiEnvelope },
+      { label: 'Footer', href: '/admin/footer-cms', icon: HiDocumentText },
+      { label: 'SEO', href: '/admin/seo-cms', icon: HiGlobeAlt },
+    ],
+  },
+  {
+    label: 'Collections',
+    links: [
+      { label: 'Gallery Images', href: '/admin/gallery', icon: HiPhoto },
+      { label: 'Services (DB)', href: '/admin/services', icon: HiCommandLine },
+      { label: 'Testimonials (DB)', href: '/admin/testimonials', icon: HiUserGroup },
+      { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
+    ],
+  },
+  {
+    label: 'Operations',
+    links: [
+      { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
+      { label: 'Contacts (DB)', href: '/admin/contact', icon: HiEnvelope },
+      { label: 'Users', href: '/admin/users', icon: HiUsers },
+      { label: 'SEO (Legacy)', href: '/admin/seo', icon: HiCog6Tooth },
+    ],
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -90,27 +122,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-4 space-y-1" role="navigation">
-            {sidebarLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-sans text-sm transition-all duration-200 ${
-                    isActive
-                      ? 'bg-rich-black text-white'
-                      : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                  title={sidebarCollapsed ? link.label : undefined}
-                >
-                  <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                  {!sidebarCollapsed && <span className="truncate">{link.label}</span>}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 overflow-y-auto py-4 space-y-4" role="navigation">
+            {sidebarGroups.map((group) => (
+              <div key={group.label}>
+                {!sidebarCollapsed && (
+                  <p className="px-4 mb-1 font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em]">
+                    {group.label}
+                  </p>
+                )}
+                <div className="space-y-0.5">
+                  {group.links.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`flex items-center gap-3 px-4 py-2 rounded-lg font-sans text-sm transition-all duration-200 ${
+                          isActive
+                            ? 'bg-rich-black text-white'
+                            : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
+                        }`}
+                        aria-current={isActive ? 'page' : undefined}
+                        title={sidebarCollapsed ? link.label : undefined}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                        {!sidebarCollapsed && <span className="truncate">{link.label}</span>}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* Bottom */}
