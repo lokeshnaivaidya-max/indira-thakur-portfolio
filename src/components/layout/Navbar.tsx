@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 const allLinks = [
   { href: '/', label: 'Home' },
@@ -22,6 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { config } = useSiteConfig();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -40,7 +42,15 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <span className="font-serif text-lg text-rich-black italic tracking-tight">Indira Thakur</span>
+              {(config as any)?.brand?.logo?.url ? (
+                <img
+                  src={(config as any).brand.logo.url}
+                  alt={(config as any).brand.logo.alt || 'Indira Thakur Photography'}
+                  className="h-8 w-auto object-contain"
+                />
+              ) : (
+                <span className="font-serif text-lg text-rich-black italic tracking-tight">Indira Thakur</span>
+              )}
             </Link>
 
             {/* Desktop Navigation */}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront, HiCog6Tooth } from 'react-icons/hi2';
 import ToastContainer from '@/components/admin/Toast';
 
 interface SidebarGroup {
@@ -49,6 +49,7 @@ const sidebarGroups: SidebarGroup[] = [
       { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
       { label: 'Contacts (DB)', href: '/admin/contact', icon: HiEnvelope },
       { label: 'Users', href: '/admin/users', icon: HiUsers },
+      { label: 'Account', href: '/admin/account', icon: HiCog6Tooth },
     ],
   },
 ];
@@ -100,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {!sidebarCollapsed && (
                   <span>Admin <span className="text-magenta/60">Panel</span></span>
                 )}
-                {sidebarCollapsed && <span className="text-magenta/60">AP</span>}
+                {sidebarCollapsed && <span className="font-serif text-lg text-magenta/60 italic" title="Indira Thakur Photography">IT</span>}
               </Link>
               {!sidebarCollapsed && (
                 <button
@@ -112,15 +113,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </button>
               )}
             </div>
-            {!sidebarCollapsed && (
-              <button
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors flex items-center justify-center gap-2"
-              >
-                <HiBars3 className="w-4 h-4" />
-                <span>Collapse</span>
-              </button>
-            )}
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className={`mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors flex items-center justify-center gap-2 ${sidebarCollapsed ? 'px-0' : ''}`}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <HiBars3 className="w-4 h-4" />
+              {!sidebarCollapsed && <span>Collapse</span>}
+            </button>
           </div>
 
           {/* Navigation */}

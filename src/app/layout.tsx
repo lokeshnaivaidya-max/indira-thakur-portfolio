@@ -3,6 +3,7 @@ import './globals.css';
 import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import LoadingScreen from '@/components/premium/LoadingScreen';
+import DynamicHead from '@/components/layout/DynamicHead';
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
   <body className="bg-ivory text-rich-black font-sans antialiased">
     <ThemeProvider>
+      <DynamicHead />
       <LoadingScreen />
       <div className="grain-overlay" />
       <PublicLayoutWrapper>{children}</PublicLayoutWrapper>

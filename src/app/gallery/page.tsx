@@ -289,9 +289,28 @@ export default function GalleryPage() {
         </div>
 
         {loading ? (
-          <div className="container-editorial pt-20">
-            <div className="flex justify-center">
-              <div className="inline-block w-5 h-5 border border-warm-gray/20 border-t-magenta rounded-full animate-spin" />
+          <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+            {/* Hero skeleton */}
+            <div className="mb-16">
+              <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-cream/40 animate-pulse" style={{ aspectRatio: '16/9' }} />
+            </div>
+            {/* Grid skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-4 md:space-y-6">
+                <div className="bg-cream/40 animate-pulse rounded-2xl" style={{ aspectRatio: '3/4' }} />
+              </div>
+              <div className="space-y-4 md:space-y-6">
+                <div className="bg-cream/40 animate-pulse rounded-[2rem]" style={{ aspectRatio: '16/10' }} />
+                <div className="bg-cream/40 animate-pulse rounded-xl" style={{ aspectRatio: '16/10' }} />
+              </div>
+            </div>
+            {/* Circle skeleton */}
+            <div className="py-16 md:py-24">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto">
+                {[0,1,2,3].map(i => (
+                  <div key={i} className="bg-cream/40 animate-pulse rounded-full" style={{ aspectRatio: '1/1' }} />
+                ))}
+              </div>
             </div>
           </div>
         ) : filtered.length === 0 ? (
@@ -301,7 +320,7 @@ export default function GalleryPage() {
         ) : (
           <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto space-y-0">
 
-            {/* Section 1: Hero Statement — natural aspect ratio */}
+            {/* Section 1: Hero Exhibition — animated background photos behind center image */}
             {sections.hero.length > 0 && (
               <section className="py-10 md:py-16">
                 <motion.div
@@ -310,22 +329,61 @@ export default function GalleryPage() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: '-40px' }}
-                  className="cursor-pointer group max-w-5xl mx-auto"
+                  className="cursor-pointer group relative max-w-5xl mx-auto"
                   onClick={() => openLightbox(0)}
                 >
-                  <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem]">
-                    <PolaroidImage
-                      src={sections.hero[0].src}
-                      alt={sections.hero[0].alt || sections.hero[0].title || ''}
-                      width={sections.hero[0].width}
-                      height={sections.hero[0].height}
-                      className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-12">
+                  <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-rich-black/5" style={{ aspectRatio: '16/10' }}>
+                    {/* Animated background photos */}
+                    {filtered.slice(1, 4).map((bgImg, i) => (
+                      <div
+                        key={bgImg.id}
+                        className="absolute inset-0"
+                        style={{
+                          animation: `heroBgFade ${6 + i * 2}s ease-in-out ${i * 2}s infinite`,
+                        }}
+                      >
+                        <img
+                          src={bgImg.src}
+                          alt=""
+                          className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm scale-110"
+                          style={{
+                            animation: `heroBgDrift ${8 + i * 3}s ease-in-out ${i * 1.5}s infinite alternate`,
+                          }}
+                        />
+                      </div>
+                    ))}
+                    {/* Dark overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-rich-black/30 via-rich-black/10 to-rich-black/40" />
+                    {/* Center featured image */}
+                    <div className="absolute inset-0 flex items-center justify-center p-8 md:p-16">
+                      <PolaroidImage
+                        src={sections.hero[0].src}
+                        alt={sections.hero[0].alt || sections.hero[0].title || ''}
+                        width={sections.hero[0].width}
+                        height={sections.hero[0].height}
+                        objectFit="contain"
+                        bgColor="bg-transparent"
+                        className="transition-transform duration-700 ease-out group-hover:scale-[1.02] relative z-10 drop-shadow-2xl"
+                        containerClassName="max-w-full max-h-full"
+                      />
+                    </div>
+                    {/* Hover indicator */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8 z-20">
                       <span className="font-sans text-[11px] uppercase tracking-[0.3em] text-white/90">View</span>
                     </div>
                   </div>
                 </motion.div>
+                {/* Add the keyframes via a style tag */}
+                <style dangerouslySetInnerHTML={{ __html: `
+                  @keyframes heroBgFade {
+                    0%, 100% { opacity: 0; }
+                    20%, 80% { opacity: 1; }
+                  }
+                  @keyframes heroBgDrift {
+                    0% { transform: scale(1.1) translateX(-2%); }
+                    100% { transform: scale(1.15) translateX(2%); }
+                  }
+                `}} />
               </section>
             )}
 

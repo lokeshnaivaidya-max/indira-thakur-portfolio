@@ -47,21 +47,32 @@ export default function AdminDashboardPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [configRes, galleryRes, sectionsRes] = await Promise.all([
+      const [configRes, galleryRes, sectionsRes, faqsRes, testimonialsRes] = await Promise.all([
         fetch('/api/site-config'),
         fetch('/api/gallery-images'),
         fetch('/api/dynamic-sections?pageKey=home'),
+        fetch('/api/faqs'),
+        fetch('/api/testimonials'),
       ]);
 
       const config: SiteConfigData = configRes.ok ? await configRes.json() : {};
       const gallery = galleryRes.ok ? await galleryRes.json() : [];
       const sections = sectionsRes.ok ? await sectionsRes.json() : {};
+      const faqsList = faqsRes.ok ? await faqsRes.json() : [];
+      const testimonialsList = testimonialsRes.ok ? await testimonialsRes.json() : [];
+
+      const faqCount = Array.isArray(faqsList)
+        ? faqsList.length
+        : (config.faq?.faqs?.length ?? 0);
+      const testimonialCount = Array.isArray(testimonialsList)
+        ? testimonialsList.length
+        : (config.testimonials?.testimonials?.length ?? 0);
 
       setStats({
         galleryImages: Array.isArray(gallery) ? gallery.length : 0,
         services: config.services?.services?.length ?? 0,
-        testimonials: config.testimonials?.testimonials?.length ?? 0,
-        faqs: config.faq?.faqs?.length ?? 0,
+        testimonials: testimonialCount,
+        faqs: faqCount,
         dynamicSections: Array.isArray(sections.sections) ? sections.sections.length : 0,
         lastUpdated: config.updatedAt ?? '',
       });
