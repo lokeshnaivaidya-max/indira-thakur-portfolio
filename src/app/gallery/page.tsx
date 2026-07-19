@@ -132,13 +132,11 @@ function GalleryImageCard({
   img,
   index,
   rounded = 'rounded-xl',
-  aspectClassName = 'aspect-[4/5]',
   onClick,
 }: {
   img: GalleryItem;
   index: number;
   rounded?: string;
-  aspectClassName?: string;
   onClick: () => void;
 }) {
   return (
@@ -151,7 +149,7 @@ function GalleryImageCard({
       onClick={onClick}
       className="cursor-pointer group"
     >
-      <div className={`relative overflow-hidden ${rounded} ${aspectClassName}`}>
+      <div className={`relative overflow-hidden ${rounded}`}>
         <PolaroidImage
           src={img.src}
           alt={img.alt || img.title || ''}
@@ -303,7 +301,7 @@ export default function GalleryPage() {
         ) : (
           <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto space-y-0">
 
-            {/* Section 1: Hero Statement */}
+            {/* Section 1: Hero Statement — natural aspect ratio */}
             {sections.hero.length > 0 && (
               <section className="py-10 md:py-16">
                 <motion.div
@@ -312,10 +310,10 @@ export default function GalleryPage() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: '-40px' }}
-                  className="cursor-pointer group"
+                  className="cursor-pointer group max-w-5xl mx-auto"
                   onClick={() => openLightbox(0)}
                 >
-                  <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] aspect-[16/9] md:aspect-[21/9]">
+                  <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem]">
                     <PolaroidImage
                       src={sections.hero[0].src}
                       alt={sections.hero[0].alt || sections.hero[0].title || ''}
@@ -331,44 +329,41 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 2: Editorial Grid */}
+            {/* Section 2: Editorial Grid — each image at its natural aspect ratio */}
             {sections.editorial.length >= 2 && (
               <section className="py-16 md:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  <div className="md:row-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
+                  <div>
                     <GalleryImageCard
                       img={sections.editorial[0]}
                       index={0}
                       rounded="rounded-2xl"
-                      aspectClassName="aspect-[3/4] md:h-full"
                       onClick={() => openLightbox(filtered.indexOf(sections.editorial[0]))}
                     />
                   </div>
-                  <div>
-                    <GalleryImageCard
-                      img={sections.editorial[1]}
-                      index={1}
-                      rounded="rounded-[2rem]"
-                      aspectClassName="aspect-[16/10]"
-                      onClick={() => openLightbox(filtered.indexOf(sections.editorial[1]))}
-                    />
-                  </div>
-                  {sections.editorial[2] && (
-                    <div>
+                  <div className="space-y-4 md:space-y-6">
+                    {sections.editorial[1] && (
+                      <GalleryImageCard
+                        img={sections.editorial[1]}
+                        index={1}
+                        rounded="rounded-[2rem]"
+                        onClick={() => openLightbox(filtered.indexOf(sections.editorial[1]))}
+                      />
+                    )}
+                    {sections.editorial[2] && (
                       <GalleryImageCard
                         img={sections.editorial[2]}
                         index={2}
                         rounded="rounded-xl"
-                        aspectClassName="aspect-[16/10]"
                         onClick={() => openLightbox(filtered.indexOf(sections.editorial[2]))}
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </section>
             )}
 
-            {/* Section 3: Circular Collection */}
+            {/* Section 3: Circular Collection — image contained inside circle */}
             {sections.circular.length > 0 && (
               <section className="py-16 md:py-24 bg-cream/20">
                 <div className="py-12 md:py-20">
@@ -384,7 +379,9 @@ export default function GalleryPage() {
                         onClick={() => openLightbox(filtered.indexOf(img))}
                         className="cursor-pointer group"
                       >
-                        <div className="relative overflow-hidden rounded-full aspect-square shadow-lg group-hover:shadow-xl transition-shadow duration-500">
+                        <div className="relative overflow-hidden rounded-full shadow-lg group-hover:shadow-xl transition-shadow duration-500"
+                          style={{ aspectRatio: '1 / 1' }}
+                        >
                           <PolaroidImage
                             src={img.src}
                             alt={img.alt || img.title || ''}
@@ -401,16 +398,15 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 4: Magazine Spread */}
+            {/* Section 4: Magazine Spread — natural aspect ratios */}
             {sections.magazine.length >= 3 && (
               <section className="py-16 md:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-4 md:gap-6 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
                   <div className="md:mt-12">
                     <GalleryImageCard
                       img={sections.magazine[0]}
                       index={0}
                       rounded="rounded-2xl"
-                      aspectClassName="aspect-[3/4]"
                       onClick={() => openLightbox(filtered.indexOf(sections.magazine[0]))}
                     />
                   </div>
@@ -419,7 +415,6 @@ export default function GalleryPage() {
                       img={sections.magazine[1]}
                       index={1}
                       rounded="rounded-[2rem]"
-                      aspectClassName="aspect-[4/3]"
                       onClick={() => openLightbox(filtered.indexOf(sections.magazine[1]))}
                     />
                   </div>
@@ -428,7 +423,6 @@ export default function GalleryPage() {
                       img={sections.magazine[2]}
                       index={2}
                       rounded="rounded-xl"
-                      aspectClassName="aspect-[3/4]"
                       onClick={() => openLightbox(filtered.indexOf(sections.magazine[2]))}
                     />
                   </div>
@@ -436,7 +430,7 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 5: Full Bleed */}
+            {/* Section 5: Full Bleed — decorative, cover acceptable */}
             {sections.fullBleed.length > 0 && (
               <section className="py-16 md:py-24 bg-ivory">
                 <div className="py-12 md:py-20">
@@ -447,15 +441,14 @@ export default function GalleryPage() {
                     whileInView="visible"
                     viewport={{ once: true, margin: '-40px' }}
                     onClick={() => openLightbox(filtered.indexOf(sections.fullBleed[0]))}
-                    className="cursor-pointer group relative"
+                    className="cursor-pointer group relative max-w-6xl mx-auto"
                   >
-                    <div className="relative overflow-hidden rounded-none md:rounded-2xl aspect-[21/9] md:aspect-[3/1]">
+                    <div className="relative overflow-hidden rounded-none md:rounded-2xl">
                       <PolaroidImage
                         src={sections.fullBleed[0].src}
                         alt={sections.fullBleed[0].alt || sections.fullBleed[0].title || ''}
                         width={sections.fullBleed[0].width}
                         height={sections.fullBleed[0].height}
-                        objectFit="cover"
                         className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                       />
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -469,33 +462,20 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 6: Mixed Grid */}
+            {/* Section 6: Mixed Grid — natural aspect ratios in masonry-like columns */}
             {sections.mixed.length > 0 && (
               <section className="py-16 md:py-24">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div className="columns-2 md:columns-4 gap-3 md:gap-4 space-y-3 md:space-y-4">
                   {sections.mixed.map((img, i) => {
-                    const isPortrait = img.aspectRatio < 0.85;
-                    const isLandscape = img.aspectRatio > 1.15;
                     const roundedOptions = ['rounded-none', 'rounded-xl', 'rounded-2xl', 'rounded-[2rem]'];
                     const rounded = roundedOptions[i % roundedOptions.length];
-                    const spanClass = isPortrait
-                      ? 'col-span-1 row-span-2'
-                      : isLandscape
-                        ? 'col-span-2 row-span-1'
-                        : 'col-span-1 row-span-1';
-                    const aspectClass = isPortrait
-                      ? 'aspect-[3/4]'
-                      : isLandscape
-                        ? 'aspect-[16/9]'
-                        : 'aspect-square';
 
                     return (
-                      <div key={img.id} className={spanClass}>
+                      <div key={img.id} className="break-inside-avoid">
                         <GalleryImageCard
                           img={img}
                           index={i}
                           rounded={rounded}
-                          aspectClassName={`h-full ${aspectClass}`}
                           onClick={() => openLightbox(filtered.indexOf(img))}
                         />
                       </div>
@@ -505,7 +485,7 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 7: Finale */}
+            {/* Section 7: Finale — natural aspect ratios */}
             {sections.finale.length >= 2 && (
               <section className="py-16 md:py-24">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
@@ -515,7 +495,6 @@ export default function GalleryPage() {
                       img={img}
                       index={i}
                       rounded="rounded-2xl"
-                      aspectClassName="aspect-[4/5]"
                       onClick={() => openLightbox(filtered.indexOf(img))}
                     />
                   ))}
@@ -557,7 +536,7 @@ export default function GalleryPage() {
               <HiArrowRight className="w-5 h-5" />
             </button>
 
-            <div className="max-w-5xl w-full px-6 md:px-12">
+            <div className="max-w-6xl w-full px-6 md:px-12">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentImage.id}
@@ -569,9 +548,10 @@ export default function GalleryPage() {
                   <PolaroidImage
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    fill
-                    className="object-contain"
-                    containerClassName="relative aspect-[3/2] bg-rich-black"
+                    width={currentImage.width}
+                    height={currentImage.height}
+                    containerClassName="max-h-[80vh] w-full"
+                    className="!w-full !h-full"
                   />
                 </motion.div>
               </AnimatePresence>

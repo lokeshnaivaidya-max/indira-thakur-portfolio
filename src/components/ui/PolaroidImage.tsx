@@ -11,7 +11,7 @@ interface PolaroidImageProps {
   height?: number;
   className?: string;
   containerClassName?: string;
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none';
+  objectFit?: 'cover' | 'contain';
   objectPosition?: 'top' | 'center' | 'bottom' | 'left' | 'right' | string;
   priority?: boolean;
   blurDataURL?: string;
@@ -25,14 +25,6 @@ interface PolaroidImageProps {
   style?: React.CSSProperties;
   bgColor?: string;
 }
-
-const POSITION_MAP: Record<string, string> = {
-  top: 'object-top',
-  center: 'object-center',
-  bottom: 'object-bottom',
-  left: 'object-left',
-  right: 'object-right',
-};
 
 const DEFAULT_BLUR = getBlurDataURL('#222222');
 
@@ -63,15 +55,7 @@ export function PolaroidImage({
     setHasError(true);
   }, []);
 
-  const resolvedPosition = POSITION_MAP[objectPosition] ?? '';
   const hasCaption = showCaption && caption;
-
-  const getObjectFitClass = () => {
-    if (fill) {
-      return objectFit === 'cover' ? 'object-cover' : 'object-contain';
-    }
-    return objectFit === 'cover' ? 'object-cover' : 'object-contain';
-  };
 
   if (hasError) {
     return (
@@ -80,7 +64,7 @@ export function PolaroidImage({
           'flex items-center justify-center bg-charcoal text-warm-gray',
           containerClassName
         )}
-        style={!fill ? { width, height } : undefined}
+        style={!fill ? { aspectRatio: `${width} / ${height}` } : undefined}
       >
         <svg
           className="h-12 w-12 opacity-40"
@@ -103,9 +87,7 @@ export function PolaroidImage({
     <Image
       src={src}
       alt={alt}
-      width={fill ? undefined : width}
-      height={fill ? undefined : height}
-      fill={fill}
+      fill
       sizes={sizes}
       quality={quality}
       unoptimized={unoptimized}
@@ -115,10 +97,9 @@ export function PolaroidImage({
       blurDataURL={blurDataURL ?? DEFAULT_BLUR}
       onError={handleError}
       className={cn(
-        fill && 'absolute inset-0',
-        !fill && 'w-full h-full',
-        getObjectFitClass(),
-        resolvedPosition,
+        'absolute inset-0',
+        objectFit === 'cover' ? 'object-cover' : 'object-contain',
+        objectPosition && `object-${objectPosition}`,
         className
       )}
       style={style}
@@ -133,7 +114,11 @@ export function PolaroidImage({
           bgColor,
           containerClassName
         )}
-        style={!fill ? { width, height } : undefined}
+        style={
+          !fill
+            ? { aspectRatio: `${width} / ${height}`, ...style }
+            : style
+        }
         onClick={onClick}
       >
         {img}
@@ -149,10 +134,10 @@ export function PolaroidImage({
         onClick && 'cursor-pointer',
         containerClassName
       )}
-      style={!fill ? { width: undefined } : undefined}
+      style={!fill ? { aspectRatio: `${width} / ${height}` } : undefined}
       onClick={onClick}
     >
-      <div className="relative overflow-hidden" style={!fill ? { width, height } : undefined}>
+      <div className="relative w-full h-full">
         {img}
       </div>
       <figcaption className="px-3 py-2 bg-ivory border-t border-cream">

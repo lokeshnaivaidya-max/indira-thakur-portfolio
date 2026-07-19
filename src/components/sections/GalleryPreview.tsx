@@ -58,19 +58,15 @@ export default function GalleryPreview() {
                   <PolaroidImage
                     src={img.url}
                     alt={img.alt || `Featured ${i + 1}`}
-                    fill
+                    width={img.width || 800}
+                    height={img.height || 1000}
                     sizes="(max-width: 768px) 50vw, 33vw"
                     className="!w-full"
                     containerClassName="relative w-full"
-                    style={{
-                      aspectRatio: i % 3 === 0 ? '3/4' : i % 3 === 1 ? '4/3' : '1/1',
-                    }}
                   />
                 ) : (
                   <ImagePlaceholder
-                    aspect={
-                      i % 3 === 0 ? 'aspect-[3/4]' : i % 3 === 1 ? 'aspect-[4/3]' : 'aspect-square'
-                    }
+                    aspect="aspect-[4/3]"
                     label={`Featured ${i + 1}`}
                     icon={i % 2 === 0 ? 'camera' : 'portrait'}
                   />
