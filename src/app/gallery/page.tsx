@@ -12,5 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
+  console.log('[GalleryPage] render');
   return <GalleryClient />;
 }

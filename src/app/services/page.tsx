@@ -11,5 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default function ServicesPage() {
+  console.log('[ServicesPage] render');
   return <ServicesPageClient />;
 }

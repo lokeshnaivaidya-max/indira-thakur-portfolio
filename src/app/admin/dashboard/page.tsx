@@ -88,20 +88,23 @@ export default function AdminDashboardPage() {
     });
   };
 
-  const handleExport = async () => {
+const handleExport = async () => {
     try {
-      const res = await fetch('/api/site-config');
-      if (!res.ok) throw new Error('Export failed');
+      const res = await fetch('/api/cms-export');
+      if (!res.ok) throw new Error('Failed to export');
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const date = new Date().toISOString().split('T')[0];
       a.href = url;
+      const date = new Date().toISOString().split('T')[0];
       a.download = `indira-thakur-cms-backup-${date}.json`;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      setTimeout(() => {
+        if (a.parentNode) document.body.removeChild(a);
+      }, 0);
       URL.revokeObjectURL(url);
     } catch {
       alert('Failed to export content.');

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function TestimonialsPage() {
+  console.log('[TestimonialsPage] render');
   return (
     <div className="pt-16">
       <TestimonialsSection />

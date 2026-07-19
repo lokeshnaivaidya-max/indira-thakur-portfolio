@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,7 +46,7 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
       closeButtonRef.current?.focus();
@@ -56,7 +56,7 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!menuOpen) return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeMenu();

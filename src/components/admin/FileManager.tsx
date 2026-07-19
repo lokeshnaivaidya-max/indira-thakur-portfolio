@@ -216,10 +216,14 @@ export function FileManager({
       const a = document.createElement('a');
       a.href = url;
       a.download = file.originalName;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Use setTimeout to allow click to process, then safely remove
+      setTimeout(() => {
+        if (a.parentNode) document.body.removeChild(a);
+      }, 0);
     } catch (err) {
       setError('Download failed');
     }

@@ -240,10 +240,13 @@ export function Gallery() {
       const a = document.createElement('a');
       a.href = url;
       a.download = item.title || item.alt || 'image';
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      setTimeout(() => {
+        if (a.parentNode) document.body.removeChild(a);
+      }, 0);
     } catch {
       setError('Failed to download image');
     }

@@ -1,12 +1,12 @@
 'use client';
 
 import { useThemeSettings } from '@/hooks/useThemeSettings';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { theme } = useThemeSettings();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!theme) return;
     const root = document.documentElement;
     root.style.setProperty('--color-primary', theme.primaryColor);

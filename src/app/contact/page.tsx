@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  console.log('[ContactPage] render');
   return (
     <div className="pt-16">
       <ContactSection />

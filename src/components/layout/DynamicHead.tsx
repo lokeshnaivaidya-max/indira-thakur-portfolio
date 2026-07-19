@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useLayoutEffect, useState, useRef } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 interface BrandData {
@@ -16,14 +16,14 @@ export default function DynamicHead() {
   const prevFaviconUrl = useRef<string>('');
   const prevOgImageUrl = useRef<string>('');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetch('/api/brand')
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setBrand(data); })
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Update page title from SEO settings
     const seoTitle = config?.seo?.title;
     const siteName = brand?.siteName || 'Indira Thakur Photography';

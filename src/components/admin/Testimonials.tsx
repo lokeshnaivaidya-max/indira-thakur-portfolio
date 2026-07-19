@@ -126,8 +126,8 @@ export function Testimonials() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('File size must be less than 5MB');
+    if (file.size > 20 * 1024 * 1024) {
+      setError('File size must be less than 20MB');
       return;
     }
 
@@ -396,7 +396,7 @@ export function Testimonials() {
                     />
                     <HiPhoto className="w-12 h-12 mx-auto text-warm-gray/40 mb-3" />
                     <p className="font-sans text-sm text-warm-gray/60">Click or drag to upload</p>
-                    <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP up to 5MB</p>
+                    <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP up to 20MB</p>
                   </div>
                   {formData.image && (
                     <div className="mt-4 p-3 bg-ivory rounded-lg flex items-center justify-between">

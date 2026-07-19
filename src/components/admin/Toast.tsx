@@ -26,7 +26,7 @@ export default function ToastContainer() {
 
   return (
     <div className="fixed top-24 right-6 z-[100] flex flex-col gap-3 pointer-events-none max-w-sm w-full">
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence>
         {toasts.map((t) => {
           const Icon = icons[t.type];
           return (
