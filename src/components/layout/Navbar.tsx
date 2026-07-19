@@ -2,19 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const links = [
+const allLinks = [
   { href: '/', label: 'Home' },
-  { href: '/#about', label: 'About' },
-  { href: '/#services', label: 'Services' },
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
   { href: '/gallery', label: 'Gallery' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/testimonials', label: 'Testimonials' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/contact', label: 'Contact' },
 ];
+
+const desktopLinks = allLinks.filter(
+  (l) => l.href !== '/' && l.href !== '/contact'
+);
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -38,11 +46,15 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-10">
-              {links.slice(0, -1).map((link) => (
+              {desktopLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="font-sans text-[10px] text-warm-gray/60 uppercase tracking-[0.2em] hover:text-rich-black transition-colors duration-500 py-2"
+                  className={`font-sans text-[10px] uppercase tracking-[0.2em] transition-colors duration-500 py-2 ${
+                    pathname === link.href
+                      ? 'text-rich-black font-medium'
+                      : 'text-warm-gray/60 hover:text-rich-black'
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -52,7 +64,7 @@ export default function Navbar() {
             {/* Book Now Button */}
             <div className="hidden md:flex items-center">
               <Link
-                href="/#contact"
+                href="/contact"
                 className="inline-flex items-center justify-center px-6 py-2.5 bg-rich-black text-white font-sans text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500"
               >
                 Book Now
@@ -97,7 +109,7 @@ export default function Navbar() {
             </button>
 
             <nav className="flex flex-col items-center gap-8">
-              {links.map((link, i) => (
+              {allLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, y: 20 }}
@@ -107,7 +119,11 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="font-serif text-3xl text-rich-black/70 hover:text-rich-black transition-colors duration-500"
+                    className={`font-serif text-3xl transition-colors duration-500 ${
+                      pathname === link.href
+                        ? 'text-rich-black font-medium'
+                        : 'text-rich-black/70 hover:text-rich-black'
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -118,11 +134,11 @@ export default function Navbar() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: links.length * 0.08, duration: 0.5 }}
+              transition={{ delay: allLinks.length * 0.08, duration: 0.5 }}
               className="mt-8"
             >
               <Link
-                href="/#contact"
+                href="/contact"
                 onClick={() => setMenuOpen(false)}
                 className="inline-flex items-center justify-center px-8 py-3 bg-rich-black text-white font-sans text-[10px] uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500"
               >

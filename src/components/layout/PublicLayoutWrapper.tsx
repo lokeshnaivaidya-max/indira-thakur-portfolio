@@ -7,6 +7,7 @@ import Footer from './Footer';
 export default function PublicLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
+  const isHome = pathname === '/';
 
   if (isAdmin) {
     return <>{children}</>;
@@ -16,7 +17,7 @@ export default function PublicLayoutWrapper({ children }: { children: React.Reac
     <>
       <Navbar />
       <main className="min-h-screen flex flex-col pt-20">{children}</main>
-      <Footer />
+      {isHome && <Footer />}
     </>
   );
 }

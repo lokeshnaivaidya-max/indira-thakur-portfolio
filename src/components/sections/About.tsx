@@ -412,7 +412,7 @@ export default function About() {
                   {about.ctaText || 'View Portfolio'}
                 </Link>
                 <Link
-                  href="/#contact"
+                  href="/contact"
                   className="font-sans text-[10px] text-magenta/50 uppercase tracking-[0.2em] hover:text-magenta transition-colors duration-500"
                 >
                   Get in Touch

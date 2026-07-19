@@ -13,7 +13,7 @@ export default function Hero() {
     headingItalic: 'Tells a Story',
     categories: ['Newborn', 'Maternity', 'Portrait', 'Events'],
     ctaText: 'Book Now',
-    ctaLink: '/#contact',
+    ctaLink: '/contact',
     secondaryCtaText: 'Portfolio',
     secondaryCtaLink: '/gallery',
     backgroundGradient: '',
@@ -97,7 +97,7 @@ export default function Hero() {
           className="mt-10 flex items-center gap-6"
         >
           <Link
-            href={hero.ctaLink || '/#contact'}
+            href={hero.ctaLink || '/contact'}
             className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-rich-black font-sans text-[10px] uppercase tracking-[0.25em] font-medium transition-all duration-700 hover:bg-ivory"
           >
             {hero.ctaText || 'Book Now'}

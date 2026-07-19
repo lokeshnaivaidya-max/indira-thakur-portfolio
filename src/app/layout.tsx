@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
+import ThemeProvider from '@/components/layout/ThemeProvider';
 import LoadingScreen from '@/components/premium/LoadingScreen';
 
 export const metadata: Metadata = {
@@ -21,9 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
   <body className="bg-ivory text-rich-black font-sans antialiased">
-    <LoadingScreen />
-    <div className="grain-overlay" />
-    <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+    <ThemeProvider>
+      <LoadingScreen />
+      <div className="grain-overlay" />
+      <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+    </ThemeProvider>
       </body>
     </html>
   );

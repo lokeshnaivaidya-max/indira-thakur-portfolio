@@ -56,7 +56,7 @@ export default function Services() {
                 <p className="font-sans text-sm text-white/40 mt-3 max-w-sm leading-relaxed">{service.description}</p>
               )}
               <Link
-                href="/#contact"
+                href="/contact"
                 className="inline-flex items-center gap-2 mt-5 font-sans text-[9px] text-white/40 uppercase tracking-[0.3em] hover:text-white/70 transition-colors duration-500"
               >
                 <span className="w-4 h-px bg-white/20" />
