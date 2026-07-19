@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_SIZE = 4 * 1024 * 1024;
+const MAX_SIZE = 10 * 1024 * 1024;
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     if (file.size > MAX_SIZE) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
       return jsonError(
-        `File is too large (${sizeMB} MB). Please compress the image to under 4 MB and try again.`,
+        `File is too large (${sizeMB} MB). Please compress the image to under 10 MB and try again.`,
         400
       );
     }

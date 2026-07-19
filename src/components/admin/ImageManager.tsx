@@ -91,8 +91,8 @@ export default function ImageManager({
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 4 MB.` }));
+    if (file.size > 15 * 1024 * 1024) {
+      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 15 MB.` }));
       return;
     }
 
@@ -118,10 +118,10 @@ export default function ImageManager({
     try {
       const rec = getCompressionRecommendation(file.size);
       if (rec.shouldCompress) {
-        setUploadState(prev => ({ ...prev, progress: 15, uploadingText: 'Compressing image...' }));
+        setUploadState(prev => ({ ...prev, progress: 15, uploadingText: 'Optimizing image...' }));
         const result = await compressImage(file, {
           maxWidth: rec.targetMaxWidth,
-          maxHeight: rec.targetMaxWidth * 0.625,
+          maxHeight: rec.targetMaxWidth * 0.75,
           quality: rec.targetQuality,
           outputType: file.type === 'image/png' ? 'image/png' : 'image/jpeg',
         });
@@ -130,32 +130,11 @@ export default function ImageManager({
           ...prev,
           fileName: uploadFile.name,
           fileSize: uploadFile.size,
-          uploadingText: `Compressed ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`,
+          uploadingText: `Optimized ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`,
         }));
       }
     } catch {
       setUploadState(prev => ({ ...prev, uploadingText: 'Upload using original...' }));
-    }
-
-    if (uploadFile.size > 4 * 1024 * 1024) {
-      try {
-        setUploadState(prev => ({ ...prev, progress: 20, uploadingText: 'Further compressing...' }));
-        const result = await compressImage(uploadFile, {
-          maxWidth: 1024,
-          maxHeight: 640,
-          quality: 0.6,
-          outputType: 'image/jpeg',
-        });
-        uploadFile = result.file;
-        setUploadState(prev => ({
-          ...prev,
-          fileName: uploadFile.name,
-          fileSize: uploadFile.size,
-          uploadingText: `Final size: ${formatBytes(result.compressedSize)}`,
-        }));
-      } catch {
-        // keep original
-      }
     }
 
     const progressInterval = setInterval(() => {
@@ -389,7 +368,7 @@ export default function ImageManager({
           <div className="text-center p-4 z-10">
             <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-2" />
             <p className="font-sans text-xs text-warm-gray/50">Click to upload an image</p>
-            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · auto-compressed for upload</p>
+            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · up to 15 MB</p>
           </div>
         )}
       </div>

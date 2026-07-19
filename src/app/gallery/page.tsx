@@ -42,16 +42,16 @@ function mapSiteConfigImages(config: SiteConfigData | null): GalleryItem[] {
   const featured = config?.galleryPreview?.featuredImages || [];
   return featured
     .filter((img) => img?.url)
-    .map((img, i) => ({
+    .map((img: any, i) => ({
       id: `sc-${i}`,
       src: img.url,
       alt: img.alt || '',
-      width: 800,
-      height: 1000,
+      width: img.width || 1200,
+      height: img.height || 1600,
       category: 'portrait',
       title: img.caption,
       caption: img.caption,
-      aspectRatio: 4 / 5,
+      aspectRatio: (img.width || 1200) / (img.height || 1600),
     }));
 }
 
@@ -363,7 +363,7 @@ export default function GalleryPage() {
               </section>
             )}
 
-            {/* Section 3: Circular Collection — image contained inside circle */}
+            {/* Section 3: Circular Collection — entire image contained inside circle */}
             {sections.circular.length > 0 && (
               <section className="py-16 md:py-24 bg-cream/20">
                 <div className="py-12 md:py-20">
@@ -379,7 +379,7 @@ export default function GalleryPage() {
                         onClick={() => openLightbox(filtered.indexOf(img))}
                         className="cursor-pointer group"
                       >
-                        <div className="relative overflow-hidden rounded-full shadow-lg group-hover:shadow-xl transition-shadow duration-500"
+                        <div className="relative rounded-full shadow-lg group-hover:shadow-xl transition-shadow duration-500 bg-cream/40"
                           style={{ aspectRatio: '1 / 1' }}
                         >
                           <PolaroidImage
@@ -387,9 +387,11 @@ export default function GalleryPage() {
                             alt={img.alt || img.title || ''}
                             width={img.width}
                             height={img.height}
+                            objectFit="contain"
+                            bgColor="bg-transparent"
                             className="transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                           />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 rounded-full" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 rounded-full pointer-events-none" />
                         </div>
                       </motion.div>
                     ))}
@@ -550,6 +552,7 @@ export default function GalleryPage() {
                     alt={currentImage.alt || currentImage.title || ''}
                     width={currentImage.width}
                     height={currentImage.height}
+                    quality={100}
                     containerClassName="max-h-[80vh] w-full"
                     className="!w-full !h-full"
                   />

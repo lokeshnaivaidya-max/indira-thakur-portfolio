@@ -38,8 +38,8 @@ export function Gallery() {
     alt: '',
     title: '',
     description: '',
-    width: 800,
-    height: 1000,
+    width: 1200,
+    height: 1600,
     category: 'Portrait',
     featured: false,
     order: 0,
@@ -82,8 +82,8 @@ export function Gallery() {
     return {
       url: data.url,
       publicId: data.publicId,
-      width: 800,
-      height: 1000,
+      width: data.width || 1200,
+      height: data.height || 1600,
     };
   };
 

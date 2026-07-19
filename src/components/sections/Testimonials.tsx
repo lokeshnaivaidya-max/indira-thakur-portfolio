@@ -67,8 +67,9 @@ export default function Testimonials() {
                     alt={items[current].avatar.alt || items[current].author}
                     width={64}
                     height={64}
-                    containerClassName="!w-16 !h-16 !rounded-full !mx-auto !border-2 !border-cream/40"
-                    className="!rounded-full"
+                    objectFit="contain"
+                    bgColor="bg-transparent"
+                    containerClassName="!w-16 !h-16 !rounded-full !mx-auto !border-2 !border-cream/40 !bg-cream/30"
                   />
                 </div>
               )}

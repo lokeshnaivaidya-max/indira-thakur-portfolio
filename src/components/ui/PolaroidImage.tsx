@@ -28,6 +28,14 @@ interface PolaroidImageProps {
 
 const DEFAULT_BLUR = getBlurDataURL('#222222');
 
+const OBJECT_POSITION_CLASS: Record<string, string> = {
+  top: 'object-top',
+  center: 'object-center',
+  bottom: 'object-bottom',
+  left: 'object-left',
+  right: 'object-right',
+};
+
 export function PolaroidImage({
   src,
   alt,
@@ -41,7 +49,7 @@ export function PolaroidImage({
   blurDataURL,
   caption,
   showCaption = false,
-  sizes = '100vw',
+  sizes,
   quality = 90,
   unoptimized = false,
   fill = false,
@@ -56,6 +64,14 @@ export function PolaroidImage({
   }, []);
 
   const hasCaption = showCaption && caption;
+
+  const positionClass = OBJECT_POSITION_CLASS[objectPosition] ?? 'object-center';
+
+  const responsiveSizes = sizes ?? (
+    fill
+      ? '100vw'
+      : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+  );
 
   if (hasError) {
     return (
@@ -88,7 +104,7 @@ export function PolaroidImage({
       src={src}
       alt={alt}
       fill
-      sizes={sizes}
+      sizes={responsiveSizes}
       quality={quality}
       unoptimized={unoptimized}
       priority={priority}
@@ -99,7 +115,7 @@ export function PolaroidImage({
       className={cn(
         'absolute inset-0',
         objectFit === 'cover' ? 'object-cover' : 'object-contain',
-        objectPosition && `object-${objectPosition}`,
+        positionClass,
         className
       )}
       style={style}

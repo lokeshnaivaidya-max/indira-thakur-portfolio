@@ -28,9 +28,9 @@ export async function compressImage(
   options: CompressOptions = {}
 ): Promise<CompressResult> {
   const {
-    maxWidth = 1920,
-    maxHeight = 1080,
-    quality = 0.90,
+    maxWidth = 3840,
+    maxHeight = 2160,
+    quality = 0.92,
     outputType = 'image/jpeg',
   } = options;
 
@@ -95,14 +95,14 @@ export function getCompressionRecommendation(fileSize: number): {
   targetQuality: number;
   targetMaxWidth: number;
 } {
-  if (fileSize < 500 * 1024) {
-    return { shouldCompress: false, targetQuality: 0.85, targetMaxWidth: 1920 };
+  if (fileSize < 2 * 1024 * 1024) {
+    return { shouldCompress: false, targetQuality: 0.92, targetMaxWidth: 3840 };
   }
-  if (fileSize < 1.5 * 1024 * 1024) {
-    return { shouldCompress: true, targetQuality: 0.8, targetMaxWidth: 1600 };
+  if (fileSize < 5 * 1024 * 1024) {
+    return { shouldCompress: true, targetQuality: 0.88, targetMaxWidth: 3840 };
   }
-  if (fileSize < 3 * 1024 * 1024) {
-    return { shouldCompress: true, targetQuality: 0.72, targetMaxWidth: 1280 };
+  if (fileSize < 10 * 1024 * 1024) {
+    return { shouldCompress: true, targetQuality: 0.85, targetMaxWidth: 3840 };
   }
-  return { shouldCompress: true, targetQuality: 0.65, targetMaxWidth: 1024 };
+  return { shouldCompress: true, targetQuality: 0.82, targetMaxWidth: 3840 };
 }
