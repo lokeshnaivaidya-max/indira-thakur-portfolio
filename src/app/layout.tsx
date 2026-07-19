@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Inter, DM_Mono } from 'next/font/google';
 import './globals.css';
-import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
-import ThemeProvider from '@/components/layout/ThemeProvider';
-import DynamicHead from '@/components/layout/DynamicHead';
+import ServerDataProvider from '@/components/layout/ServerDataProvider';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -52,10 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable} ${dmMono.variable}`} suppressHydrationWarning>
       <body className="bg-ivory text-rich-black font-sans antialiased" suppressHydrationWarning>
-        <ThemeProvider>
-          <DynamicHead />
-          <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
-        </ThemeProvider>
+        <ServerDataProvider>{children}</ServerDataProvider>
       </body>
     </html>
   );

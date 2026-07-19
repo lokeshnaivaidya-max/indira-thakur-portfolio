@@ -1,0 +1,36 @@
+import { connectToDatabase } from '@/lib/mongodb';
+import SiteConfig from '@/models/SiteConfig';
+import ThemeSettings from '@/models/ThemeSettings';
+import Providers from './Providers';
+
+interface ServerData {
+  config: any;
+  theme: any;
+}
+
+async function fetchServerData(): Promise<ServerData> {
+  let config = null;
+  let theme = null;
+
+  try {
+    if (process.env.MONGODB_URI) {
+      await connectToDatabase();
+      config = await SiteConfig.findOne().lean();
+      theme = await ThemeSettings.findOne().lean();
+    }
+  } catch (error) {
+    console.warn('Server data fetch failed, using fallbacks:', error);
+  }
+
+  return { config, theme };
+}
+
+export default async function ServerDataProvider({ children }: { children: React.ReactNode }) {
+  const { config, theme } = await fetchServerData();
+
+  return (
+    <Providers initialConfig={config} initialTheme={theme}>
+      {children}
+    </Providers>
+  );
+}
