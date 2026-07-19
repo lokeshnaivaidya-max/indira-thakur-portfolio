@@ -77,7 +77,6 @@ export default function Contact() {
               src={contactData.bannerImage.url}
               alt={contactData.bannerImage.alt || 'Contact Banner'}
               fill
-              objectFit="cover"
               sizes="100vw"
               className="!w-full !h-full"
               containerClassName="!w-full !h-full"
@@ -135,7 +134,6 @@ export default function Contact() {
                   src={contactData.studioImage.url}
                   alt={contactData.studioImage.alt || 'Studio'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"

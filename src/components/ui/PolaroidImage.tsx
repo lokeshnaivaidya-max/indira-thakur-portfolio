@@ -23,6 +23,7 @@ interface PolaroidImageProps {
   fill?: boolean;
   onClick?: () => void;
   style?: React.CSSProperties;
+  bgColor?: string;
 }
 
 const POSITION_MAP: Record<string, string> = {
@@ -42,7 +43,7 @@ export function PolaroidImage({
   height = 600,
   className,
   containerClassName,
-  objectFit = 'cover',
+  objectFit = 'contain',
   objectPosition = 'center',
   priority = false,
   blurDataURL,
@@ -54,6 +55,7 @@ export function PolaroidImage({
   fill = false,
   onClick,
   style,
+  bgColor = 'bg-cream',
 }: PolaroidImageProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -63,6 +65,13 @@ export function PolaroidImage({
 
   const resolvedPosition = POSITION_MAP[objectPosition] ?? '';
   const hasCaption = showCaption && caption;
+
+  const getObjectFitClass = () => {
+    if (fill) {
+      return objectFit === 'cover' ? 'object-cover' : 'object-contain';
+    }
+    return objectFit === 'cover' ? 'object-cover' : 'object-contain';
+  };
 
   if (hasError) {
     return (
@@ -107,14 +116,8 @@ export function PolaroidImage({
       onError={handleError}
       className={cn(
         fill && 'absolute inset-0',
-        !fill && objectFit === 'cover' && 'w-full h-full',
-        !fill && objectFit === 'contain' && 'w-full h-full',
-        !fill && objectFit === 'fill' && 'w-full h-full',
-        !fill && objectFit === 'none' && 'w-full h-full',
-        objectFit === 'cover' && 'object-cover',
-        objectFit === 'contain' && 'object-contain',
-        objectFit === 'fill' && 'object-fill',
-        objectFit === 'none' && 'object-none',
+        !fill && 'w-full h-full',
+        getObjectFitClass(),
         resolvedPosition,
         className
       )}
@@ -126,7 +129,8 @@ export function PolaroidImage({
     return (
       <div
         className={cn(
-          'relative overflow-hidden bg-cream',
+          'relative overflow-hidden',
+          bgColor,
           containerClassName
         )}
         style={!fill ? { width, height } : undefined}
@@ -140,7 +144,8 @@ export function PolaroidImage({
   return (
     <figure
       className={cn(
-        'group relative overflow-hidden bg-cream',
+        'group relative overflow-hidden',
+        bgColor,
         onClick && 'cursor-pointer',
         containerClassName
       )}

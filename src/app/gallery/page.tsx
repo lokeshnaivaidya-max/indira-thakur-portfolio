@@ -157,7 +157,6 @@ function GalleryImageCard({
           alt={img.alt || img.title || ''}
           width={img.width}
           height={img.height}
-          objectFit="cover"
           className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
@@ -322,7 +321,6 @@ export default function GalleryPage() {
                       alt={sections.hero[0].alt || sections.hero[0].title || ''}
                       width={sections.hero[0].width}
                       height={sections.hero[0].height}
-                      objectFit="cover"
                       className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-12">
@@ -392,7 +390,6 @@ export default function GalleryPage() {
                             alt={img.alt || img.title || ''}
                             width={img.width}
                             height={img.height}
-                            objectFit="cover"
                             className="transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 rounded-full" />

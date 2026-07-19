@@ -55,7 +55,6 @@ export default function About() {
                   src={about.images.founderPortrait.url}
                   alt={about.images.founderPortrait.alt || 'Indira Thakur - Portrait'}
                   fill
-                  objectFit="cover"
                   objectPosition="top"
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   className="!w-full !h-full"
@@ -127,7 +126,6 @@ export default function About() {
                   src={about.images.storyImage.url}
                   alt={about.images.storyImage.alt || 'Story - Photography Journey'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"
@@ -202,7 +200,6 @@ export default function About() {
                   src={about.images.journeyImage.url}
                   alt={about.images.journeyImage.alt || 'Journey - Creative Path'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"
@@ -301,7 +298,6 @@ export default function About() {
                   src={about.images.editorial1.url}
                   alt={about.images.editorial1.alt || 'Editorial - Behind the Scenes'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"
@@ -323,7 +319,6 @@ export default function About() {
                   src={about.images.behindTheScenes.url}
                   alt={about.images.behindTheScenes.alt || 'Behind the Scenes'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"
@@ -432,7 +427,6 @@ export default function About() {
                   src={about.images.welcomeImage.url}
                   alt={about.images.welcomeImage.alt || 'Welcome to Indira Thakur Photography'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"
@@ -443,7 +437,6 @@ export default function About() {
                   src={about.images.achievementImage.url}
                   alt={about.images.achievementImage.alt || 'Indira Thakur Photography'}
                   fill
-                  objectFit="cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full"

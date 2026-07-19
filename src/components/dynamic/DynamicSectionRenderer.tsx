@@ -80,7 +80,8 @@ function HeroSection({ section }: { section: IDynamicSection }) {
           src={section.primaryImage.url}
           alt={section.primaryImage.alt || section.heading || section.title}
           fill
-          className="object-cover"
+          objectFit="cover"
+          className="!w-full !h-full"
           containerClassName="absolute inset-0"
           priority
         />
@@ -166,7 +167,7 @@ function TextImageSection({ section }: { section: IDynamicSection }) {
             src={section.primaryImage.url}
             alt={section.primaryImage.alt || section.heading || ''}
             fill
-            className="object-cover"
+            className="!w-full !h-full"
             containerClassName="absolute inset-0"
           />
         )}
@@ -190,7 +191,8 @@ function BannerSection({ section }: { section: IDynamicSection }) {
           src={section.primaryImage.url}
           alt={section.primaryImage.alt || section.heading || ''}
           fill
-          className="object-cover"
+          objectFit="cover"
+          className="!w-full !h-full"
           containerClassName="absolute inset-0"
         />
       )}
@@ -234,7 +236,7 @@ function GallerySection({ section }: { section: IDynamicSection }) {
               transition={{ delay: i * 0.05 }}
               className="break-inside-avoid mb-3"
             >
-              <PolaroidImage src={img.url} alt={img.alt || ''} width={600} height={800} objectFit="cover" />
+              <PolaroidImage src={img.url} alt={img.alt || ''} width={600} height={800} />
             </motion.div>
           ))}
         </div>
@@ -451,7 +453,7 @@ function SplitSection({ section }: { section: IDynamicSection }) {
             src={section.images[0].url}
             alt={section.images[0].alt || ''}
             fill
-            className="object-cover"
+            className="!w-full !h-full"
             containerClassName="absolute inset-0"
           />
         )}
@@ -462,7 +464,7 @@ function SplitSection({ section }: { section: IDynamicSection }) {
             src={section.images[1].url}
             alt={section.images[1].alt || ''}
             fill
-            className="object-cover"
+            className="!w-full !h-full"
             containerClassName="absolute inset-0"
           />
         )}
@@ -524,7 +526,7 @@ function VideoSection({ section }: { section: IDynamicSection }) {
               src={section.primaryImage.url}
               alt={section.primaryImage.alt || section.heading || ''}
               fill
-              className="object-cover"
+              className="!w-full !h-full"
               containerClassName="absolute inset-0"
             />
           )}

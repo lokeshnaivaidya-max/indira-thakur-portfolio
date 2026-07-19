@@ -59,7 +59,6 @@ export default function GalleryPreview() {
                     src={img.url}
                     alt={img.alt || `Featured ${i + 1}`}
                     fill
-                    objectFit="cover"
                     sizes="(max-width: 768px) 50vw, 33vw"
                     className="!w-full"
                     containerClassName="relative w-full"

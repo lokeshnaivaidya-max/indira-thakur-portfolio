@@ -38,7 +38,6 @@ export default function Services() {
                   src={service.image.url}
                   alt={service.image.alt || service.title}
                   fill
-                  objectFit="cover"
                   sizes="100vw"
                   className="!w-full !h-full"
                   containerClassName="!w-full !h-full !absolute !inset-0"

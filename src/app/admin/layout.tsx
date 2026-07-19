@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront } from 'react-icons/hi2';
 import ToastContainer from '@/components/admin/Toast';
 
 interface SidebarGroup {
@@ -40,7 +40,6 @@ const sidebarGroups: SidebarGroup[] = [
     links: [
       { label: 'Gallery Images', href: '/admin/gallery', icon: HiPhoto },
       { label: 'Services (DB)', href: '/admin/services', icon: HiCommandLine },
-      { label: 'Testimonials (DB)', href: '/admin/testimonials', icon: HiUserGroup },
       { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
     ],
   },
@@ -50,7 +49,6 @@ const sidebarGroups: SidebarGroup[] = [
       { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
       { label: 'Contacts (DB)', href: '/admin/contact', icon: HiEnvelope },
       { label: 'Users', href: '/admin/users', icon: HiUsers },
-      { label: 'SEO (Legacy)', href: '/admin/seo', icon: HiCog6Tooth },
     ],
   },
 ];
