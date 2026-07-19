@@ -47,16 +47,21 @@ export default function AdminDashboardPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [configRes, sectionsRes] = await Promise.all([
+      const [configRes, sectionsRes, galleryRes] = await Promise.all([
         fetch('/api/site-config'),
         fetch('/api/dynamic-sections?pageKey=home'),
+        fetch('/api/gallery-images'),
       ]);
 
       const config: SiteConfigData = configRes.ok ? await configRes.json() : {};
       const sections = sectionsRes.ok ? await sectionsRes.json() : {};
+      const galleryImages = galleryRes.ok ? await galleryRes.json() : [];
+
+      const siteConfigGalleryCount = config.galleryPreview?.featuredImages?.length ?? 0;
+      const dbGalleryCount = Array.isArray(galleryImages) ? galleryImages.length : 0;
 
       setStats({
-        galleryImages: config.galleryPreview?.featuredImages?.length ?? 0,
+        galleryImages: siteConfigGalleryCount + dbGalleryCount,
         services: config.services?.services?.length ?? 0,
         testimonials: config.testimonials?.testimonials?.length ?? 0,
         faqs: config.faq?.faqs?.length ?? 0,

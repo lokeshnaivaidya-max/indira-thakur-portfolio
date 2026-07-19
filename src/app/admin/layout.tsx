@@ -39,7 +39,6 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Collections',
     links: [
       { label: 'Gallery Images', href: '/admin/gallery', icon: HiPhoto },
-      { label: 'Services (DB)', href: '/admin/services', icon: HiCommandLine },
       { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
     ],
   },

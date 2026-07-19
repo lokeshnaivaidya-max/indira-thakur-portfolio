@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
+import Contact from '@/models/Contact';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +24,25 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Contact form submission:', { name, email, phone, service, message });
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { success: true, message: 'Thank you for your message! I will get back to you within 24 hours.' },
+        { status: 200 }
+      );
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI);
+    }
+
+    await Contact.create({
+      name,
+      email,
+      phone: phone || '',
+      subject: service || '',
+      message,
+      read: false,
+    });
 
     return NextResponse.json(
       { success: true, message: 'Thank you for your message! I will get back to you within 24 hours.' },
