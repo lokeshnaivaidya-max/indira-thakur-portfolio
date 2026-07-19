@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSectionsBuilder, Section, SectionType, SectionImage, SectionButton, SectionItem } from '@/hooks/useSectionsBuilder';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
+import { toast } from '@/lib/toast';
+import StickySaveBar from '@/components/admin/StickySaveBar';
 import {
   HiSquares2X2,
   HiChevronUp,
@@ -213,27 +215,15 @@ export default function AdminSectionsPage() {
           </div>
         )}
 
-        {/* Save Button */}
-        {sections.length > 0 && (
-          <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="w-full max-w-md mx-auto px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2"
-            >
-              {saving ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving sections...
-                </>
-              ) : (
-                'Save All Sections'
-              )}
-            </button>
-          </div>
-        )}
       </div>
+      {sections.length > 0 && (
+        <StickySaveBar
+          dirty={dirty}
+          saving={saving}
+          onDiscard={() => { fetchSections(); toast.info('Changes discarded'); }}
+          onSave={() => handleSave()}
+        />
+      )}
     </div>
   );
 }

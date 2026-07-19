@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from '@/lib/toast';
+import StickySaveBar from '@/components/admin/StickySaveBar';
 
 export default function AdminSEOPage() {
   const [seo, setSeo] = useState({
@@ -12,8 +13,10 @@ export default function AdminSEOPage() {
     twitterHandle: '',
     canonicalUrl: '',
   });
+  const [initialSeo, setInitialSeo] = useState(seo);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const fetchSEO = async () => {
     try {
@@ -22,6 +25,8 @@ export default function AdminSEOPage() {
       if (!response.ok) throw new Error('Failed to fetch SEO settings');
       const data = await response.json();
       setSeo(data);
+      setInitialSeo(data);
+      setDirty(false);
     } catch {
     } finally {
       setLoading(false);
@@ -32,8 +37,7 @@ export default function AdminSEOPage() {
     fetchSEO();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
     try {
       const response = await fetch('/api/seo', {
@@ -42,6 +46,8 @@ export default function AdminSEOPage() {
         body: JSON.stringify(seo),
       });
       if (!response.ok) throw new Error('Failed to save');
+      setInitialSeo(seo);
+      setDirty(false);
       toast.success('Changes Saved Successfully');
     } catch {
       toast.error('Failed to Save Changes');
@@ -50,9 +56,22 @@ export default function AdminSEOPage() {
     }
   };
 
-  const handleChange = (field: string, value: string) => {
-    setSeo(prev => ({ ...prev, [field]: value }));
+  const handleDiscard = () => {
+    setSeo(initialSeo);
+    setDirty(false);
+    toast.info('Changes discarded');
   };
+
+  const handleChange = (field: string, value: string) => {
+    setSeo(prev => {
+      const next = { ...prev, [field]: value };
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    setDirty(JSON.stringify(seo) !== JSON.stringify(initialSeo));
+  }, [seo, initialSeo]);
 
   if (loading) return <div className="flex items-center justify-center h-64">Loading...</div>;
 
@@ -63,7 +82,7 @@ export default function AdminSEOPage() {
         <p className="font-sans text-sm text-warm-gray/60">Manage your website's SEO and metadata</p>
       </div>
 
-      <form onSubmit={handleSave} className="flex-1 overflow-y-auto max-w-3xl mx-auto w-full p-4">
+      <div className="flex-1 overflow-y-auto max-w-3xl mx-auto w-full p-4">
         <div className="bg-white border border-cream/50 rounded-lg p-6 space-y-6">
           <div>
             <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
@@ -147,18 +166,14 @@ export default function AdminSEOPage() {
               />
             </div>
           </div>
-
-          <div className="pt-4 border-t border-cream">
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full max-w-md mx-auto px-8 py-4 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50"
-            >
-              {saving ? 'Saving...' : 'Save SEO Settings'}
-            </button>
-          </div>
         </div>
-      </form>
+      </div>
+      <StickySaveBar
+        dirty={dirty}
+        saving={saving}
+        onDiscard={handleDiscard}
+        onSave={handleSave}
+      />
     </div>
   );
 }

@@ -5,9 +5,11 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { useState } from 'react';
 import { HiPlus, HiTrash, HiEnvelope } from 'react-icons/hi2';
+import { toast } from '@/lib/toast';
+import StickySaveBar from '@/components/admin/StickySaveBar';
 
 export default function AdminContactCMSPage() {
-  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, resetConfig, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -95,13 +97,13 @@ export default function AdminContactCMSPage() {
           </div>
         </Section>
 
-        <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
-          <button type="button" onClick={() => saveConfig()} disabled={saving} className="w-full max-w-md mx-auto px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2">
-            {saving ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving to database...</>) : dirty ? 'Save Changes' : 'Save All Changes'}
-          </button>
-          {lastSavedAt && <p className="text-center font-sans text-[10px] text-warm-gray/30 mt-2">Last saved: {lastSavedAt.toLocaleTimeString()}</p>}
-        </div>
       </div>
+      <StickySaveBar
+        dirty={dirty}
+        saving={saving}
+        onDiscard={() => { resetConfig(); toast.info('Changes discarded'); }}
+        onSave={() => saveConfig()}
+      />
     </div>
   );
 }

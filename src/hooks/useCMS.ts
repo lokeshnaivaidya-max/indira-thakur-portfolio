@@ -141,6 +141,14 @@ export function useCMS(options: UseCMSOptions = {}) {
     setState(prev => ({ ...prev, error: null }));
   }, []);
 
+  const resetConfig = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      config: configRef.current,
+      dirty: false,
+    }));
+  }, []);
+
   useEffect(() => {
     fetchConfig();
   }, [fetchConfig]);
@@ -157,5 +165,6 @@ export function useCMS(options: UseCMSOptions = {}) {
     updateSection,
     updateField,
     clearMessages,
+    resetConfig,
   };
 }

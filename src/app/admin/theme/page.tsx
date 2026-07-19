@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import { toast } from '@/lib/toast';
+import StickySaveBar from '@/components/admin/StickySaveBar';
 
 const DEFAULTS = {
   primaryColor: '#C2186A',
@@ -48,6 +49,17 @@ export default function AdminThemePage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const fetchTheme = async () => {
+    try {
+      const res = await fetch('/api/theme');
+      if (res.ok) {
+        const data = await res.json();
+        const { _id, __v, createdAt, updatedAt, ...rest } = data;
+        setTheme(prev => ({ ...prev, ...rest }));
+      }
+    } catch {}
+  };
+
   const update = (key: string, value: any) => {
     setTheme(prev => ({ ...prev, [key]: value }));
     setDirty(true);
@@ -77,6 +89,12 @@ export default function AdminThemePage() {
   const handleReset = () => {
     setTheme(DEFAULTS);
     setDirty(true);
+  };
+
+  const handleDiscard = async () => {
+    await fetchTheme();
+    setDirty(false);
+    toast.info('Changes discarded');
   };
 
   if (loading) {
@@ -308,27 +326,13 @@ export default function AdminThemePage() {
           </div>
         </div>
 
-        {/* Action Bar */}
-        <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4 flex gap-3">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving || !dirty}
-            className="flex-1 max-w-md px-8 py-3.5 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all disabled:opacity-50 rounded flex items-center justify-center gap-2"
-          >
-            {saving ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-            ) : 'Save Theme'}
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-6 py-3.5 border border-cream/60 text-warm-gray/70 font-sans text-xs tracking-wider uppercase hover:bg-cream/50 transition-all rounded"
-          >
-            Reset to Defaults
-          </button>
-        </div>
       </div>
+      <StickySaveBar
+        dirty={dirty}
+        saving={saving}
+        onDiscard={handleDiscard}
+        onSave={handleSave}
+      />
     </div>
   );
 }
