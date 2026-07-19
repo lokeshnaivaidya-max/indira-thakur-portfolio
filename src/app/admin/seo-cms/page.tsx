@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiGlobeAlt } from 'react-icons/hi2';
 
 export default function AdminSEOPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
   const [newKeyword, setNewKeyword] = useState('');
 
   if (loading) {
@@ -51,11 +51,8 @@ export default function AdminSEOPage() {
       <AdminPageHeader
         title="SEO Settings"
         description="Manage meta tags, descriptions, and social sharing"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
-        onClearMessages={clearMessages}
         previewHref="/"
       />
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiCog6Tooth, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront } from 'react-icons/hi2';
+import ToastContainer from '@/components/admin/Toast';
 
 interface SidebarGroup {
   label: string;
@@ -204,6 +205,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </div>
       </main>
+      <ToastContainer />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiCommandLine, HiPhoto } from 'react-icons/hi2';
 
 export default function AdminServicesPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -68,11 +68,8 @@ export default function AdminServicesPage() {
       <AdminPageHeader
         title="Services"
         description="Showcase the types of photography you offer"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
-        onClearMessages={clearMessages}
         previewHref="/#services"
       />
 

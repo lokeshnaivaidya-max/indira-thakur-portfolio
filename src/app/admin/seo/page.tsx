@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { HiXMark, HiArrowRightOnRectangle } from 'react-icons/hi2';
+import { toast } from '@/lib/toast';
 
 export default function AdminSEOPage() {
   const [seo, setSeo] = useState({
@@ -14,8 +14,6 @@ export default function AdminSEOPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const fetchSEO = async () => {
     try {
@@ -24,8 +22,7 @@ export default function AdminSEOPage() {
       if (!response.ok) throw new Error('Failed to fetch SEO settings');
       const data = await response.json();
       setSeo(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load');
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -38,22 +35,16 @@ export default function AdminSEOPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setError(null);
-    setSuccess(null);
-
     try {
       const response = await fetch('/api/seo', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(seo),
       });
-
       if (!response.ok) throw new Error('Failed to save');
-      
-      setSuccess('SEO settings saved successfully!');
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+      toast.success('Changes Saved Successfully');
+    } catch {
+      toast.error('Failed to Save Changes');
     } finally {
       setSaving(false);
     }
@@ -71,17 +62,6 @@ export default function AdminSEOPage() {
         <h1 className="font-serif text-3xl md:text-4xl text-rich-black mb-2">SEO Settings</h1>
         <p className="font-sans text-sm text-warm-gray/60">Manage your website's SEO and metadata</p>
       </div>
-
-      {(error || success) && (
-        <div className={`mb-6 p-4 rounded-lg flex items-center justify-between ${
-          error ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-green-50 border border-green-200 text-green-700'
-        }`}>
-          <span className="font-sans text-sm">{error || success}</span>
-          <button onClick={() => { setError(null); setSuccess(null); }} className="text-current opacity-70 hover:opacity-100">
-            <HiXMark className="w-5 h-5" />
-          </button>
-        </div>
-      )}
 
       <form onSubmit={handleSave} className="flex-1 overflow-y-auto max-w-3xl mx-auto w-full p-4">
         <div className="bg-white border border-cream/50 rounded-lg p-6 space-y-6">

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiUserGroup } from 'react-icons/hi2';
 
 export default function AdminTestimonialsPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -60,11 +60,8 @@ export default function AdminTestimonialsPage() {
       <AdminPageHeader
         title="Testimonials"
         description="Manage client testimonials and quotes"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
-        onClearMessages={clearMessages}
         previewHref="/#testimonials"
       />
 

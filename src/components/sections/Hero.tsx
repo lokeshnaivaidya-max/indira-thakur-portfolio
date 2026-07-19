@@ -50,14 +50,17 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
+  // Per-image duration support
   useEffect(() => {
     if (images.length <= 1) return;
-    const total = (slideshowDuration + transitionDuration) * 1000;
-    const timer = setInterval(() => {
+    const currentImage = images[currentIndex] as any;
+    const duration = currentImage?.duration || slideshowDuration;
+    const total = (duration + transitionDuration) * 1000;
+    const timer = setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, total);
-    return () => clearInterval(timer);
-  }, [images.length, slideshowDuration, transitionDuration]);
+    return () => clearTimeout(timer);
+  }, [currentIndex, images, slideshowDuration, transitionDuration]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const x = (e.clientX / window.innerWidth - 0.5) * 4;
@@ -82,8 +85,27 @@ export default function Hero() {
         <>
           {images.map((img: any, i: number) => {
             const isActive = i === currentIndex;
-            const kbIndex = i % 6;
-            const totalDuration = slideshowDuration + transitionDuration;
+            const imgDuration = img.duration || slideshowDuration;
+            const totalDuration = imgDuration + transitionDuration;
+
+            // Per-image animation or auto-cyclic
+            let animName = 'none';
+            if (mounted && isActive && kenBurnsEnabled) {
+              const anim = img.animation || 'auto';
+              if (anim === 'auto') {
+                animName = `kb${i % 6}`;
+              } else {
+                const animMap: Record<string, string> = {
+                  'zoom-in': 'kb0',
+                  'zoom-out': 'kb1',
+                  'pan-left': 'kb2',
+                  'pan-right': 'kb3',
+                  'drift-up': 'kb4',
+                  'drift-down': 'kb5',
+                };
+                animName = animMap[anim] || `kb${i % 6}`;
+              }
+            }
 
             return (
               <div
@@ -100,7 +122,7 @@ export default function Hero() {
                   className="absolute inset-0"
                   style={{
                     animation: mounted && isActive && kenBurnsEnabled
-                      ? `kb${kbIndex} ${totalDuration}s ease-in-out forwards`
+                      ? `${animName} ${totalDuration}s ease-in-out forwards`
                       : 'none',
                     transform: mounted && isActive && !kenBurnsEnabled
                       ? `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.02)`

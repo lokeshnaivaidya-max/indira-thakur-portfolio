@@ -66,7 +66,6 @@ export default function AdminSectionsPage() {
     loading,
     saving,
     error,
-    success,
     pageKey,
     setPageKey,
     fetchSections,
@@ -141,10 +140,7 @@ export default function AdminSectionsPage() {
       <AdminPageHeader
         title="Page Builder"
         description="Create, edit, reorder, and manage sections on any page of your website"
-        error={error}
-        success={success}
         dirty={dirty}
-        onClearMessages={clearMessages}
         previewHref={previewMap[pageKey] || '/'}
       />
 

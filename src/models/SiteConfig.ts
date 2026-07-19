@@ -22,7 +22,7 @@ export interface IHeroSection {
     heroSecondary: ISiteImage;
     background: ISiteImage;
   };
-  heroImages: ISiteImage[];
+  heroImages: (ISiteImage & { duration?: number; animation?: string })[];
   slideshowDuration: number;
   transitionDuration: number;
   kenBurnsEnabled: boolean;
@@ -200,7 +200,15 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
           },
           default: () => ({}),
         },
-        heroImages: { type: [SiteImageSchema], default: [] },
+        heroImages: {
+          type: [{
+            url: { type: String, default: '' },
+            alt: { type: String, default: '' },
+            duration: { type: Number, default: 8 },
+            animation: { type: String, default: 'auto' },
+          }],
+          default: [],
+        },
         slideshowDuration: { type: Number, default: 8 },
         transitionDuration: { type: Number, default: 2 },
         kenBurnsEnabled: { type: Boolean, default: true },

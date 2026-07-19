@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import { toast } from '@/lib/toast';
 
 const DEFAULTS = {
   primaryColor: '#C2186A',
@@ -32,8 +33,6 @@ export default function AdminThemePage() {
   const [theme, setTheme] = useState(DEFAULTS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -56,8 +55,6 @@ export default function AdminThemePage() {
 
   const handleSave = async () => {
     setSaving(true);
-    setError(null);
-    setSuccess(null);
     try {
       const res = await fetch('/api/theme', {
         method: 'PUT',
@@ -68,11 +65,10 @@ export default function AdminThemePage() {
       const saved = await res.json();
       const { _id, __v, createdAt, updatedAt, ...rest } = saved;
       setTheme(prev => ({ ...prev, ...rest }));
-      setSuccess('Theme saved successfully');
       setDirty(false);
-      setTimeout(() => setSuccess(null), 3000);
+      toast.success('Changes Saved Successfully');
     } catch {
-      setError('Failed to save theme settings');
+      toast.error('Failed to Save Changes');
     } finally {
       setSaving(false);
     }
@@ -99,11 +95,8 @@ export default function AdminThemePage() {
       <AdminPageHeader
         title="Theme Settings"
         description="Customize colors, typography, and visual effects"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={null}
-        onClearMessages={() => { setError(null); setSuccess(null); }}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-6xl mx-auto w-full">

@@ -25,7 +25,7 @@ export interface SiteConfigData {
       heroSecondary: SiteImage;
       background: SiteImage;
     };
-    heroImages: SiteImage[];
+    heroImages: (SiteImage & { duration?: number; animation?: string })[];
     slideshowDuration: number;
     transitionDuration: number;
     kenBurnsEnabled: boolean;

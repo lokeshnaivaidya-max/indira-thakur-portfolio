@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiHome, HiPhoto, HiSparkles, HiClock, HiPlay, HiStop } from 'react-icons/hi2';
 
 export default function AdminHomePage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
   const [newCategory, setNewCategory] = useState('');
 
   if (loading) {
@@ -76,7 +76,6 @@ export default function AdminHomePage() {
         title="Home Page"
         description="Customize the first impression visitors see when they land on your website"
         error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
         onClearMessages={clearMessages}
@@ -173,7 +172,7 @@ export default function AdminHomePage() {
         {/* Hero Slideshow Images */}
         <Section title="Hero Slideshow Images" icon={<HiPhoto className="w-5 h-5" />} defaultOpen>
           <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
-            Upload multiple images for the hero slideshow. Images crossfade automatically every few seconds. Use high-resolution images for the best experience.
+            Upload multiple images for the hero slideshow. Each image can have its own duration and animation style.
           </p>
 
           {(home.heroImages || []).length === 0 ? (
@@ -191,52 +190,102 @@ export default function AdminHomePage() {
             </div>
           ) : (
             <>
-              <div className="space-y-3 mb-4">
+              <div className="space-y-4 mb-4">
                 {(home.heroImages || []).map((img: any, i: number) => (
-                  <div key={i} className="flex items-start gap-4 p-4 bg-white border border-cream/50 rounded-lg">
-                    <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 bg-ivory rounded text-warm-gray/40 font-mono text-xs">
-                      {String(i + 1).padStart(2, '0')}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <ImageManager
-                        label={`Slide ${i + 1}`}
-                        value={img}
-                        onChange={(newImg) => updateHeroImage(i, newImg)}
-                        aspect="aspect-[16/9]"
-                        folder="home/hero/slideshow"
-                      />
-                      <input
-                        type="text"
-                        value={img.alt || ''}
-                        onChange={(e) => updateHeroImage(i, { ...img, alt: e.target.value })}
-                        placeholder="Alt text (for accessibility)"
-                        className="mt-2 w-full px-3 py-1.5 bg-ivory/50 border border-cream/50 text-rich-black font-sans text-xs rounded focus:outline-none focus:border-magenta/40"
-                      />
-                    </div>
-                    <div className="flex-shrink-0 flex flex-col gap-1">
-                      <button
-                        type="button"
-                        onClick={() => moveHeroImage(i, 'up')}
-                        disabled={i === 0}
-                        className="px-2 py-1 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30 font-sans"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveHeroImage(i, 'down')}
-                        disabled={i === (home.heroImages || []).length - 1}
-                        className="px-2 py-1 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30 font-sans"
-                      >
-                        ↓
-                      </button>
+                  <div key={i} className="bg-white border border-cream/50 rounded-lg overflow-hidden">
+                    <div className="flex items-start gap-4 p-4">
+                      <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                        <div className="flex items-center justify-center w-8 h-8 bg-ivory rounded text-warm-gray/40 font-mono text-xs">
+                          {String(i + 1).padStart(2, '0')}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => moveHeroImage(i, 'up')}
+                          disabled={i === 0}
+                          className="px-1 py-0.5 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveHeroImage(i, 'down')}
+                          disabled={i === (home.heroImages || []).length - 1}
+                          className="px-1 py-0.5 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30"
+                        >
+                          ↓
+                        </button>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <ImageManager
+                          label={`Slide ${i + 1}`}
+                          value={img}
+                          onChange={(newImg) => updateHeroImage(i, { ...img, ...newImg })}
+                          aspect="aspect-[16/9]"
+                          folder="home/hero/slideshow"
+                        />
+                      </div>
+
                       <button
                         type="button"
                         onClick={() => removeHeroImage(i)}
-                        className="px-2 py-1 text-[10px] text-red-400 hover:text-red-600 font-sans"
+                        className="flex-shrink-0 px-2 py-1 text-[10px] text-red-400 hover:text-red-600 font-sans"
                       >
-                        ×
+                        Delete
                       </button>
+                    </div>
+
+                    {/* Per-image settings */}
+                    <div className="px-4 pb-4 pt-2 border-t border-cream/30">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block font-sans text-[10px] font-medium tracking-wider uppercase text-warm-gray/50 mb-1">
+                            Alt Text
+                          </label>
+                          <input
+                            type="text"
+                            value={img.alt || ''}
+                            onChange={(e) => updateHeroImage(i, { ...img, alt: e.target.value })}
+                            placeholder="Describe this image"
+                            className="w-full px-3 py-1.5 bg-ivory/50 border border-cream/50 text-rich-black font-sans text-xs rounded focus:outline-none focus:border-magenta/40"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-sans text-[10px] font-medium tracking-wider uppercase text-warm-gray/50 mb-1">
+                            Duration
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="range"
+                              min={3}
+                              max={15}
+                              step={1}
+                              value={img.duration || 8}
+                              onChange={(e) => updateHeroImage(i, { ...img, duration: Number(e.target.value) })}
+                              className="flex-1 accent-magenta"
+                            />
+                            <span className="font-mono text-[10px] text-warm-gray/50 w-6 text-right">{img.duration || 8}s</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block font-sans text-[10px] font-medium tracking-wider uppercase text-warm-gray/50 mb-1">
+                            Animation
+                          </label>
+                          <select
+                            value={img.animation || 'auto'}
+                            onChange={(e) => updateHeroImage(i, { ...img, animation: e.target.value })}
+                            className="w-full px-3 py-1.5 bg-ivory/50 border border-cream/50 text-rich-black font-sans text-xs rounded focus:outline-none focus:border-magenta/40"
+                          >
+                            <option value="auto">Auto (cyclic)</option>
+                            <option value="zoom-in">Zoom In</option>
+                            <option value="zoom-out">Zoom Out</option>
+                            <option value="pan-left">Pan Left</option>
+                            <option value="pan-right">Pan Right</option>
+                            <option value="drift-up">Drift Up</option>
+                            <option value="drift-down">Drift Down</option>
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}

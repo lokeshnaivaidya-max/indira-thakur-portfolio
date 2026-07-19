@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { HiPlus, HiTrash, HiPhoto } from 'react-icons/hi2';
 
 export default function AdminGalleryPreviewPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -62,11 +62,8 @@ export default function AdminGalleryPreviewPage() {
       <AdminPageHeader
         title="Gallery Preview"
         description="Manage the featured gallery preview section on the homepage"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
-        onClearMessages={clearMessages}
         previewHref="/gallery"
       />
 

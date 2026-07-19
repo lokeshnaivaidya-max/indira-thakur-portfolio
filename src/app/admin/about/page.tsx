@@ -7,7 +7,7 @@ import ImageManager from '@/components/admin/ImageManager';
 import { HiPlus, HiTrash, HiPhoto, HiDocumentText, HiSparkles, HiTrophy, HiHeart, HiStar } from 'react-icons/hi2';
 
 export default function AdminAboutPage() {
-  const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
+  const { config, loading, saving, error, dirty, lastSavedAt, updateSection, saveConfig, fetchConfig } = useCMS();
 
   if (loading) {
     return (
@@ -107,11 +107,8 @@ export default function AdminAboutPage() {
       <AdminPageHeader
         title="About Section"
         description="Tell your story, showcase your journey, and welcome visitors to your world"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={lastSavedAt}
-        onClearMessages={clearMessages}
         previewHref="/#about"
       />
 

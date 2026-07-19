@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
+import { toast } from '@/lib/toast';
 
 interface BrandData {
   siteName: string;
@@ -36,8 +37,6 @@ export default function AdminBrandPage() {
   const [brand, setBrand] = useState<BrandData>(DEFAULTS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -60,8 +59,6 @@ export default function AdminBrandPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    setError(null);
-    setSuccess(null);
     try {
       const res = await fetch('/api/brand', {
         method: 'PUT',
@@ -72,11 +69,10 @@ export default function AdminBrandPage() {
       const saved = await res.json();
       const { _id, __v, createdAt, updatedAt, ...rest } = saved;
       setBrand(prev => ({ ...prev, ...rest }));
-      setSuccess('Brand settings saved successfully');
       setDirty(false);
-      setTimeout(() => setSuccess(null), 3000);
+      toast.success('Changes Saved Successfully');
     } catch {
-      setError('Failed to save brand settings');
+      toast.error('Failed to Save Changes');
     } finally {
       setSaving(false);
     }
@@ -98,11 +94,8 @@ export default function AdminBrandPage() {
       <AdminPageHeader
         title="Brand Settings"
         description="Manage site identity, contact info, and social links"
-        error={error}
-        success={success}
         dirty={dirty}
         lastSavedAt={null}
-        onClearMessages={() => { setError(null); setSuccess(null); }}
       />
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">

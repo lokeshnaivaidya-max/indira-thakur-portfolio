@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from '@/lib/toast';
 
 interface UseCMSOptions {
   verifyWrites?: boolean;
@@ -11,7 +12,6 @@ interface CMSState {
   loading: boolean;
   saving: boolean;
   error: string | null;
-  success: string | null;
   lastSavedAt: Date | null;
   dirty: boolean;
 }
@@ -23,11 +23,9 @@ export function useCMS(options: UseCMSOptions = {}) {
     loading: true,
     saving: false,
     error: null,
-    success: null,
     lastSavedAt: null,
     dirty: false,
   });
-  const successTimerRef = useRef<NodeJS.Timeout | null>(null);
   const configRef = useRef<any>(null);
 
   const fetchConfig = useCallback(async () => {
@@ -49,11 +47,7 @@ export function useCMS(options: UseCMSOptions = {}) {
 
   const saveConfig = useCallback(async (data?: any) => {
     try {
-      setState(prev => ({ ...prev, saving: true, error: null, success: null }));
-
-      if (successTimerRef.current) {
-        clearTimeout(successTimerRef.current);
-      }
+      setState(prev => ({ ...prev, saving: true, error: null }));
 
       const payload = data || configRef.current;
       if (!payload) {
@@ -92,30 +86,27 @@ export function useCMS(options: UseCMSOptions = {}) {
           ...prev,
           config: verified,
           saving: false,
-          success: 'All changes saved and verified successfully!',
           lastSavedAt: new Date(),
           dirty: false,
         }));
+        toast.success('Changes Saved Successfully');
       } else {
         configRef.current = saved;
         setState(prev => ({
           ...prev,
           config: saved,
           saving: false,
-          success: 'All changes saved successfully!',
           lastSavedAt: new Date(),
           dirty: false,
         }));
+        toast.success('Changes Saved Successfully');
       }
-
-      successTimerRef.current = setTimeout(() => {
-        setState(prev => ({ ...prev, success: null }));
-      }, 5000);
 
       return saved;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save. Please try again.';
-      setState(prev => ({ ...prev, saving: false, error: message }));
+      setState(prev => ({ ...prev, saving: false }));
+      toast.error('Failed to Save Changes');
       return null;
     }
   }, [verifyWrites]);
@@ -147,14 +138,11 @@ export function useCMS(options: UseCMSOptions = {}) {
   }, []);
 
   const clearMessages = useCallback(() => {
-    setState(prev => ({ ...prev, error: null, success: null }));
+    setState(prev => ({ ...prev, error: null }));
   }, []);
 
   useEffect(() => {
     fetchConfig();
-    return () => {
-      if (successTimerRef.current) clearTimeout(successTimerRef.current);
-    };
   }, [fetchConfig]);
 
   return {
@@ -162,7 +150,6 @@ export function useCMS(options: UseCMSOptions = {}) {
     loading: state.loading,
     saving: state.saving,
     error: state.error,
-    success: state.success,
     lastSavedAt: state.lastSavedAt,
     dirty: state.dirty,
     fetchConfig,

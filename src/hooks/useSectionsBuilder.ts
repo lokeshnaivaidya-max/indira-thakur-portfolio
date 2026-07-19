@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
+import { toast } from '@/lib/toast';
 
 export type SectionType = 'hero' | 'text-image' | 'banner' | 'gallery' | 'cards' | 'testimonials' | 'cta' | 'faq' | 'richtext' | 'split' | 'timeline';
 
@@ -145,12 +146,9 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const successTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearMessages = useCallback(() => {
     setError(null);
-    setSuccess(null);
   }, []);
 
   const fetchSections = useCallback(async (key?: string) => {
@@ -183,16 +181,11 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
     try {
       setSaving(true);
       setError(null);
-      setSuccess(null);
-
-      if (successTimerRef.current) {
-        clearTimeout(successTimerRef.current);
-      }
 
       const validation = validateSections(payload);
       if (!validation.valid) {
         setSaving(false);
-        setError(validation.errors.join(' '));
+        toast.error(validation.errors.join(' '));
         return null;
       }
 
@@ -215,16 +208,12 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
         order: i,
       }));
       setSections(savedSections);
-      setSuccess('Sections saved successfully!');
-
-      successTimerRef.current = setTimeout(() => {
-        setSuccess(null);
-      }, 5000);
+      toast.success('Changes Saved Successfully');
 
       return saved;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save. Please try again.';
-      setError(message);
+      toast.error('Failed to Save Changes');
       return null;
     } finally {
       setSaving(false);
@@ -293,7 +282,6 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
     loading,
     saving,
     error,
-    success,
     pageKey,
     setPageKey,
     fetchSections,

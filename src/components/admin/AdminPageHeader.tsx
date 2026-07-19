@@ -1,26 +1,23 @@
 'use client';
 
-import { HiCheckCircle, HiExclamationCircle, HiEye, HiXMark } from 'react-icons/hi2';
+import { HiEye } from 'react-icons/hi2';
 
 interface AdminPageHeaderProps {
   title: string;
   description: string;
-  error: string | null;
-  success: string | null;
+  error?: string | null;
+  success?: string | null;
   dirty?: boolean;
   lastSavedAt?: Date | null;
-  onClearMessages: () => void;
+  onClearMessages?: () => void;
   previewHref?: string;
 }
 
 export default function AdminPageHeader({
   title,
   description,
-  error,
-  success,
   dirty,
   lastSavedAt,
-  onClearMessages,
   previewHref,
 }: AdminPageHeaderProps) {
   return (
@@ -51,26 +48,10 @@ export default function AdminPageHeader({
         )}
       </div>
 
-      {(error || success) && (
-        <div
-          className={`mt-4 p-4 rounded-lg flex items-center justify-between ${
-            error
-              ? 'bg-red-50 border border-red-200 text-red-700'
-              : 'bg-green-50 border border-green-200 text-green-700'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {error ? (
-              <HiExclamationCircle className="w-5 h-5 flex-shrink-0" />
-            ) : (
-              <HiCheckCircle className="w-5 h-5 flex-shrink-0" />
-            )}
-            <span className="font-sans text-sm">{error || success}</span>
-          </div>
-          <button onClick={onClearMessages} className="text-current opacity-70 hover:opacity-100">
-            <HiXMark className="w-5 h-5" />
-          </button>
-        </div>
+      {lastSavedAt && (
+        <p className="font-sans text-[10px] text-warm-gray/30 mt-3">
+          Last saved: {lastSavedAt.toLocaleTimeString()}
+        </p>
       )}
     </div>
   );
