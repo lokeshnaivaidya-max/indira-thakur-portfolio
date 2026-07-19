@@ -20,10 +20,10 @@ export default function Providers({ initialConfig, initialTheme, children }: Pro
   const hasInitialData = initialConfig !== null && initialConfig !== undefined && initialTheme !== null && initialTheme !== undefined;
   const [config, setConfig] = useState<SiteConfigData | null>(initialConfig);
   const [theme, setTheme] = useState<any>(initialTheme);
-  const [hydrated, setHydrated] = useState(hasInitialData);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setHydrated(true);
+    setIsClient(true);
     if (hookConfig) setConfig(hookConfig);
     if (hookTheme) setTheme(hookTheme);
   }, [hookConfig, hookTheme]);
@@ -31,7 +31,8 @@ export default function Providers({ initialConfig, initialTheme, children }: Pro
   const effectiveConfig = config || hookConfig;
   const effectiveTheme = theme || hookTheme;
 
-  const isLoading = !hydrated || (!hasInitialData && (configLoading || themeLoading));
+  // Only show loading on client if no data yet
+  const isLoading = isClient && !hasInitialData && (configLoading || themeLoading);
 
   if (isLoading) {
     return (
