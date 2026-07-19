@@ -64,10 +64,6 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [menuOpen, closeMenu]);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
   return (
     <>
       <header
