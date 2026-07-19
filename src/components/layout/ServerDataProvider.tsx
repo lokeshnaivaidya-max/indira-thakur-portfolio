@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import SiteConfig from '@/models/SiteConfig';
 import ThemeSettings from '@/models/ThemeSettings';
-import Providers from './Providers';
+import AppProviders from './AppProviders';
 
 interface ServerData {
   config: any;
@@ -29,8 +29,8 @@ export default async function ServerDataProvider({ children }: { children: React
   const { config, theme } = await fetchServerData();
 
   return (
-    <Providers initialConfig={config} initialTheme={theme}>
+    <AppProviders initialConfig={config} initialTheme={theme}>
       {children}
-    </Providers>
+    </AppProviders>
   );
 }
