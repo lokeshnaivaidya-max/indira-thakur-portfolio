@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { createHash } from 'crypto';
+import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_SECRET = process.env.JWT_SECRET || 'indira-thakur-portfolio-secret-2024';
 
 function getTokenUser(request: Request) {
   const cookie = request.headers.get('cookie') || '';
@@ -41,13 +41,17 @@ export async function POST(request: Request) {
     const User = (await import('@/models/User')).default;
     await connectToDatabase();
 
-    const hashedCurrent = createHash('sha256').update(currentPassword).digest('hex');
-    const user = await User.findOne({ email: tokenUser.email.toLowerCase(), password: hashedCurrent });
+    const user = await User.findOne({ email: tokenUser.email.toLowerCase() });
     if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
       return NextResponse.json({ error: 'Current password is incorrect' }, { status: 403 });
     }
 
-    const hashedNew = createHash('sha256').update(newPassword).digest('hex');
+    const hashedNew = await bcrypt.hash(newPassword, 12);
     await User.findByIdAndUpdate(user._id, { password: hashedNew });
 
     return NextResponse.json({ success: true, message: 'Password changed successfully' });

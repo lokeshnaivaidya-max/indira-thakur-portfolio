@@ -37,5 +37,12 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
     throw e;
   }
 
+  try {
+    const { ensureAdminExists } = await import('@/models/User');
+    await ensureAdminExists();
+  } catch {
+    // Admin seeding is best-effort
+  }
+
   return cached.conn;
 }

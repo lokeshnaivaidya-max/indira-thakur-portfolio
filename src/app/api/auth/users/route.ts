@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { createHash } from 'crypto';
+import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_SECRET = process.env.JWT_SECRET || 'indira-thakur-portfolio-secret-2024';
 
 function getTokenUser(request: Request) {
   const cookie = request.headers.get('cookie') || '';
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         users: [{
           _id: 'env-admin',
           name: 'Admin',
-          email: process.env.ADMIN_EMAIL || 'admin@indirathakur.com',
+          email: 'admin@indirathakur.com',
           role: 'admin',
           createdAt: new Date().toISOString(),
         }],
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'A user with this email already exists' }, { status: 409 });
     }
 
-    const hashedPassword = createHash('sha256').update(password).digest('hex');
+    const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({ name, email: email.toLowerCase(), password: hashedPassword, role: role || 'editor' });
 
     return NextResponse.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role } }, { status: 201 });
@@ -103,7 +103,7 @@ export async function PUT(request: Request) {
     if (email) updateData.email = email.toLowerCase();
     if (role) updateData.role = role;
     if (password) {
-      updateData.password = createHash('sha256').update(password).digest('hex');
+      updateData.password = await bcrypt.hash(password, 12);
     }
 
     const user = await User.findByIdAndUpdate(id, updateData, { new: true }).select('-password');
