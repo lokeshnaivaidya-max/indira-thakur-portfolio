@@ -97,6 +97,12 @@
   .hover-magenta {
     @apply transition-colors duration-500 ease-out hover:text-magenta;
   }
+  .hover-luxury {
+    @apply transition-colors duration-500 ease-out;
+  }
+  .hover-luxury:hover {
+    color: #B76E79;
+  }
 
   .grain-overlay::after {
     content: '';

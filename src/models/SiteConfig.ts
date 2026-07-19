@@ -99,6 +99,7 @@ export interface ITestimonialsSection {
     quote: string;
     author: string;
     role?: string;
+    rating?: number;
     avatar: ISiteImage;
   }[];
   backgroundImage: ISiteImage;
@@ -340,6 +341,7 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
               quote: { type: String, default: '' },
               author: { type: String, default: '' },
               role: { type: String, default: '' },
+              rating: { type: Number, default: 5 },
               avatar: { type: SiteImageSchema, default: () => ({}) },
             },
           ],

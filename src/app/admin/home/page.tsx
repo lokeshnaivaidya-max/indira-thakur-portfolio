@@ -225,6 +225,7 @@ export default function AdminHomePage() {
                           onChange={(newImg) => updateHeroImage(i, { ...img, ...newImg })}
                           aspect="aspect-[16/9]"
                           folder="home/hero/slideshow"
+                          imageType="hero"
                         />
                       </div>
 
@@ -301,6 +302,58 @@ export default function AdminHomePage() {
               </button>
             </>
           )}
+        </Section>
+
+        {/* Hero Preview */}
+        <Section title="Hero Preview" icon={<HiPhoto className="w-5 h-5" />}>
+          <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
+            Preview how your hero looks on desktop and mobile. Only photography images from this section are used — never the brand logo.
+          </p>
+          <div className="space-y-4">
+            {/* Desktop Preview */}
+            <div>
+              <p className="font-sans text-[10px] text-warm-gray/50 uppercase tracking-wider mb-2">Desktop</p>
+              <div className="relative w-full aspect-[16/9] bg-rich-black rounded-lg overflow-hidden border border-cream/50">
+                {(home.heroImages?.[0]?.url || home.images?.heroMain?.url) ? (
+                  <img
+                    src={home.heroImages?.[0]?.url || home.images?.heroMain?.url}
+                    alt="Hero desktop preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: home.backgroundGradient || 'linear-gradient(135deg, #1A1110 0%, #2C1810 40%, #111111 100%)' }}>
+                    <p className="font-sans text-xs text-white/30">No image set — gradient fallback</p>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-rich-black/70 via-rich-black/30 to-transparent" />
+                <div className="absolute bottom-6 left-6">
+                  <p className="font-serif text-xl text-white">{home.heading || 'Every Frame'}</p>
+                  <p className="font-serif text-sm text-white/40 italic">{home.headingItalic || 'Tells a Story'}</p>
+                </div>
+              </div>
+            </div>
+            {/* Mobile Preview */}
+            <div>
+              <p className="font-sans text-[10px] text-warm-gray/50 uppercase tracking-wider mb-2">Mobile</p>
+              <div className="relative w-48 aspect-[9/16] bg-rich-black rounded-lg overflow-hidden border border-cream/50 mx-auto">
+                {(home.heroImages?.[0]?.url || home.images?.heroMain?.url) ? (
+                  <img
+                    src={home.heroImages?.[0]?.url || home.images?.heroMain?.url}
+                    alt="Hero mobile preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: home.backgroundGradient || 'linear-gradient(135deg, #1A1110 0%, #2C1810 40%, #111111 100%)' }}>
+                    <p className="font-sans text-[9px] text-white/30 text-center px-2">No image set</p>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-rich-black/70 via-rich-black/20 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3">
+                  <p className="font-serif text-[11px] text-white leading-tight">{home.heading || 'Every Frame'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </Section>
 
         {/* Slideshow Settings */}
@@ -393,6 +446,7 @@ export default function AdminHomePage() {
               onChange={(img) => updateSection('home', { images: { ...home.images, heroMain: img } })}
               aspect="aspect-[16/9]"
               folder="home/hero"
+              imageType="hero"
             />
             <ImageManager
               label="Hero Accent Image"
@@ -402,6 +456,7 @@ export default function AdminHomePage() {
               onChange={(img) => updateSection('home', { images: { ...home.images, heroSecondary: img } })}
               aspect="aspect-[16/9]"
               folder="home/hero"
+              imageType="hero"
             />
           </div>
         </Section>

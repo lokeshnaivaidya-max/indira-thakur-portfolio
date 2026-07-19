@@ -76,7 +76,7 @@ export interface SiteConfigData {
   testimonials: {
     eyebrow: string;
     heading: string;
-    testimonials: { quote: string; author: string; role?: string; avatar: SiteImage }[];
+    testimonials: { quote: string; author: string; role?: string; rating?: number; avatar: SiteImage }[];
     backgroundImage: SiteImage;
   };
   faq: {

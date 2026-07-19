@@ -99,7 +99,7 @@ export default function Navbar() {
                   className={`font-sans text-xs uppercase tracking-[0.2em] transition-colors duration-500 py-2 ${
                     pathname === link.href
                       ? 'text-rich-black font-medium'
-                      : 'text-warm-gray/60 hover:text-rich-black'
+                      : 'text-warm-gray/60 hover:text-[#B76E79]'
                   }`}
                 >
                   {link.label}
@@ -110,7 +110,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-6 py-3 bg-rich-black text-white font-sans text-xs uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500 min-h-[44px]"
+                className="inline-flex items-center justify-center px-6 py-3 bg-rich-black text-white font-sans text-xs uppercase tracking-[0.2em] hover:bg-[#B76E79] transition-all duration-500 min-h-[44px]"
               >
                 Book Now
               </Link>
@@ -172,7 +172,7 @@ export default function Navbar() {
                     className={`font-serif text-2xl md:text-3xl transition-colors duration-500 py-2 px-4 min-h-[44px] inline-flex items-center ${
                       pathname === link.href
                         ? 'text-rich-black font-medium'
-                        : 'text-rich-black/70 hover:text-rich-black'
+                        : 'text-rich-black/70 hover:text-[#B76E79]'
                     }`}
                   >
                     {link.label}
@@ -190,7 +190,7 @@ export default function Navbar() {
               <Link
                 href="/contact"
                 onClick={closeMenu}
-                className="inline-flex items-center justify-center px-8 py-3.5 bg-rich-black text-white font-sans text-xs uppercase tracking-[0.2em] hover:bg-charcoal transition-all duration-500 min-h-[44px]"
+                className="inline-flex items-center justify-center px-8 py-3.5 bg-rich-black text-white font-sans text-xs uppercase tracking-[0.2em] hover:bg-[#B76E79] transition-all duration-500 min-h-[44px]"
               >
                 Book Now
               </Link>

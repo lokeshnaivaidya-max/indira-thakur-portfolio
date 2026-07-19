@@ -70,7 +70,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative h-screen w-full overflow-hidden bg-rich-black -mt-20 pt-20"
+      className="relative h-screen min-h-[100dvh] w-full overflow-hidden bg-rich-black"
       aria-label="Hero section"
     >
       <style dangerouslySetInnerHTML={{ __html: kenBurnsKeyframes }} />

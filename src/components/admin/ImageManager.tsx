@@ -20,6 +20,7 @@ interface ImageManagerProps {
   aspect?: string;
   folder?: string;
   required?: boolean;
+  imageType?: 'hero' | 'logo' | 'favicon' | 'gallery' | 'general';
 }
 
 interface UploadState {
@@ -44,6 +45,7 @@ export default function ImageManager({
   onChange,
   aspect = 'aspect-[4/3]',
   folder = 'site',
+  imageType = 'general',
 }: ImageManagerProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
     uploading: false,
@@ -89,6 +91,23 @@ export default function ImageManager({
     if (!file.type.startsWith('image/')) {
       setUploadState(prev => ({ ...prev, error: 'Please select an image file (JPEG, PNG, WebP, GIF)' }));
       return;
+    }
+
+    if (imageType === 'hero') {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      await new Promise<void>((resolve) => {
+        img.onload = () => {
+          const ratio = img.width / img.height;
+          if (ratio >= 0.75 && ratio <= 1.5) {
+            setUploadState(prev => ({ ...prev, warning: 'This image appears to be a logo or square image. Hero backgrounds work best with landscape photographs.' }));
+          }
+          URL.revokeObjectURL(objectUrl);
+          resolve();
+        };
+        img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(); };
+        img.src = objectUrl;
+      });
     }
 
     if (file.size > 15 * 1024 * 1024) {
@@ -213,7 +232,7 @@ export default function ImageManager({
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
-  }, [folder, value.alt, value.caption, onChange]);
+  }, [folder, value.alt, value.caption, onChange, imageType]);
 
   const handleUrlSubmit = useCallback(() => {
     if (!urlInput.trim()) return;
@@ -352,7 +371,15 @@ export default function ImageManager({
           <div className="text-center p-4 z-10">
             <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-2" />
             <p className="font-sans text-xs text-warm-gray/50">Click to upload an image</p>
-            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · up to 15 MB · uploaded as-is</p>
+            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">
+              {imageType === 'hero' && 'Landscape photos work best · JPEG, PNG, WebP · up to 15 MB'}
+              {imageType === 'logo' && 'Transparent PNG or SVG recommended · up to 15 MB'}
+              {imageType === 'favicon' && 'Square image recommended · PNG, ICO, SVG · up to 15 MB'}
+              {imageType !== 'hero' && imageType !== 'logo' && imageType !== 'favicon' && 'JPEG, PNG, WebP, GIF · up to 15 MB · uploaded as-is'}
+            </p>
+            {imageType === 'hero' && (
+              <p className="font-sans text-[10px] text-warm-gray/30 mt-0.5">Recommended: landscape format (16:9 or wider)</p>
+            )}
           </div>
         )}
       </div>
