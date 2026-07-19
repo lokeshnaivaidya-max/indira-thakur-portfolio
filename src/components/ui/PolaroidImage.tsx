@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useCallback } from 'react';
 import { cn } from '@/lib/imageUtils';
 
@@ -96,18 +95,13 @@ export function PolaroidImage({
   }
 
   const img = (
-    <Image
+    <img
       src={src}
       alt={alt}
-      fill
-      sizes={responsiveSizes}
-      quality={quality}
-      unoptimized={unoptimized}
-      priority={priority}
       loading={priority ? 'eager' : 'lazy'}
       onError={handleError}
       className={cn(
-        'absolute inset-0',
+        'absolute inset-0 w-full h-full',
         objectFit === 'cover' ? 'object-cover' : 'object-contain',
         positionClass,
         className

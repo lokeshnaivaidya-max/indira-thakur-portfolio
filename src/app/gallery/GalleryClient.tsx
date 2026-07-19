@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
@@ -257,6 +257,23 @@ export default function GalleryClient() {
   }, [lightboxOpen, closeLightbox, goNext, goPrev]);
 
   const currentImage = filtered[currentIndex];
+
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+  }, [goNext, goPrev]);
 
   return (
     <>
@@ -579,6 +596,8 @@ export default function GalleryClient() {
             role="dialog"
             aria-modal="true"
             aria-label="Gallery lightbox"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <button
               onClick={closeLightbox}

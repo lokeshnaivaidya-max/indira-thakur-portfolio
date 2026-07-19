@@ -1,5 +1,6 @@
 import Hero from '@/components/sections/Hero';
 import FAQ from '@/components/sections/FAQ';
+import GoogleContact from '@/components/sections/GoogleContact';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function Home() {
     <>
       <Hero />
       <FAQ />
+      <GoogleContact />
     </>
   );
 }

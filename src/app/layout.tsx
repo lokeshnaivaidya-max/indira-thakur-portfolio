@@ -56,7 +56,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <DynamicHead />
           <LoadingScreen />
-          <div className="grain-overlay" aria-hidden="true" />
           <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
         </ThemeProvider>
       </body>

@@ -70,7 +70,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative h-screen min-h-[100dvh] w-full overflow-hidden bg-rich-black"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-rich-black"
       aria-label="Hero section"
     >
       <style dangerouslySetInnerHTML={{ __html: kenBurnsKeyframes }} />
@@ -124,7 +124,7 @@ export default function Hero() {
                   <img
                     src={img.url}
                     alt={img.alt || ''}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain"
                     style={{
                       willChange: 'transform',
                     }}
