@@ -9,6 +9,8 @@ export default function PublicLayoutWrapper({ children }: { children: React.Reac
   const isAdmin = pathname.startsWith('/admin');
   const isHome = pathname === '/';
 
+  console.log('[PublicLayoutWrapper] render', { pathname, isAdmin, isHome });
+
   if (isAdmin) {
     return <>{children}</>;
   }

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  console.log('[AboutPage] render');
   return (
     <div className="pt-16">
       <AboutSection />

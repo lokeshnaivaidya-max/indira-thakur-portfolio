@@ -42,6 +42,8 @@ export default function AppProviders({ initialConfig, initialTheme, children }: 
     );
   }
 
+  console.log('[AppProviders] render', { pathname: typeof window !== 'undefined' ? window.location.pathname : 'ssr', isClient, hasInitialData, isLoading });
+
   return (
     <>
       {effectiveTheme && (
