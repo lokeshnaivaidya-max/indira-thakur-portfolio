@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useCallback } from 'react';
-import { cn, getBlurDataURL } from '@/lib/imageUtils';
+import { cn } from '@/lib/imageUtils';
 
 interface PolaroidImageProps {
   src: string;
@@ -14,7 +14,6 @@ interface PolaroidImageProps {
   objectFit?: 'cover' | 'contain';
   objectPosition?: 'top' | 'center' | 'bottom' | 'left' | 'right' | string;
   priority?: boolean;
-  blurDataURL?: string;
   caption?: string;
   showCaption?: boolean;
   sizes?: string;
@@ -25,8 +24,6 @@ interface PolaroidImageProps {
   style?: React.CSSProperties;
   bgColor?: string;
 }
-
-const DEFAULT_BLUR = getBlurDataURL('#222222');
 
 const OBJECT_POSITION_CLASS: Record<string, string> = {
   top: 'object-top',
@@ -46,7 +43,6 @@ export function PolaroidImage({
   objectFit = 'contain',
   objectPosition = 'center',
   priority = false,
-  blurDataURL,
   caption,
   showCaption = false,
   sizes,
@@ -109,8 +105,6 @@ export function PolaroidImage({
       unoptimized={unoptimized}
       priority={priority}
       loading={priority ? 'eager' : 'lazy'}
-      placeholder="blur"
-      blurDataURL={blurDataURL ?? DEFAULT_BLUR}
       onError={handleError}
       className={cn(
         'absolute inset-0',

@@ -598,7 +598,7 @@ export default function GalleryClient() {
 
             <button
               onClick={goNext}
-              className="absolute right-4 md:right-6 z-10 text-white/60 hover:text-white transition-colors duration-300"
+              className="absolute right-4 md:right-6 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
               aria-label="Next image"
             >
               <HiArrowRight className="w-5 h-5" />
@@ -633,7 +633,7 @@ export default function GalleryClient() {
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
               {filtered.length > 15 ? (
                 <span className="font-sans text-[10px] text-white/50">
                   {currentIndex + 1} of {filtered.length}
@@ -643,7 +643,8 @@ export default function GalleryClient() {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-6 h-px bg-white' : 'w-3 h-px bg-white/20'}`}
+                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-2 h-2 rounded-full bg-white' : 'w-2 h-2 rounded-full bg-white/20'}`}
+                    aria-label={`Go to image ${i + 1}`}
                   />
                 ))
               )}
