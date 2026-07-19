@@ -73,7 +73,7 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.3 }}
               >
-                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">{about.eyebrow}</span>
+                <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">{about.eyebrow}</span>
                 <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-4 max-w-sm">{about.heading}</h2>
                 <div className="w-5 h-px bg-magenta/25 mt-6" />
                 <p className="font-sans text-sm text-warm-gray/50 mt-5 max-w-xs leading-relaxed">
@@ -81,7 +81,7 @@ export default function About() {
                 </p>
                 <Link
                   href={about.ctaLink || '/gallery'}
-                  className="inline-flex items-center gap-2 mt-6 font-sans text-[9px] text-magenta/50 uppercase tracking-[0.3em] hover:text-magenta transition-colors duration-500"
+                  className="inline-flex items-center gap-2 mt-6 font-sans text-[11px] text-magenta/60 uppercase tracking-[0.3em] hover:text-magenta transition-colors duration-500"
                 >
                   <span className="w-3 h-px bg-magenta/25" />
                   {about.ctaText || 'View Portfolio'}
@@ -103,7 +103,7 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="lg:col-span-5 flex flex-col justify-center"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">My Story</span>
+              <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">My Story</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
                 From Words to <span className="italic font-normal text-warm-gray/60">Frames</span>
               </h3>
@@ -150,7 +150,7 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="text-center"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Philosophy</span>
+              <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">Philosophy</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
                 Every Session is a <span className="italic font-normal text-warm-gray/60">Love Story</span>
               </h3>
@@ -172,7 +172,7 @@ export default function About() {
                 {about.specializations.map((spec: string, i: number) => (
                   <span
                     key={i}
-                    className="px-5 py-2 border border-beige/40 font-sans text-[10px] text-warm-gray/50 uppercase tracking-[0.2em] rounded-full hover:border-magenta/20 hover:text-magenta/60 transition-all duration-500"
+                    className="px-5 py-2 border border-beige/40 font-sans text-[11px] text-warm-gray/50 uppercase tracking-[0.2em] rounded-full hover:border-magenta/20 hover:text-magenta/60 transition-all duration-500"
                   >
                     {spec}
                   </span>
@@ -217,14 +217,14 @@ export default function About() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:col-span-6 order-1 lg:order-2"
             >
-              <span className="font-mono text-[8px] text-white/30 uppercase tracking-[0.35em]">The Journey</span>
+              <span className="font-mono text-[11px] text-white/50 uppercase tracking-[0.35em]">The Journey</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-white leading-[1.15] mt-4">
                 Capturing <span className="italic font-normal text-white/50">Milestones</span>
               </h3>
               <div className="w-5 h-px bg-white/15 mt-6" />
-              <p className="font-sans text-sm text-white/40 mt-6 leading-[1.8]">{about.journey}</p>
+                <p className="font-sans text-sm text-white/50 mt-6 leading-[1.8]">{about.journey}</p>
               {about.journeyContinued && (
-                <p className="font-sans text-sm text-white/40 mt-4 leading-[1.8]">{about.journeyContinued}</p>
+                <p className="font-sans text-sm text-white/50 mt-4 leading-[1.8]">{about.journeyContinued}</p>
               )}
 
               {about.stats && about.stats.length > 0 && (
@@ -232,7 +232,7 @@ export default function About() {
                   {about.stats.map((stat: { label: string; value: string }, i: number) => (
                     <div key={i}>
                       <p className="font-serif text-2xl md:text-3xl text-white">{stat.value}</p>
-                      <p className="font-mono text-[9px] text-white/30 uppercase tracking-[0.2em] mt-1">{stat.label}</p>
+                      <p className="font-mono text-[11px] text-white/50 uppercase tracking-[0.2em] mt-1">{stat.label}</p>
                     </div>
                   ))}
                 </div>
@@ -253,7 +253,7 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="text-center mb-16"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Milestones</span>
+              <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">Milestones</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
                 Proud <span className="italic font-normal text-warm-gray/60">Moments</span>
               </h3>
@@ -271,7 +271,7 @@ export default function About() {
                   className="p-8 bg-white border border-cream/40 hover:border-magenta/15 transition-colors duration-500"
                 >
                   {ach.year && (
-                    <p className="font-mono text-[9px] text-magenta/30 uppercase tracking-[0.2em] mb-3">{ach.year}</p>
+                    <p className="font-mono text-[11px] text-magenta/30 uppercase tracking-[0.2em] mb-3">{ach.year}</p>
                   )}
                   <h4 className="font-serif text-lg text-rich-black">{ach.title}</h4>
                   <div className="w-4 h-px bg-magenta/15 mt-3 mb-3" />
@@ -344,7 +344,7 @@ export default function About() {
                 transition={{ duration: 0.8 }}
                 className="text-center mb-14"
               >
-                <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Core Values</span>
+                <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">Core Values</span>
                 <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
                   What <span className="italic font-normal text-warm-gray/60">Drives Us</span>
                 </h3>
@@ -385,7 +385,7 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="lg:col-span-6"
             >
-              <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">Welcome</span>
+              <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">Welcome</span>
               <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black leading-[1.15] mt-4">
                 Join the <span className="italic font-normal text-warm-gray/60">Family</span>
               </h3>
@@ -395,20 +395,20 @@ export default function About() {
               {about.signature && (
                 <div className="mt-8">
                   <p className="font-serif text-xl italic text-rich-black/70">{about.signature}</p>
-                  <p className="font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em] mt-1">Indira Thakur Photography</p>
+                  <p className="font-mono text-[11px] text-warm-gray/50 uppercase tracking-[0.2em] mt-1">Indira Thakur Photography</p>
                 </div>
               )}
 
               <div className="mt-8 flex items-center gap-6">
                 <Link
                   href={about.ctaLink || '/gallery'}
-                  className="inline-flex items-center justify-center px-8 py-3.5 bg-rich-black text-white font-sans text-[10px] uppercase tracking-[0.25em] font-medium transition-all duration-700 hover:bg-charcoal"
+                  className="inline-flex items-center justify-center px-8 py-3.5 bg-rich-black text-white font-sans text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-700 hover:bg-charcoal"
                 >
                   {about.ctaText || 'View Portfolio'}
                 </Link>
                 <Link
                   href="/contact"
-                  className="font-sans text-[10px] text-magenta/50 uppercase tracking-[0.2em] hover:text-magenta transition-colors duration-500"
+                  className="font-sans text-[11px] text-magenta/50 uppercase tracking-[0.2em] hover:text-magenta transition-colors duration-500"
                 >
                   Get in Touch
                 </Link>

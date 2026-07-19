@@ -35,7 +35,7 @@ export default function Testimonials() {
   const bgImage = config?.testimonials?.backgroundImage?.url || '';
 
   return (
-    <section className={`relative py-28 md:py-36 ${bgImage ? '' : 'bg-ivory'}`}>
+    <section className={`relative py-28 md:py-36 ${bgImage ? '' : 'bg-ivory'}`} aria-label="Testimonials">
       {bgImage && (
         <PolaroidImage
           src={bgImage}
@@ -73,7 +73,7 @@ export default function Testimonials() {
                   />
                 </div>
               )}
-              <p className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black/65 leading-relaxed italic">
+              <p className="font-serif text-2xl md:text-3xl lg:text-4xl text-rich-black/65 leading-relaxed italic" aria-live="polite">
                 &ldquo;{items[current]?.quote}&rdquo;
               </p>
               <div className="w-4 h-px bg-magenta/15 mx-auto mt-8 mb-4" />
@@ -81,7 +81,7 @@ export default function Testimonials() {
                 {items[current]?.author}
               </p>
               {items[current]?.role && (
-                <p className="font-sans text-[10px] text-rich-black/25 mt-1">{items[current].role}</p>
+                <p className="font-sans text-[11px] text-rich-black/40 mt-1">{items[current].role}</p>
               )}
             </motion.div>
           </AnimatePresence>
@@ -91,9 +91,17 @@ export default function Testimonials() {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`transition-all duration-700 h-px ${i === current ? 'w-6 bg-magenta/50' : 'w-3 bg-beige/60'}`}
+                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[28px] min-h-[28px] flex items-center justify-center"
                 aria-label={`Testimonial ${i + 1}`}
-              />
+              >
+                <span
+                  className="h-[3px] rounded-full transition-all duration-700 ease-out"
+                  style={{
+                    width: i === current ? 24 : 12,
+                    backgroundColor: i === current ? 'rgba(180,80,120,0.5)' : 'rgba(219,206,178,0.6)',
+                  }}
+                />
+              </button>
             ))}
           </div>
         </div>

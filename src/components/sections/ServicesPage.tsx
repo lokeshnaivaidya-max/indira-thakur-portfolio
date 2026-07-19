@@ -25,7 +25,7 @@ export default function ServicesPageClient() {
     <div className="pt-36 pb-20">
       <div className="container-editorial mb-16">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-          <span className="font-mono text-[9px] text-magenta/40 uppercase tracking-[0.3em]">{servicesData.eyebrow}</span>
+          <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.3em]">{servicesData.eyebrow}</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-rich-black leading-[1.1] mt-3">{servicesData.heading}</h1>
         </motion.div>
       </div>
@@ -58,12 +58,12 @@ export default function ServicesPageClient() {
                     </div>
                   )}
                   <div className="absolute bottom-12 md:bottom-20 left-8 md:left-16 lg:left-24 max-w-lg">
-                    <p className="font-mono text-[9px] text-white/40 uppercase tracking-[0.25em]">{String(i + 1).padStart(2, '0')}</p>
+                    <p className="font-mono text-[11px] text-white/40 uppercase tracking-[0.25em]">{String(i + 1).padStart(2, '0')}</p>
                     <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mt-2 leading-[1.05]">{service.title}</h2>
                     {service.description && (
-                      <p className="font-sans text-sm text-white/50 mt-4 leading-relaxed max-w-md">{service.description}</p>
+                      <p className="font-sans text-sm text-white/60 mt-4 leading-relaxed max-w-md">{service.description}</p>
                     )}
-                    <Link href="/contact" className="inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-white/50 uppercase tracking-[0.2em] hover:text-white transition-colors">
+                    <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-white/60 uppercase tracking-[0.2em] hover:text-white transition-colors">
                       <span className="w-4 h-px bg-white/30" />Enquire
                     </Link>
                   </div>
@@ -84,13 +84,13 @@ export default function ServicesPageClient() {
                   </div>
                   <div className="flex items-center px-8 md:px-16 py-12 lg:py-0">
                     <div className="max-w-sm">
-                      <p className="font-mono text-[9px] text-magenta/40 uppercase tracking-[0.25em]">{String(i + 1).padStart(2, '0')}</p>
+                      <p className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.25em]">{String(i + 1).padStart(2, '0')}</p>
                       <h2 className="font-serif text-3xl md:text-4xl text-rich-black mt-2">{service.title}</h2>
                       <div className="w-6 h-px bg-magenta/25 mt-5" />
                       {service.description && (
-                        <p className="font-sans text-sm text-warm-gray/50 mt-5 leading-relaxed">{service.description}</p>
+                        <p className="font-sans text-sm text-warm-gray/60 mt-5 leading-relaxed">{service.description}</p>
                       )}
-                      <Link href="/contact" className="inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-magenta/50 uppercase tracking-[0.2em] hover:text-magenta transition-colors">
+                      <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-magenta/60 uppercase tracking-[0.2em] hover:text-magenta transition-colors">
                         <span className="w-4 h-px bg-magenta/25" />Enquire
                       </Link>
                     </div>

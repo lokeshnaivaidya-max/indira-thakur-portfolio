@@ -69,7 +69,7 @@ export default function AdminTestimonialsPage() {
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         <Section title="Section Header" defaultOpen icon={<HiUserGroup className="w-5 h-5" />}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FieldInput label="Eyebrow" value={t.eyebrow || ''} onChange={(v) => updateSection('testimonials', { eyebrow: v })} placeholder="e.g., Kind Words" helperText="Tiny text above the heading" />
             <FieldInput label="Heading" value={t.heading || ''} onChange={(v) => updateSection('testimonials', { heading: v })} placeholder="e.g., What Families Say" helperText="The main title of this section" />
           </div>
@@ -106,7 +106,7 @@ export default function AdminTestimonialsPage() {
                     className="w-full px-4 py-2.5 bg-white border border-cream/60 text-rich-black font-sans text-sm rounded focus:outline-none focus:border-magenta/40 transition-colors resize-none"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <FieldInput label="Author Name" value={item.author || ''} onChange={(v) => handleTestimonialChange(i, 'author', v)} placeholder="e.g., Ananya Sharma" helperText="The person who gave this testimonial" />
                   <FieldInput label="Role (optional)" value={item.role || ''} onChange={(v) => handleTestimonialChange(i, 'role', v)} placeholder="e.g., New Mom" helperText="Their relationship to you (e.g., New Mom)" />
                 </div>

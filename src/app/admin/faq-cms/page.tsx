@@ -62,7 +62,7 @@ export default function AdminFAQPage() {
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         <Section title="Section Header" defaultOpen icon={<HiQuestionMarkCircle className="w-5 h-5" />}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FieldInput label="Eyebrow" value={faq.eyebrow || ''} onChange={(v) => updateSection('faq', { eyebrow: v })} placeholder="e.g., Questions" helperText="Tiny text above the heading" />
             <FieldInput label="Heading" value={faq.heading || ''} onChange={(v) => updateSection('faq', { heading: v })} placeholder="e.g., Commonly Asked" helperText="The main title of this section" />
           </div>

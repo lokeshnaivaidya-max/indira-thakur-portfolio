@@ -37,7 +37,7 @@ export default function GalleryPreview() {
           viewport={{ once: true }}
           transition={{ duration: 1 }}
         >
-          <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">{gp.eyebrow}</span>
+          <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">{gp.eyebrow}</span>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-3">{gp.heading}</h2>
         </motion.div>
       </div>
@@ -83,7 +83,7 @@ export default function GalleryPreview() {
           className="group inline-flex items-center gap-3"
         >
           <span className="w-5 h-px bg-magenta/25 group-hover:w-8 transition-all duration-700" />
-          <span className="font-sans text-[9px] text-magenta/50 uppercase tracking-[0.3em] group-hover:text-magenta transition-colors duration-500">
+          <span className="font-sans text-[11px] text-magenta/60 uppercase tracking-[0.3em] group-hover:text-magenta transition-colors duration-500">
             {gp.ctaText || 'View Full Gallery'}
           </span>
           <span className="w-5 h-px bg-magenta/25 group-hover:w-8 transition-all duration-700" />

@@ -105,7 +105,7 @@ export default function AdminServicesPage() {
               <div key={i} className="p-5 bg-ivory/50 border border-cream/40 rounded-lg space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-mono text-[10px] text-warm-gray/40 uppercase tracking-wider">Service #{i + 1}</span>
-                  <button type="button" onClick={() => removeService(i)} className="text-red-400 hover:text-red-600 transition-colors">
+                  <button type="button" onClick={() => removeService(i)} className="min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-red-400 hover:text-red-600 transition-colors">
                     <HiTrash className="w-4 h-4" />
                   </button>
                 </div>
@@ -143,7 +143,7 @@ export default function AdminServicesPage() {
                 />
               </div>
             ))}
-            <button type="button" onClick={addService} className="flex items-center gap-2 text-magenta font-sans text-xs hover:text-raspberry transition-colors">
+            <button type="button" onClick={addService} className="inline-flex items-center gap-2 px-4 py-2 min-h-[44px] text-magenta font-sans text-xs hover:bg-magenta/5 rounded transition-colors">
               <HiPlus className="w-4 h-4" /> Add Another Service
             </button>
           </div>

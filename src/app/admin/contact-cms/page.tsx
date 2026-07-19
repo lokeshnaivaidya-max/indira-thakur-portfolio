@@ -68,7 +68,7 @@ export default function AdminContactCMSPage() {
             <FieldInput label="Heading" value={c.heading || ''} onChange={(v) => updateSection('contact', { heading: v })} placeholder="e.g., Begin Your Story" helperText="The main title of this section" />
           </div>
           <FieldTextarea label="Description" value={c.description || ''} onChange={(v) => updateSection('contact', { description: v })} rows={2} placeholder="Contact section description..." helperText="A warm invitation to get in touch" />
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FieldInput label="Email" value={c.email || ''} onChange={(v) => updateSection('contact', { email: v })} placeholder="hello@indirathakur.com" helperText="Your business email address" />
             <FieldInput label="Phone" value={c.phone || ''} onChange={(v) => updateSection('contact', { phone: v })} placeholder="+91 99999 99999" helperText="Your business phone number" />
             <FieldInput label="Location" value={c.location || ''} onChange={(v) => updateSection('contact', { location: v })} placeholder="Bangalore, India" helperText="Your studio or city" />

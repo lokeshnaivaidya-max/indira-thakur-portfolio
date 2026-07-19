@@ -1,9 +1,29 @@
 import type { Metadata } from 'next';
+import { Playfair_Display, Inter, DM_Mono } from 'next/font/google';
 import './globals.css';
 import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import LoadingScreen from '@/components/premium/LoadingScreen';
 import DynamicHead from '@/components/layout/DynamicHead';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -21,14 +41,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-  <body className="bg-ivory text-rich-black font-sans antialiased">
-    <ThemeProvider>
-      <DynamicHead />
-      <LoadingScreen />
-      <div className="grain-overlay" />
-      <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
-    </ThemeProvider>
+    <html lang="en" className={`${playfair.variable} ${inter.variable} ${dmMono.variable}`} suppressHydrationWarning>
+      <body className="bg-ivory text-rich-black font-sans antialiased" suppressHydrationWarning>
+        <ThemeProvider>
+          <DynamicHead />
+          <LoadingScreen />
+          <div className="grain-overlay" aria-hidden="true" />
+          <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

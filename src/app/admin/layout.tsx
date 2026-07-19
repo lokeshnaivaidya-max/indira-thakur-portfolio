@@ -105,21 +105,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {!sidebarCollapsed && (
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden text-warm-brown p-1"
+                  className="lg:hidden text-warm-brown w-11 h-11 inline-flex items-center justify-center"
                   aria-label="Close sidebar"
                 >
                   <HiXMark className="w-5 h-5" />
                 </button>
               )}
             </div>
-            <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={`mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors flex items-center justify-center gap-2 ${sidebarCollapsed ? 'px-0' : ''}`}
-              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <HiBars3 className="w-4 h-4" />
-              {!sidebarCollapsed && <span>Collapse</span>}
-            </button>
+            <div className={`hidden lg:flex mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors items-center justify-center gap-2 ${sidebarCollapsed ? 'px-0' : ''}`}>
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="flex items-center justify-center gap-2 w-full"
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <HiBars3 className="w-4 h-4" />
+                {!sidebarCollapsed && <span>Collapse</span>}
+              </button>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -127,7 +129,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {sidebarGroups.map((group) => (
               <div key={group.label}>
                 {!sidebarCollapsed && (
-                  <p className="px-4 mb-1 font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em]">
+                  <p className="px-4 mb-1 font-mono text-[11px] text-warm-gray/30 uppercase tracking-[0.2em]">
                     {group.label}
                   </p>
                 )}
@@ -139,7 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`flex items-center gap-3 px-4 py-2 rounded-lg font-sans text-sm transition-all duration-200 ${
+                        className={`flex items-center gap-3 px-4 py-2 min-h-[44px] rounded-lg font-sans text-sm transition-all duration-200 ${
                           isActive
                             ? 'bg-rich-black text-white'
                             : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
@@ -187,14 +189,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 min-w-0 lg:ml-0 flex flex-col">
         {/* Mobile Top Bar - sticky */}
         <header className="sticky top-0 z-30 lg:hidden bg-white/95 backdrop-blur-sm border-b border-cream/50 px-4 py-3 flex-shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-warm-brown p-2"
-            aria-label="Open sidebar"
-            aria-expanded={sidebarOpen}
-          >
-            <HiBars3 className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-warm-brown p-2"
+              aria-label="Open sidebar"
+              aria-expanded={sidebarOpen}
+            >
+              <HiBars3 className="w-6 h-6" />
+            </button>
+            <span className="font-serif text-lg text-rich-black">
+              {sidebarGroups.flatMap(g => g.links).find(l => pathname === l.href)?.label || 'Admin'}
+            </span>
+          </div>
         </header>
 
         {/* Content area - scrollable, single scrollbar on main */}

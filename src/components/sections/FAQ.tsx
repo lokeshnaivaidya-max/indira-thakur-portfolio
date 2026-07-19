@@ -44,7 +44,7 @@ export default function FAQ() {
       <div className="container-editorial">
         <div className="max-w-3xl mx-auto">
           <div className="mb-14">
-            <span className="font-mono text-[8px] text-magenta/40 uppercase tracking-[0.35em]">{faqData.eyebrow}</span>
+            <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.35em]">{faqData.eyebrow}</span>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-rich-black leading-[1.1] mt-3">{faqData.heading}</h2>
           </div>
 
@@ -56,9 +56,12 @@ export default function FAQ() {
                   key={i}
                   className="bg-white/60 backdrop-blur-sm border border-beige/30 rounded-sm"
                 >
-                  <button
+                   <button
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     className="w-full py-6 px-8 flex items-center justify-between text-left group transition-colors duration-300 hover:bg-white/40"
+                    aria-expanded={openIndex === i}
+                    aria-controls={`faq-answer-${i}`}
+                    id={`faq-question-${i}`}
                   >
                     <span className="font-sans text-base font-medium text-rich-black pr-4">
                       {faq.question}
@@ -73,6 +76,8 @@ export default function FAQ() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
                         className="overflow-hidden"
+                        id={`faq-answer-${i}`}
+                        role="region"
                       >
                         <p className="font-sans text-sm text-warm-gray/60 pb-6 px-8 leading-relaxed">
                           {faq.answer}

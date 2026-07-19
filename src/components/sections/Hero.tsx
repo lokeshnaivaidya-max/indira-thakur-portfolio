@@ -44,7 +44,7 @@ export default function Hero() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  
 
   useEffect(() => {
     setMounted(true);
@@ -62,12 +62,6 @@ export default function Hero() {
     return () => clearTimeout(timer);
   }, [currentIndex, images, slideshowDuration, transitionDuration]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 4;
-    const y = (e.clientY / window.innerHeight - 0.5) * 4;
-    setMousePos({ x, y });
-  }, []);
-
   const goToSlide = useCallback((index: number) => {
     setCurrentIndex(index);
   }, []);
@@ -77,7 +71,7 @@ export default function Hero() {
   return (
     <section
       className="relative h-screen w-full overflow-hidden bg-rich-black -mt-20 pt-20"
-      onMouseMove={handleMouseMove}
+      aria-label="Hero section"
     >
       <style dangerouslySetInnerHTML={{ __html: kenBurnsKeyframes }} />
 
@@ -124,9 +118,6 @@ export default function Hero() {
                     animation: mounted && isActive && kenBurnsEnabled
                       ? `${animName} ${totalDuration}s ease-in-out forwards`
                       : 'none',
-                    transform: mounted && isActive && !kenBurnsEnabled
-                      ? `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.02)`
-                      : undefined,
                     willChange: 'transform',
                   }}
                 >
@@ -135,9 +126,6 @@ export default function Hero() {
                     alt={img.alt || ''}
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{
-                      transform: mounted && isActive
-                        ? `translate(${mousePos.x}px, ${mousePos.y}px)`
-                        : undefined,
                       willChange: 'transform',
                     }}
                     {...(i === 0 ? { fetchPriority: 'high' } : {})}
@@ -189,7 +177,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-            className="font-mono text-[10px] text-white/30 uppercase tracking-[0.3em] mb-4"
+            className="font-mono text-[11px] text-white/50 uppercase tracking-[0.3em] mb-4"
           >
             {tagline}
           </motion.p>
@@ -199,7 +187,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] text-white leading-[1.02] tracking-tight max-w-4xl"
+          className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-[7rem] text-white leading-[1.02] tracking-tight max-w-4xl"
         >
           {heading}
           <br />
@@ -216,7 +204,7 @@ export default function Hero() {
           {categories.map((cat: string) => (
             <span
               key={cat}
-              className="font-mono text-[9px] text-white/25 uppercase tracking-[0.3em]"
+              className="font-mono text-[11px] text-white/50 uppercase tracking-[0.3em]"
             >
               {cat}
             </span>
@@ -232,13 +220,13 @@ export default function Hero() {
         >
           <Link
             href={ctaLink}
-            className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-rich-black font-sans text-[10px] uppercase tracking-[0.25em] font-medium transition-all duration-700 hover:bg-ivory"
+            className="inline-flex items-center justify-center px-8 py-3.5 min-h-[44px] bg-white text-rich-black font-sans text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-700 hover:bg-ivory"
           >
             {ctaText}
           </Link>
           <Link
             href={secondaryCtaLink}
-            className="group inline-flex items-center gap-3 font-sans text-[10px] text-white/30 uppercase tracking-[0.25em] hover:text-white/60 transition-colors duration-500"
+            className="group inline-flex items-center gap-3 font-sans text-[11px] text-white/50 uppercase tracking-[0.25em] hover:text-white/60 transition-colors duration-500"
           >
             <span className="w-4 h-px bg-white/20 group-hover:w-7 transition-all duration-500" />
             {secondaryCtaText}
@@ -257,13 +245,17 @@ export default function Hero() {
               <button
                 key={i}
                 onClick={() => goToSlide(i)}
-                className="h-px transition-all duration-700 ease-out"
-                style={{
-                  width: i === currentIndex ? 32 : 16,
-                  backgroundColor: i === currentIndex ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
-                }}
+                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[28px] min-h-[28px] flex items-center justify-center"
                 aria-label={`Go to slide ${i + 1}`}
-              />
+              >
+                <span
+                  className="h-[3px] rounded-full transition-all duration-700 ease-out"
+                  style={{
+                    width: i === currentIndex ? 24 : 12,
+                    backgroundColor: i === currentIndex ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
+                  }}
+                />
+              </button>
             ))}
           </motion.div>
         )}
@@ -276,7 +268,7 @@ export default function Hero() {
         transition={{ duration: 1, delay: 1.2 }}
         className="absolute bottom-16 right-8 md:hidden z-20"
       >
-        <p className="font-mono text-[7px] text-white/15 uppercase tracking-[0.3em] leading-[2.2] text-right">
+        <p className="font-mono text-[11px] text-white/30 uppercase tracking-[0.3em] leading-[2.2] text-right">
           {categories.join(' · ')}
         </p>
       </motion.div>

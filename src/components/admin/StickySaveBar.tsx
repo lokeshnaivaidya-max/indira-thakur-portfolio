@@ -49,7 +49,7 @@ export default function StickySaveBar({
                   type="button"
                   onClick={onDiscard}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 font-sans text-[11px] uppercase tracking-[0.15em] text-warm-gray/60 hover:text-rich-black transition-colors disabled:opacity-40"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] font-sans text-xs uppercase tracking-[0.15em] text-warm-gray/60 hover:text-rich-black transition-colors disabled:opacity-40"
                 >
                   <HiArrowPath className="w-3.5 h-3.5" />
                   Discard
@@ -58,7 +58,7 @@ export default function StickySaveBar({
                   type="button"
                   onClick={onSave}
                   disabled={saving || !dirty}
-                  className="inline-flex items-center justify-center gap-2 px-7 py-2.5 bg-rich-black text-white font-sans text-[11px] uppercase tracking-[0.15em] hover:bg-charcoal transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-2.5 min-h-[44px] bg-rich-black text-white font-sans text-xs uppercase tracking-[0.15em] hover:bg-charcoal transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <>

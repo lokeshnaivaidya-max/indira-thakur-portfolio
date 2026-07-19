@@ -264,7 +264,7 @@ export default function GalleryPage() {
         {/* Page Header */}
         <div className="container-editorial mb-6">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-            <span className="font-mono text-[9px] text-magenta/40 uppercase tracking-[0.3em]">Portfolio</span>
+            <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.3em]">Portfolio</span>
             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-rich-black leading-[1.1] mt-3">The Gallery</h1>
           </motion.div>
         </div>
@@ -346,6 +346,7 @@ export default function GalleryPage() {
                           src={bgImg.src}
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm scale-110"
+                          loading="lazy"
                           style={{
                             animation: `heroBgDrift ${8 + i * 3}s ease-in-out ${i * 1.5}s infinite alternate`,
                           }}
@@ -365,6 +366,7 @@ export default function GalleryPage() {
                         bgColor="bg-transparent"
                         className="transition-transform duration-700 ease-out group-hover:scale-[1.02] relative z-10 drop-shadow-2xl"
                         containerClassName="max-w-full max-h-full"
+                        priority
                       />
                     </div>
                     {/* Hover indicator */}
@@ -574,24 +576,30 @@ export default function GalleryPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[70] bg-rich-black/98 flex items-center justify-center"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Gallery lightbox"
           >
             <button
               onClick={closeLightbox}
-              className="absolute top-8 right-8 z-10 text-white/40 hover:text-white transition-colors duration-300"
+              className="absolute top-8 right-8 z-10 text-white/60 hover:text-white transition-colors duration-300"
+              aria-label="Close lightbox"
             >
               <HiXMark className="w-5 h-5" />
             </button>
 
             <button
               onClick={goPrev}
-              className="absolute left-4 md:left-6 z-10 text-white/20 hover:text-white transition-colors duration-300"
+              className="absolute left-4 md:left-6 z-10 text-white/60 hover:text-white transition-colors duration-300"
+              aria-label="Previous image"
             >
               <HiArrowLeft className="w-5 h-5" />
             </button>
 
             <button
               onClick={goNext}
-              className="absolute right-4 md:right-6 z-10 text-white/20 hover:text-white transition-colors duration-300"
+              className="absolute right-4 md:right-6 z-10 text-white/60 hover:text-white transition-colors duration-300"
+              aria-label="Next image"
             >
               <HiArrowRight className="w-5 h-5" />
             </button>
@@ -608,7 +616,7 @@ export default function GalleryPage() {
                   <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    className="max-h-[80vh] w-auto mx-auto object-contain"
+                    className="max-h-[80vh] max-w-[90vw] w-auto mx-auto object-contain"
                   />
                 </motion.div>
               </AnimatePresence>
@@ -635,7 +643,7 @@ export default function GalleryPage() {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`transition-all duration-500 ${i === currentIndex ? 'w-6 h-px bg-white' : 'w-3 h-px bg-white/20'}`}
+                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-6 h-px bg-white' : 'w-3 h-px bg-white/20'}`}
                   />
                 ))
               )}

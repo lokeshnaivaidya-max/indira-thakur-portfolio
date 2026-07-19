@@ -71,11 +71,11 @@ export default function AdminGalleryPreviewPage() {
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         <Section title="Section Header" defaultOpen icon={<HiPhoto className="w-5 h-5" />}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FieldInput label="Eyebrow" value={gp.eyebrow || ''} onChange={(v) => updateSection('galleryPreview', { eyebrow: v })} placeholder="e.g., Portfolio" helperText="Tiny text above the heading" />
             <FieldInput label="Heading" value={gp.heading || ''} onChange={(v) => updateSection('galleryPreview', { heading: v })} placeholder="e.g., Featured Work" helperText="The main title of this section" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FieldInput label="CTA Text" value={gp.ctaText || ''} onChange={(v) => updateSection('galleryPreview', { ctaText: v })} placeholder="e.g., View Full Gallery" helperText="The text on the button" />
             <FieldInput label="CTA Link" value={gp.ctaLink || ''} onChange={(v) => updateSection('galleryPreview', { ctaLink: v })} placeholder="e.g., /gallery" helperText="Where the button goes (e.g., /gallery)" />
           </div>

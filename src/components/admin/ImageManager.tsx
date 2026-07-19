@@ -285,6 +285,8 @@ export default function ImageManager({
 
       {/* Upload Area */}
       <div
+        role="button"
+        tabIndex={0}
         className={`border-2 border-dashed rounded-lg ${aspect} flex items-center justify-center transition-all cursor-pointer relative overflow-hidden group ${
           uploadState.error
             ? 'border-red-300 bg-red-50/30'
@@ -295,6 +297,12 @@ export default function ImageManager({
             : 'border-cream/60 hover:border-magenta/30 bg-ivory/30'
         }`}
         onClick={() => !uploadState.uploading && fileInputRef.current?.click()}
+        onKeyDown={(e) => {
+          if ((e.key === 'Enter' || e.key === ' ') && !uploadState.uploading) {
+            e.preventDefault();
+            fileInputRef.current?.click();
+          }
+        }}
       >
         <input
           ref={fileInputRef}
@@ -413,7 +421,7 @@ export default function ImageManager({
             <button
               type="button"
               onClick={handleCopyUrl}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-cream/60 text-warm-gray/60 font-sans text-[10px] hover:bg-cream/50 transition-all rounded"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] border border-cream/60 text-warm-gray/60 font-sans text-[11px] hover:bg-cream/50 transition-all rounded"
             >
               <HiClipboardDocument className="w-3 h-3" />
               {copied ? 'Copied!' : 'Copy URL'}
@@ -421,7 +429,7 @@ export default function ImageManager({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-cream/60 text-warm-gray/60 font-sans text-[10px] hover:bg-cream/50 transition-all rounded"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] border border-cream/60 text-warm-gray/60 font-sans text-[11px] hover:bg-cream/50 transition-all rounded"
             >
               <HiArrowDownTray className="w-3 h-3" />
               Replace
@@ -431,7 +439,7 @@ export default function ImageManager({
         <button
           type="button"
           onClick={() => setShowUrlInput(!showUrlInput)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-cream/60 text-warm-gray/60 font-sans text-[10px] hover:bg-cream/50 transition-all rounded"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] border border-cream/60 text-warm-gray/60 font-sans text-[11px] hover:bg-cream/50 transition-all rounded"
         >
           {showUrlInput ? 'Hide URL input' : 'Use image URL'}
         </button>
@@ -439,7 +447,7 @@ export default function ImageManager({
           <button
             type="button"
             onClick={handleRemove}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-red-200 text-red-500 font-sans text-[10px] hover:bg-red-50 transition-all rounded"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] border border-red-200 text-red-500 font-sans text-[11px] hover:bg-red-50 transition-all rounded"
           >
             <HiXMark className="w-3 h-3" />
             Remove
@@ -462,7 +470,7 @@ export default function ImageManager({
             type="button"
             onClick={handleUrlSubmit}
             disabled={!urlInput.trim()}
-            className="px-4 py-2 bg-rich-black text-white font-sans text-[10px] uppercase tracking-wider rounded hover:bg-charcoal transition-colors disabled:opacity-30"
+            className="px-4 py-2 min-h-[44px] bg-rich-black text-white font-sans text-[11px] uppercase tracking-wider rounded hover:bg-charcoal transition-colors disabled:opacity-30"
           >
             Add
           </button>

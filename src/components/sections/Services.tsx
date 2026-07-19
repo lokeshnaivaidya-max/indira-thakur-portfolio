@@ -20,7 +20,7 @@ export default function Services() {
   const hasImage = (url: string) => url && url.trim() !== '';
 
   return (
-    <section id="services" className="bg-rich-black">
+    <section id="services" className="bg-rich-black" aria-label="Services section">
       {servicesData.services?.map((service: any, i: number) => {
         const isLast = i === (servicesData.services?.length || 3) - 1;
         return (
@@ -32,7 +32,7 @@ export default function Services() {
             transition={{ duration: 1.2 }}
             className="relative w-full border-t border-white/[0.03] first:border-t-0"
           >
-            <div className="relative h-[70vh] md:h-[85vh]">
+            <div className="relative h-[60vh] md:h-[85vh]">
               {hasImage(service.image?.url) ? (
                 <PolaroidImage
                   src={service.image.url}
@@ -49,14 +49,14 @@ export default function Services() {
             </div>
 
             <div className={`absolute bottom-14 ${isLast ? 'right-8 md:right-16 lg:right-24 text-right' : 'left-8 md:left-16 lg:left-24'}`}>
-              <p className="font-mono text-[8px] text-white/30 uppercase tracking-[0.35em]">{service.subtitle}</p>
+              <p className="font-mono text-[11px] text-white/50 uppercase tracking-[0.35em]">{service.subtitle}</p>
               <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mt-1 leading-[1.05]">{service.title}</h3>
               {service.description && (
-                <p className="font-sans text-sm text-white/40 mt-3 max-w-sm leading-relaxed">{service.description}</p>
+                <p className="font-sans text-sm text-white/50 mt-3 max-w-sm leading-relaxed">{service.description}</p>
               )}
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 mt-5 font-sans text-[9px] text-white/40 uppercase tracking-[0.3em] hover:text-white/70 transition-colors duration-500"
+                className="inline-flex items-center gap-2 mt-5 min-h-[44px] min-w-[44px] font-sans text-[11px] text-white/50 uppercase tracking-[0.3em] hover:text-white/70 transition-colors duration-500"
               >
                 <span className="w-4 h-px bg-white/20" />
                 Enquire
