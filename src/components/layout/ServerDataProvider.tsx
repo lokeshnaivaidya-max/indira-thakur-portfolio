@@ -19,13 +19,14 @@ async function fetchServerData(): Promise<ServerData> {
       theme = await ThemeSettings.findOne().lean();
     }
   } catch (error) {
-    console.warn('Server data fetch failed, using fallbacks:', error);
+    console.warn('[ServerDataProvider] fetch failed', error);
   }
 
   return { config, theme };
 }
 
 export default async function ServerDataProvider({ children }: { children: React.ReactNode }) {
+  console.log('[ServerDataProvider] render');
   const { config, theme } = await fetchServerData();
 
   return (

@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  console.log('[RootLayout] render', { pathname: typeof window !== 'undefined' ? window.location.pathname : 'server' });
+  console.log('[RootLayout] render');
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable} ${dmMono.variable}`} suppressHydrationWarning>
       <body className="bg-ivory text-rich-black font-sans antialiased" suppressHydrationWarning>
