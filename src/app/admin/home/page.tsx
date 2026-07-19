@@ -318,7 +318,7 @@ export default function AdminHomePage() {
                   <img
                     src={home.heroImages?.[0]?.url || home.images?.heroMain?.url}
                     alt="Hero desktop preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center" style={{ background: home.backgroundGradient || 'linear-gradient(135deg, #1A1110 0%, #2C1810 40%, #111111 100%)' }}>
@@ -340,7 +340,7 @@ export default function AdminHomePage() {
                   <img
                     src={home.heroImages?.[0]?.url || home.images?.heroMain?.url}
                     alt="Hero mobile preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center" style={{ background: home.backgroundGradient || 'linear-gradient(135deg, #1A1110 0%, #2C1810 40%, #111111 100%)' }}>

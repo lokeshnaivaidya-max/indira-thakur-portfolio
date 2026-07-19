@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { toast } from '@/lib/toast';
 
 const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSd-LdjuiUE9RSb-rlFMKYj1nJ9az_SQ5RiDeBSTNMQVu5OFYw/formResponse';
@@ -49,14 +48,14 @@ export default function GoogleContact() {
     return (
       <section className="py-24 md:py-32 bg-ivory">
         <div className="container-editorial text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <div>
             <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.3em]">Get In Touch</span>
             <h2 className="font-serif text-3xl md:text-5xl text-rich-black mt-3">Thank You!</h2>
             <p className="font-sans text-sm text-warm-gray/50 mt-4 max-w-md mx-auto">Your message has been received. We&apos;ll get back to you soon.</p>
             <button onClick={() => setSubmitted(false)} className="mt-8 px-8 py-3 min-h-[44px] bg-rich-black text-white font-sans text-[11px] uppercase tracking-[0.25em] hover:bg-charcoal transition-colors duration-500">
               Send Another Message
             </button>
-          </motion.div>
+          </div>
         </div>
       </section>
     );
@@ -66,14 +65,14 @@ export default function GoogleContact() {
     <section className="py-24 md:py-32 bg-ivory">
       <div className="container-editorial">
         <div className="max-w-2xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+          <div>
             <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.3em]">Get In Touch</span>
             <h2 className="font-serif text-3xl md:text-5xl text-rich-black leading-[1.1] mt-3">Begin Your Story</h2>
             <div className="w-5 h-px bg-magenta/25 mt-6" />
             <p className="font-sans text-sm text-warm-gray/50 mt-5 leading-relaxed">Every beautiful photograph begins with a conversation. Send us a message and we&apos;ll be in touch.</p>
-          </motion.div>
+          </div>
 
-          <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.1 }} className="mt-10 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-10 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-sans text-[10px] uppercase tracking-[0.2em] text-warm-gray/40 mb-2">Name</label>
@@ -95,7 +94,7 @@ export default function GoogleContact() {
             <button type="submit" disabled={submitting} className="w-full py-4 min-h-[48px] bg-rich-black text-white font-sans text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-500 hover:bg-charcoal disabled:opacity-50 disabled:cursor-not-allowed">
               {submitting ? 'Sending...' : 'Send Message'}
             </button>
-          </motion.form>
+          </form>
         </div>
       </div>
     </section>

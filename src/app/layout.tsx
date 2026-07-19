@@ -3,7 +3,6 @@ import { Playfair_Display, Inter, DM_Mono } from 'next/font/google';
 import './globals.css';
 import PublicLayoutWrapper from '@/components/layout/PublicLayoutWrapper';
 import ThemeProvider from '@/components/layout/ThemeProvider';
-import LoadingScreen from '@/components/premium/LoadingScreen';
 import DynamicHead from '@/components/layout/DynamicHead';
 
 const playfair = Playfair_Display({
@@ -55,7 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-ivory text-rich-black font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider>
           <DynamicHead />
-          <LoadingScreen />
           <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
         </ThemeProvider>
       </body>

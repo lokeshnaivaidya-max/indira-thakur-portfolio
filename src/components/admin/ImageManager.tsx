@@ -355,7 +355,7 @@ export default function ImageManager({
             <img
               src={value.url}
               alt={value.alt || label}
-              className="w-full h-full object-cover absolute inset-0"
+              className="w-full h-full object-contain absolute inset-0"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
