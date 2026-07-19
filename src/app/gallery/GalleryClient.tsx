@@ -624,13 +624,15 @@ export default function GalleryClient() {
             </button>
 
             <div className="max-w-6xl w-full px-6 md:px-12">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" onExitComplete={() => console.log('[GalleryLightbox] onExitComplete')}>
                 <motion.div
                   key={currentImage.id}
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
+                  onAnimationStart={() => console.log('[GalleryLightbox] exit animation start', currentImage?.id)}
+                  onAnimationComplete={() => console.log('[GalleryLightbox] exit animation complete', currentImage?.id)}
                 >
                   <img
                     src={currentImage.src}

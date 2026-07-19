@@ -47,6 +47,7 @@ export default function Navbar() {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useLayoutEffect(() => {
+    console.log('[Navbar] body overflow effect', { menuOpen });
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
       closeButtonRef.current?.focus();

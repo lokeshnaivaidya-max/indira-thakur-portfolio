@@ -24,6 +24,7 @@ export default function DynamicHead() {
   }, []);
 
   useLayoutEffect(() => {
+    console.log('[DynamicHead] effect running', { config: !!config, brand: !!brand });
     // Update page title from SEO settings
     const seoTitle = config?.seo?.title;
     const siteName = brand?.siteName || 'Indira Thakur Photography';

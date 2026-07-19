@@ -52,13 +52,15 @@ export default function Testimonials() {
 
       <div className="container-editorial relative">
         <div className="max-w-3xl mx-auto text-center">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={() => console.log('[Testimonials] onExitComplete')}>
             <motion.div
               key={current}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.8 }}
+              onAnimationStart={() => console.log('[Testimonials] exit animation start', current)}
+              onAnimationComplete={() => console.log('[Testimonials] exit animation complete', current)}
             >
               {hasImage(items[current]?.avatar?.url) && (
                 <div className="mb-6">
