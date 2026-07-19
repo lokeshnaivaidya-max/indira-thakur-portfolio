@@ -6,14 +6,16 @@ interface Toast {
   type: ToastType;
 }
 
-type Listener = (toasts: Toast[]) => void;
+type Listener = () => void;
 
 let toasts: Toast[] = [];
+let cachedSnapshot: Toast[] = [];
 let listeners: Listener[] = [];
 let nextId = 0;
 
 function notify() {
-  listeners.forEach(fn => fn([...toasts]));
+  cachedSnapshot = [...toasts];
+  listeners.forEach(fn => fn());
 }
 
 function add(message: string, type: ToastType, duration = 3500) {
@@ -36,5 +38,5 @@ export const toast = {
       listeners = listeners.filter(l => l !== fn);
     };
   },
-  getSnapshot: () => [...toasts],
+  getSnapshot: () => cachedSnapshot,
 };
