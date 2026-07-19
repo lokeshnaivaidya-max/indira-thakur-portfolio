@@ -36,7 +36,11 @@ export default function DynamicHead() {
       prevFaviconUrl.current = faviconUrl;
 
       const existing = document.querySelectorAll("link[rel='icon']");
-      existing.forEach(el => el.remove());
+      existing.forEach(el => {
+        if (el.parentNode) {
+          el.remove();
+        }
+      });
 
       const link = document.createElement('link');
       link.rel = 'icon';
