@@ -43,3 +43,28 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Failed to update booking status' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+    const booking = await Booking.findByIdAndDelete(id);
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Booking DELETE error:', error);
+    return NextResponse.json({ error: 'Failed to delete booking' }, { status: 500 });
+  }
+}

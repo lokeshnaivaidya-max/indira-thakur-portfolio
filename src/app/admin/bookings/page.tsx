@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { HiTrash, HiPencil, HiEye, HiCalendarDays, HiEnvelope, HiPhone, HiXMark, HiArrowRight } from 'react-icons/hi2';
+import { HiTrash, HiPencil, HiEye, HiCalendarDays, HiEnvelope, HiPhone, HiXMark, HiArrowRight, HiExclamationCircle } from 'react-icons/hi2';
+import { toast } from '@/lib/toast';
 
 interface Booking {
   _id: string;
@@ -22,6 +23,8 @@ export default function AdminBookingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [previewBooking, setPreviewBooking] = useState<Booking | null>(null);
+  const [deleteBookingId, setDeleteBookingId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string | null }>({ id: null });
 
   const fetchBookings = async () => {
     try {
@@ -59,13 +62,20 @@ export default function AdminBookingsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this booking?')) return;
+    setDeleteBookingId(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    const id = deleteBookingId;
+    if (!id) return;
+    setDeleteBookingId(null);
     try {
       const response = await fetch(`/api/bookings?id=${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete booking');
       await fetchBookings();
+      toast.success('Booking deleted successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete');
+      toast.error('Failed to delete booking');
     }
   };
 
@@ -243,6 +253,40 @@ export default function AdminBookingsPage() {
                   <p className="font-sans text-sm text-warm-gray/70 whitespace-pre-wrap">{previewBooking.message}</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteBookingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-rich-black/80 backdrop-blur-sm p-4" onClick={() => setDeleteBookingId(null)}>
+          <div className="bg-white rounded-lg max-w-md w-full flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-cream">
+              <h3 className="font-serif text-lg text-rich-black">Delete Booking</h3>
+              <button onClick={() => setDeleteBookingId(null)} className="p-2 hover:bg-cream rounded-lg">
+                <HiXMark className="w-5 h-5 text-rich-black" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <HiExclamationCircle className="w-8 h-8 text-amber-500 flex-shrink-0" />
+                <p className="font-sans text-sm text-rich-black">Are you sure you want to delete this booking? This action cannot be undone.</p>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteBookingId(null)}
+                  className="px-4 py-2 font-sans text-sm border border-cream/60 text-warm-gray/60 hover:bg-cream/50 transition-all rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-4 py-2 font-sans text-sm bg-magenta text-white rounded hover:bg-raspberry transition-all"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
