@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_SECRET = process.env.JWT_SECRET || 'indira-thakur-portfolio-secret-2024';
 
 export async function GET(request: Request) {
   try {

@@ -29,6 +29,11 @@ export async function PUT(request: Request) {
     await connectToDatabase();
     const body = await request.json();
 
+    delete body._id;
+    delete body.__v;
+    delete body.createdAt;
+    delete body.updatedAt;
+
     const config = await SiteConfig.findOneAndUpdate({}, body, {
       new: true,
       upsert: true,
