@@ -25,6 +25,11 @@ export interface SiteConfigData {
       heroSecondary: SiteImage;
       background: SiteImage;
     };
+    heroImages: SiteImage[];
+    slideshowDuration: number;
+    transitionDuration: number;
+    kenBurnsEnabled: boolean;
+    overlayIntensity: number;
   };
   about: {
     eyebrow: string;

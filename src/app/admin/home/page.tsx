@@ -4,7 +4,7 @@ import { useCMS } from '@/hooks/useCMS';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { useState } from 'react';
-import { HiHome, HiPhoto, HiSparkles } from 'react-icons/hi2';
+import { HiHome, HiPhoto, HiSparkles, HiClock, HiPlay, HiStop } from 'react-icons/hi2';
 
 export default function AdminHomePage() {
   const { config, loading, saving, error, success, dirty, lastSavedAt, updateSection, saveConfig, clearMessages, fetchConfig } = useCMS();
@@ -46,6 +46,30 @@ export default function AdminHomePage() {
     updateSection('home', { categories: cats });
   };
 
+  const addHeroImage = () => {
+    const imgs = [...(home.heroImages || []), { url: '', alt: '' }];
+    updateSection('home', { heroImages: imgs });
+  };
+
+  const removeHeroImage = (index: number) => {
+    const imgs = (home.heroImages || []).filter((_: any, i: number) => i !== index);
+    updateSection('home', { heroImages: imgs });
+  };
+
+  const updateHeroImage = (index: number, img: { url: string; alt: string }) => {
+    const imgs = [...(home.heroImages || [])];
+    imgs[index] = img;
+    updateSection('home', { heroImages: imgs });
+  };
+
+  const moveHeroImage = (index: number, direction: 'up' | 'down') => {
+    const imgs = [...(home.heroImages || [])];
+    const target = direction === 'up' ? index - 1 : index + 1;
+    if (target < 0 || target >= imgs.length) return;
+    [imgs[index], imgs[target]] = [imgs[target], imgs[index]];
+    updateSection('home', { heroImages: imgs });
+  };
+
   return (
     <div className="h-full flex flex-col">
       <AdminPageHeader
@@ -61,7 +85,7 @@ export default function AdminHomePage() {
 
       <div className="flex-1 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
         {/* Hero Text Content */}
-        <CollapsibleSection title="Hero Text" icon={<HiHome className="w-5 h-5" />} defaultOpen>
+        <Section title="Hero Text" icon={<HiHome className="w-5 h-5" />} defaultOpen>
           <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
             This is the first thing visitors see. Make it count!
           </p>
@@ -92,7 +116,7 @@ export default function AdminHomePage() {
               Category Tags
             </label>
             <p className="font-sans text-[10px] text-warm-gray/40 mb-2 italic">
-              These appear in the top-right corner of the hero section
+              These appear in the hero section below the heading
             </p>
             <div className="flex flex-wrap gap-2 mb-2">
               {(home.categories || []).map((cat: string, i: number) => (
@@ -107,10 +131,10 @@ export default function AdminHomePage() {
               <button type="button" onClick={addCategory} className="px-4 py-2 bg-rich-black text-white text-xs uppercase tracking-wider rounded hover:bg-charcoal transition-colors">Add</button>
             </div>
           </div>
-        </CollapsibleSection>
+        </Section>
 
         {/* Buttons */}
-        <CollapsibleSection title="Button Settings" icon={<HiSparkles className="w-5 h-5" />}>
+        <Section title="Button Settings" icon={<HiSparkles className="w-5 h-5" />}>
           <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
             Control the call-to-action buttons on your homepage.
           </p>
@@ -123,11 +147,11 @@ export default function AdminHomePage() {
               placeholder="e.g., Book Now"
             />
             <FieldInput
-              label="Primary Button Destination"
-              helperText="Where the button takes visitors (e.g., /#contact, /gallery)"
+              label="Primary Button Link"
+              helperText="Where the button goes (e.g., /contact)"
               value={home.ctaLink || ''}
               onChange={(v) => updateSection('home', { ctaLink: v })}
-              placeholder="e.g., /#contact"
+              placeholder="e.g., /contact"
             />
             <FieldInput
               label="Secondary Button Text"
@@ -137,25 +161,182 @@ export default function AdminHomePage() {
               placeholder="e.g., Portfolio"
             />
             <FieldInput
-              label="Secondary Button Destination"
-              helperText="Where the text link takes visitors"
+              label="Secondary Button Link"
+              helperText="Where the text link goes"
               value={home.secondaryCtaLink || ''}
               onChange={(v) => updateSection('home', { secondaryCtaLink: v })}
               placeholder="e.g., /gallery"
             />
           </div>
-        </CollapsibleSection>
+        </Section>
 
-        {/* Hero Images */}
-        <CollapsibleSection title="Hero Images" icon={<HiPhoto className="w-5 h-5" />}>
+        {/* Hero Slideshow Images */}
+        <Section title="Hero Slideshow Images" icon={<HiPhoto className="w-5 h-5" />} defaultOpen>
           <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
-            These images appear in the hero section. For best results, use high-resolution images.
+            Upload multiple images for the hero slideshow. Images crossfade automatically every few seconds. Use high-resolution images for the best experience.
+          </p>
+
+          {(home.heroImages || []).length === 0 ? (
+            <div className="text-center py-10 border-2 border-dashed border-cream/60 rounded-lg mb-4">
+              <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-3" />
+              <p className="font-sans text-sm text-warm-gray/40 mb-1">No slideshow images yet</p>
+              <p className="font-sans text-[10px] text-warm-gray/30 mb-4">Add images to create a cinematic hero experience</p>
+              <button
+                type="button"
+                onClick={addHeroImage}
+                className="px-6 py-2.5 bg-magenta text-white text-xs uppercase tracking-wider rounded hover:bg-raspberry transition-colors"
+              >
+                Add First Image
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3 mb-4">
+                {(home.heroImages || []).map((img: any, i: number) => (
+                  <div key={i} className="flex items-start gap-4 p-4 bg-white border border-cream/50 rounded-lg">
+                    <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 bg-ivory rounded text-warm-gray/40 font-mono text-xs">
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <ImageManager
+                        label={`Slide ${i + 1}`}
+                        value={img}
+                        onChange={(newImg) => updateHeroImage(i, newImg)}
+                        aspect="aspect-[16/9]"
+                        folder="home/hero/slideshow"
+                      />
+                      <input
+                        type="text"
+                        value={img.alt || ''}
+                        onChange={(e) => updateHeroImage(i, { ...img, alt: e.target.value })}
+                        placeholder="Alt text (for accessibility)"
+                        className="mt-2 w-full px-3 py-1.5 bg-ivory/50 border border-cream/50 text-rich-black font-sans text-xs rounded focus:outline-none focus:border-magenta/40"
+                      />
+                    </div>
+                    <div className="flex-shrink-0 flex flex-col gap-1">
+                      <button
+                        type="button"
+                        onClick={() => moveHeroImage(i, 'up')}
+                        disabled={i === 0}
+                        className="px-2 py-1 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30 font-sans"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveHeroImage(i, 'down')}
+                        disabled={i === (home.heroImages || []).length - 1}
+                        className="px-2 py-1 text-[10px] text-warm-gray/50 hover:text-rich-black disabled:opacity-30 font-sans"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeHeroImage(i)}
+                        className="px-2 py-1 text-[10px] text-red-400 hover:text-red-600 font-sans"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={addHeroImage}
+                className="w-full py-3 border-2 border-dashed border-cream/60 rounded-lg font-sans text-xs text-warm-gray/40 hover:text-magenta hover:border-magenta/30 transition-colors uppercase tracking-wider"
+              >
+                + Add Another Image
+              </button>
+            </>
+          )}
+        </Section>
+
+        {/* Slideshow Settings */}
+        <Section title="Slideshow Settings" icon={<HiClock className="w-5 h-5" />}>
+          <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
+            Fine-tune how the hero slideshow behaves.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1">
+                Slide Duration (seconds)
+              </label>
+              <p className="font-sans text-[10px] text-warm-gray/40 mb-1.5 italic">How long each image is shown</p>
+              <input
+                type="range"
+                min={3}
+                max={15}
+                step={1}
+                value={home.slideshowDuration || 8}
+                onChange={(e) => updateSection('home', { slideshowDuration: Number(e.target.value) })}
+                className="w-full accent-magenta"
+              />
+              <p className="font-mono text-[10px] text-warm-gray/40 mt-1">{home.slideshowDuration || 8}s</p>
+            </div>
+            <div>
+              <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1">
+                Transition Speed (seconds)
+              </label>
+              <p className="font-sans text-[10px] text-warm-gray/40 mb-1.5 italic">How fast images crossfade</p>
+              <input
+                type="range"
+                min={0.5}
+                max={5}
+                step={0.5}
+                value={home.transitionDuration || 2}
+                onChange={(e) => updateSection('home', { transitionDuration: Number(e.target.value) })}
+                className="w-full accent-magenta"
+              />
+              <p className="font-mono text-[10px] text-warm-gray/40 mt-1">{home.transitionDuration || 2}s</p>
+            </div>
+            <div>
+              <label className="block font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70 mb-1">
+                Overlay Darkness
+              </label>
+              <p className="font-sans text-[10px] text-warm-gray/40 mb-1.5 italic">How dark the overlay is over images</p>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={home.overlayIntensity ?? 0.7}
+                onChange={(e) => updateSection('home', { overlayIntensity: Number(e.target.value) })}
+                className="w-full accent-magenta"
+              />
+              <p className="font-mono text-[10px] text-warm-gray/40 mt-1">{Math.round((home.overlayIntensity ?? 0.7) * 100)}%</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => updateSection('home', { kenBurnsEnabled: !home.kenBurnsEnabled })}
+                className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                  home.kenBurnsEnabled !== false ? 'bg-magenta' : 'bg-cream'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${
+                    home.kenBurnsEnabled !== false ? 'translate-x-6' : ''
+                  }`}
+                />
+              </button>
+              <div>
+                <p className="font-sans text-xs font-medium tracking-wider uppercase text-warm-gray/70">Ken Burns Effect</p>
+                <p className="font-sans text-[10px] text-warm-gray/40 italic">Slow zoom/pan animation on each image</p>
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* Legacy Images */}
+        <Section title="Legacy Background Images" icon={<HiPhoto className="w-5 h-5" />}>
+          <p className="font-sans text-[11px] text-warm-gray/40 mb-4">
+            These are older settings. If you have slideshow images above, they take priority. These serve as fallback only.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ImageManager
               label="Hero Background (Main)"
-              description="This is the main background image shown on the homepage"
-              helperText="This image fills the entire hero section. Use a stunning, high-resolution photo."
+              description="Main fallback background image"
               sectionIndicator="Homepage Hero"
               value={home.images?.heroMain || { url: '', alt: '' }}
               onChange={(img) => updateSection('home', { images: { ...home.images, heroMain: img } })}
@@ -164,26 +345,15 @@ export default function AdminHomePage() {
             />
             <ImageManager
               label="Hero Accent Image"
-              description="An additional accent image for the hero section"
-              helperText="Used as a secondary accent or overlay image"
+              description="Secondary accent image"
               sectionIndicator="Homepage Hero"
               value={home.images?.heroSecondary || { url: '', alt: '' }}
               onChange={(img) => updateSection('home', { images: { ...home.images, heroSecondary: img } })}
               aspect="aspect-[16/9]"
               folder="home/hero"
             />
-            <ImageManager
-              label="Fallback Background"
-              description="Alternative background (used only if Main is empty)"
-              helperText="If no main image is uploaded, this will be used. Otherwise ignored."
-              sectionIndicator="Homepage Hero"
-              value={home.images?.background || { url: '', alt: '' }}
-              onChange={(img) => updateSection('home', { images: { ...home.images, background: img } })}
-              aspect="aspect-[16/9]"
-              folder="home/hero"
-            />
           </div>
-        </CollapsibleSection>
+        </Section>
 
         {/* Save Button */}
         <div className="sticky bottom-0 bg-ivory/95 backdrop-blur-sm border-t border-cream/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 px-4 sm:px-6 md:px-8 lg:px-10 py-4">
@@ -201,7 +371,7 @@ export default function AdminHomePage() {
   );
 }
 
-function CollapsibleSection({ title, icon, defaultOpen = false, children }: { title: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
+function Section({ title, icon, defaultOpen = false, children }: { title: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="bg-white border border-cream/50 rounded-lg overflow-hidden">

@@ -22,6 +22,11 @@ export interface IHeroSection {
     heroSecondary: ISiteImage;
     background: ISiteImage;
   };
+  heroImages: ISiteImage[];
+  slideshowDuration: number;
+  transitionDuration: number;
+  kenBurnsEnabled: boolean;
+  overlayIntensity: number;
 }
 
 export interface IAboutSection {
@@ -195,6 +200,11 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
           },
           default: () => ({}),
         },
+        heroImages: { type: [SiteImageSchema], default: [] },
+        slideshowDuration: { type: Number, default: 8 },
+        transitionDuration: { type: Number, default: 2 },
+        kenBurnsEnabled: { type: Boolean, default: true },
+        overlayIntensity: { type: Number, default: 0.7 },
       },
       default: () => ({}),
     },
