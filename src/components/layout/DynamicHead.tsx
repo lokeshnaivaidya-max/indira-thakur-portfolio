@@ -1,26 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+
+interface BrandData {
+  siteName?: string;
+  favicon?: { url: string; alt: string };
+  defaultOgImage?: { url: string; alt: string };
+}
 
 export default function DynamicHead() {
   const { config } = useSiteConfig();
+  const [brand, setBrand] = useState<BrandData | null>(null);
 
   useEffect(() => {
-    if (!config) return;
+    fetch('/api/brand')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setBrand(data); })
+      .catch(() => {});
+  }, []);
 
+  useEffect(() => {
     // Update page title from SEO settings
-    const title = config.seo?.title || config.home?.heading || 'Indira Thakur Photography';
+    const seoTitle = config?.seo?.title;
+    const siteName = brand?.siteName || 'Indira Thakur Photography';
+    const title = seoTitle || siteName;
     document.title = title.includes('Indira Thakur') ? title : `${title} | Indira Thakur Photography`;
 
-    // Update favicon
-    const faviconUrl = (config as any).brand?.favicon?.url || (config as any).footer?.logo?.url || '';
+    // Update favicon from Brand Settings
+    const faviconUrl = brand?.favicon?.url || '';
     if (faviconUrl) {
-      // Remove existing favicon links
       const existing = document.querySelectorAll("link[rel='icon']");
       existing.forEach(el => el.remove());
 
-      // Add new favicon with cache bust
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/x-icon';
@@ -29,7 +41,7 @@ export default function DynamicHead() {
     }
 
     // Update og:image
-    const ogImageUrl = (config as any).brand?.defaultOgImage?.url || '';
+    const ogImageUrl = brand?.defaultOgImage?.url || config?.seo?.ogImage?.url || '';
     if (ogImageUrl) {
       const existingOg = document.querySelector("meta[property='og:image']");
       if (existingOg) {
@@ -41,7 +53,7 @@ export default function DynamicHead() {
         document.head.appendChild(meta);
       }
     }
-  }, [config]);
+  }, [config, brand]);
 
   return null;
 }

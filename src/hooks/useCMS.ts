@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from '@/lib/toast';
+import { invalidateSiteConfigCache } from '@/hooks/useSiteConfig';
 
 interface UseCMSOptions {
   verifyWrites?: boolean;
@@ -81,6 +82,7 @@ export function useCMS(options: UseCMSOptions = {}) {
           console.warn('Save verification: data mismatch, using server response');
         }
 
+        invalidateSiteConfigCache();
         configRef.current = verified;
         setState(prev => ({
           ...prev,
@@ -91,6 +93,7 @@ export function useCMS(options: UseCMSOptions = {}) {
         }));
         toast.success('Changes Saved Successfully');
       } else {
+        invalidateSiteConfigCache();
         configRef.current = saved;
         setState(prev => ({
           ...prev,

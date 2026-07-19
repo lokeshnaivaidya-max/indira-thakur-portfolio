@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface SiteImage {
   url: string;
@@ -155,4 +155,9 @@ export function useSiteConfig() {
   }, []);
 
   return { config, loading };
+}
+
+export function invalidateSiteConfigCache() {
+  cachedConfig = null;
+  fetchPromise = null;
 }

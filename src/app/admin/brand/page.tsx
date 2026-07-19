@@ -5,6 +5,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { toast } from '@/lib/toast';
 import StickySaveBar from '@/components/admin/StickySaveBar';
+import { invalidateSiteConfigCache } from '@/hooks/useSiteConfig';
 
 interface BrandData {
   siteName: string;
@@ -69,6 +70,7 @@ export default function AdminBrandPage() {
       if (!res.ok) throw new Error('Failed to save');
       const saved = await res.json();
       const { _id, __v, createdAt, updatedAt, ...rest } = saved;
+      invalidateSiteConfigCache();
       setBrand(prev => ({ ...prev, ...rest }));
       setDirty(false);
       toast.success('Changes Saved Successfully');

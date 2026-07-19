@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
+
+interface BrandData {
+  logo?: { url: string; alt: string };
+}
 
 const allLinks = [
   { href: '/', label: 'Home' },
@@ -23,7 +26,14 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { config } = useSiteConfig();
+  const [brand, setBrand] = useState<BrandData | null>(null);
+
+  useEffect(() => {
+    fetch('/api/brand')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setBrand(data); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -42,10 +52,10 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              {(config as any)?.brand?.logo?.url ? (
+              {brand?.logo?.url ? (
                 <img
-                  src={(config as any).brand.logo.url}
-                  alt={(config as any).brand.logo.alt || 'Indira Thakur Photography'}
+                  src={brand.logo.url}
+                  alt={brand.logo.alt || 'Indira Thakur Photography'}
                   className="h-8 w-auto object-contain"
                 />
               ) : (
