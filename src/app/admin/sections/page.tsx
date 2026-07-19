@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSectionsBuilder, Section, SectionType, SectionImage, SectionButton, SectionItem } from '@/hooks/useSectionsBuilder';
@@ -6,6 +6,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import ImageManager from '@/components/admin/ImageManager';
 import { toast } from '@/lib/toast';
 import StickySaveBar from '@/components/admin/StickySaveBar';
+import { normalizeUrl } from '@/lib/urlNormalizer';
 import {
   HiSquares2X2,
   HiChevronUp,
@@ -879,7 +880,11 @@ function ButtonsEditor({ buttons, onChange }: { buttons: SectionButton[]; onChan
 
   const updateButton = (index: number, data: Partial<SectionButton>) => {
     const updated = [...buttons];
-    updated[index] = { ...updated[index], ...data };
+    // Normalize link if it's being updated
+    const normalizedData = data.link !== undefined 
+      ? { ...data, link: normalizeUrl(data.link) }
+      : data;
+    updated[index] = { ...updated[index], ...normalizedData };
     onChange(updated);
   };
 

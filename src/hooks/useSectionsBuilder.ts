@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from '@/lib/toast';
+import { normalizeAllSectionLinks, normalizeUrl } from '@/lib/urlNormalizer';
 
 export type SectionType = 'hero' | 'text-image' | 'banner' | 'gallery' | 'cards' | 'testimonials' | 'cta' | 'faq' | 'richtext' | 'split' | 'timeline';
 
@@ -167,7 +168,8 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
         ...s,
         order: i,
       }));
-      setSections(fetchedSections);
+      // Normalize all internal links in fetched sections
+      setSections(normalizeAllSectionLinks(fetchedSections));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load sections';
       setError(message);
@@ -178,18 +180,20 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
 
   const saveSections = useCallback(async (sectionsToSave?: Section[]) => {
     const payload = sectionsToSave || sections;
+    // Normalize all links before saving
+    const normalizedPayload = normalizeAllSectionLinks(payload);
     try {
       setSaving(true);
       setError(null);
 
-      const validation = validateSections(payload);
+      const validation = validateSections(normalizedPayload);
       if (!validation.valid) {
         setSaving(false);
         toast.error(validation.errors.join(' '));
         return null;
       }
 
-      const orderedSections = payload.map((s, i) => ({ ...s, order: i }));
+      const orderedSections = normalizedPayload.map((s, i) => ({ ...s, order: i }));
 
       const response = await fetch('/api/dynamic-sections', {
         method: 'PUT',
@@ -266,8 +270,12 @@ export function useSectionsBuilder(initialPageKey: string = 'home') {
   }, []);
 
   const updateSection = useCallback((id: string, data: Partial<Section>) => {
+    // Normalize links if buttons are being updated
+    const normalizedData = data.buttons
+      ? { ...data, buttons: data.buttons.map(btn => ({ ...btn, link: normalizeUrl(btn.link) })) }
+      : data;
     setSections(prev =>
-      prev.map(s => (s.id === id ? { ...s, ...data } : s))
+      prev.map(s => (s.id === id ? { ...s, ...normalizedData } : s))
     );
   }, []);
 
