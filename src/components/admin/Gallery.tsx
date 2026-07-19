@@ -139,8 +139,8 @@ export function Gallery() {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB');
+    if (file.size > 15 * 1024 * 1024) {
+      setError('File size must be less than 15MB');
       return;
     }
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, HiClipboardDocument } from 'react-icons/hi2';
-import { compressImage, formatBytes, getCompressionRecommendation } from '@/lib/compressImage';
+import { formatBytes } from '@/lib/compressImage';
 
 interface SiteImage {
   url: string;
@@ -110,32 +110,8 @@ export default function ImageManager({
       fileSize: file.size,
       fileType: file.type,
       previewUrl: localPreview,
+      uploadingText: 'Uploading original...',
     });
-
-    setUploadState(prev => ({ ...prev, progress: 10, uploadingText: 'Preparing image...' }));
-
-    let uploadFile: File = file;
-    try {
-      const rec = getCompressionRecommendation(file.size);
-      if (rec.shouldCompress) {
-        setUploadState(prev => ({ ...prev, progress: 15, uploadingText: 'Optimizing image...' }));
-        const result = await compressImage(file, {
-          maxWidth: rec.targetMaxWidth,
-          maxHeight: rec.targetMaxWidth * 0.75,
-          quality: rec.targetQuality,
-          outputType: file.type === 'image/png' ? 'image/png' : 'image/jpeg',
-        });
-        uploadFile = result.file;
-        setUploadState(prev => ({
-          ...prev,
-          fileName: uploadFile.name,
-          fileSize: uploadFile.size,
-          uploadingText: `Optimized ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`,
-        }));
-      }
-    } catch {
-      setUploadState(prev => ({ ...prev, uploadingText: 'Upload using original...' }));
-    }
 
     const progressInterval = setInterval(() => {
       setUploadState(prev => {
@@ -146,7 +122,7 @@ export default function ImageManager({
 
     try {
       const formData = new FormData();
-      formData.append('file', uploadFile);
+      formData.append('file', file);
       formData.append('folder', folder);
 
       abortControllerRef.current = new AbortController();
@@ -168,10 +144,10 @@ export default function ImageManager({
         if (!response.ok) {
           const msg = text.substring(0, 200);
           if (msg.includes('Request Entity Too Large') || msg.includes('413')) {
-            throw new Error('Image is too large for the server. Please use a smaller image or lower quality.');
+            throw new Error('Image is too large for the server. Please use a smaller image.');
           }
           if (msg.includes('<!DOCTYPE') || msg.includes('<html')) {
-            throw new Error(`Server error (${response.status}). The image may be too large for the server to process.`);
+            throw new Error(`Server error (${response.status}). The image may be too large.`);
           }
           throw new Error(msg || `Upload failed with status ${response.status}`);
         }
@@ -195,6 +171,7 @@ export default function ImageManager({
         success: true,
         warning: null,
         previewUrl: null,
+        uploadingText: `Uploaded ${formatFileSize(file.size)}`,
       }));
 
       onChange({
@@ -241,7 +218,6 @@ export default function ImageManager({
   const handleUrlSubmit = useCallback(() => {
     if (!urlInput.trim()) return;
 
-    // Basic URL validation
     try {
       new URL(urlInput.trim());
     } catch {
@@ -368,7 +344,7 @@ export default function ImageManager({
           <div className="text-center p-4 z-10">
             <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-2" />
             <p className="font-sans text-xs text-warm-gray/50">Click to upload an image</p>
-            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · up to 15 MB</p>
+            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">JPEG, PNG, WebP, GIF · up to 15 MB · uploaded as-is</p>
           </div>
         )}
       </div>

@@ -95,14 +95,5 @@ export function getCompressionRecommendation(fileSize: number): {
   targetQuality: number;
   targetMaxWidth: number;
 } {
-  if (fileSize < 2 * 1024 * 1024) {
-    return { shouldCompress: false, targetQuality: 0.92, targetMaxWidth: 3840 };
-  }
-  if (fileSize < 5 * 1024 * 1024) {
-    return { shouldCompress: true, targetQuality: 0.88, targetMaxWidth: 3840 };
-  }
-  if (fileSize < 10 * 1024 * 1024) {
-    return { shouldCompress: true, targetQuality: 0.85, targetMaxWidth: 3840 };
-  }
-  return { shouldCompress: true, targetQuality: 0.82, targetMaxWidth: 3840 };
+  return { shouldCompress: false, targetQuality: 0.92, targetMaxWidth: 3840 };
 }

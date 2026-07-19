@@ -23,7 +23,6 @@ export async function uploadImageBuffer(
       {
         folder,
         resource_type: 'image',
-        transformation: [{ quality: 'auto', fetch_format: 'auto' }],
       },
       (error, result) => {
         if (error || !result) {

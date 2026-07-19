@@ -547,14 +547,10 @@ export default function GalleryPage() {
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
                 >
-                  <PolaroidImage
+                  <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    width={currentImage.width}
-                    height={currentImage.height}
-                    quality={100}
-                    containerClassName="max-h-[80vh] w-full"
-                    className="!w-full !h-full"
+                    className="max-h-[80vh] w-auto mx-auto object-contain"
                   />
                 </motion.div>
               </AnimatePresence>
