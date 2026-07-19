@@ -4,14 +4,14 @@ import { createHash } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 function getTokenUser(request: Request) {
   const cookie = request.headers.get('cookie') || '';
   const match = cookie.match(/auth_token=([^;]+)/);
   if (!match) return null;
   try {
-    return jwt.verify(match[1], JWT_SECRET) as { email: string; role: string };
+    return jwt.verify(match[1], JWT_SECRET) as unknown as { email: string; role: string };
   } catch {
     return null;
   }

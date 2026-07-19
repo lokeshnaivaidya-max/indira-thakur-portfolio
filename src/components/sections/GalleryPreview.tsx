@@ -80,7 +80,7 @@ export default function GalleryPreview() {
       <div className="flex justify-center mt-10">
         <Link
           href={gp.ctaLink || '/gallery'}
-          className="group inline-flex items-center gap-3"
+          className="group inline-flex items-center gap-3 py-2 min-h-[44px]"
         >
           <span className="w-5 h-px bg-magenta/25 group-hover:w-8 transition-all duration-700" />
           <span className="font-sans text-[11px] text-magenta/60 uppercase tracking-[0.3em] group-hover:text-magenta transition-colors duration-500">

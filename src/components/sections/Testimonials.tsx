@@ -91,7 +91,7 @@ export default function Testimonials() {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[28px] min-h-[28px] flex items-center justify-center"
+                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label={`Testimonial ${i + 1}`}
               >
                 <span

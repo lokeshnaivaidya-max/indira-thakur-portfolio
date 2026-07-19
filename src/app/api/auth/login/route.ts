@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function POST(request: Request) {
   try {
@@ -43,7 +43,8 @@ export async function POST(request: Request) {
     }
 
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@indirathakur.com';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
 
     if (email === adminEmail && password === adminPassword) {
       const token = jwt.sign(

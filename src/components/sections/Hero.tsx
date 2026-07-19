@@ -226,7 +226,7 @@ export default function Hero() {
           </Link>
           <Link
             href={secondaryCtaLink}
-            className="group inline-flex items-center gap-3 font-sans text-[11px] text-white/50 uppercase tracking-[0.25em] hover:text-white/60 transition-colors duration-500"
+            className="group inline-flex items-center gap-3 py-2 min-h-[44px] font-sans text-[11px] text-white/50 uppercase tracking-[0.25em] hover:text-white/60 transition-colors duration-500"
           >
             <span className="w-4 h-px bg-white/20 group-hover:w-7 transition-all duration-500" />
             {secondaryCtaText}
@@ -245,7 +245,7 @@ export default function Hero() {
               <button
                 key={i}
                 onClick={() => goToSlide(i)}
-                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[28px] min-h-[28px] flex items-center justify-center"
+                className="h-2 rounded-full transition-all duration-700 ease-out min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label={`Go to slide ${i + 1}`}
               >
                 <span
@@ -268,7 +268,7 @@ export default function Hero() {
         transition={{ duration: 1, delay: 1.2 }}
         className="absolute bottom-16 right-8 md:hidden z-20"
       >
-        <p className="font-mono text-[11px] text-white/30 uppercase tracking-[0.3em] leading-[2.2] text-right">
+        <p className="font-mono text-[11px] text-white/50 uppercase tracking-[0.3em] leading-[2.2] text-right">
           {categories.join(' · ')}
         </p>
       </motion.div>

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'indira-portfolio-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function GET(request: Request) {
   try {

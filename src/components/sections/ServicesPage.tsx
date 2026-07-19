@@ -63,7 +63,7 @@ export default function ServicesPageClient() {
                     {service.description && (
                       <p className="font-sans text-sm text-white/60 mt-4 leading-relaxed max-w-md">{service.description}</p>
                     )}
-                    <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-white/60 uppercase tracking-[0.2em] hover:text-white transition-colors">
+                    <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[11px] text-white/60 uppercase tracking-[0.2em] hover:text-white transition-colors">
                       <span className="w-4 h-px bg-white/30" />Enquire
                     </Link>
                   </div>
@@ -90,7 +90,7 @@ export default function ServicesPageClient() {
                       {service.description && (
                         <p className="font-sans text-sm text-warm-gray/60 mt-5 leading-relaxed">{service.description}</p>
                       )}
-                      <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[10px] text-magenta/60 uppercase tracking-[0.2em] hover:text-magenta transition-colors">
+                      <Link href="/contact" className="min-h-[44px] inline-flex items-center gap-2 mt-6 font-sans text-[11px] text-magenta/60 uppercase tracking-[0.2em] hover:text-magenta transition-colors">
                         <span className="w-4 h-px bg-magenta/25" />Enquire
                       </Link>
                     </div>

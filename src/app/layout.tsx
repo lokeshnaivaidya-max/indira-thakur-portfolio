@@ -26,6 +26,7 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://indirathakurphotography.com'),
   title: {
     default: 'Indira Thakur Photography | Capturing Life\'s Precious Moments',
     template: '%s | Indira Thakur Photography',
@@ -35,6 +36,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Indira Thakur Photography',
+    url: 'https://indirathakurphotography.com',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Indira Thakur Photography',
+      },
+    ],
   },
   twitter: { card: 'summary_large_image' },
 };

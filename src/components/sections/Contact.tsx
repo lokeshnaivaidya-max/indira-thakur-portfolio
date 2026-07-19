@@ -108,11 +108,11 @@ export default function Contact() {
 
             {contactData.socialLinks && contactData.socialLinks.length > 0 && (
               <div className="mt-6 pt-6 border-t border-beige/30">
-                <p className="font-mono text-[9px] text-warm-gray/30 uppercase tracking-[0.2em] mb-3">Follow Along</p>
+                <p className="font-mono text-[11px] text-warm-gray/30 uppercase tracking-[0.2em] mb-3">Follow Along</p>
                 <div className="flex gap-4">
                   {contactData.socialLinks.map((link: { platform: string; url: string }, i: number) => (
                     link.url && (
-                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-magenta/60 hover:text-magenta transition-colors">
+                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-magenta/60 hover:text-magenta transition-colors py-1.5 min-h-[44px] inline-flex items-center">
                         {link.platform || 'Social'}
                       </a>
                     )

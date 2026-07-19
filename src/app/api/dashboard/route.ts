@@ -4,8 +4,10 @@ import { requireAuth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const user = requireAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
 
     const GalleryImage = (await import('@/models/GalleryImage')).default;

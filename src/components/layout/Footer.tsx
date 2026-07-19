@@ -66,7 +66,7 @@ export default function Footer() {
                 { href: '/gallery', label: 'Gallery' },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500">
+                  <Link href={item.href} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500 py-1.5 min-h-[44px] inline-block">
                     {item.label}
                   </Link>
                 </li>
@@ -77,13 +77,13 @@ export default function Footer() {
           <nav aria-label="Footer navigation">
             <h4 className="font-mono text-[11px] text-white/50 uppercase tracking-[0.25em] mb-6">Connect</h4>
             <ul className="space-y-3">
-              <li><a href={`mailto:${footerData.email}`} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500">{footerData.email}</a></li>
-              <li><a href={`tel:${footerData.phone?.replace(/\s/g, '')}`} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500">{footerData.phone}</a></li>
+              <li><a href={`mailto:${footerData.email}`} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500 py-1.5 min-h-[44px] inline-block">{footerData.email}</a></li>
+              <li><a href={`tel:${footerData.phone?.replace(/\s/g, '')}`} className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500 py-1.5 min-h-[44px] inline-block">{footerData.phone}</a></li>
               {footerData.instagramUrl && (
-                <li><a href={footerData.instagramUrl} target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500">Instagram</a></li>
+                <li><a href={footerData.instagramUrl} target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500 py-1.5 min-h-[44px] inline-block">Instagram</a></li>
               )}
               {footerData.facebookUrl && (
-                <li><a href={footerData.facebookUrl} target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500">Facebook</a></li>
+                <li><a href={footerData.facebookUrl} target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-white/40 hover:text-white transition-colors duration-500 py-1.5 min-h-[44px] inline-block">Facebook</a></li>
               )}
             </ul>
           </nav>

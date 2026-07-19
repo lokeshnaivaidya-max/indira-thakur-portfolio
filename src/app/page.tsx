@@ -1,8 +1,15 @@
 import Hero from '@/components/sections/Hero';
 import FAQ from '@/components/sections/FAQ';
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Home',
+  description: 'Indira Thakur Photography — professional newborn, maternity, portrait, and event photography in Bangalore.',
+  openGraph: {
+    title: 'Indira Thakur Photography | Capturing Life\'s Precious Moments',
+    description: 'Professional photographer specializing in newborn, maternity, portrait, and event photography. Based in Bangalore.',
+    url: 'https://indirathakurphotography.com',
+  },
 };
 
 export default function Home() {
