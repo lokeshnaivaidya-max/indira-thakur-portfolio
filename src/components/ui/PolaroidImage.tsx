@@ -19,6 +19,7 @@ interface PolaroidImageProps {
   showCaption?: boolean;
   sizes?: string;
   quality?: number;
+  unoptimized?: boolean;
   fill?: boolean;
   onClick?: () => void;
   style?: React.CSSProperties;
@@ -48,7 +49,8 @@ export function PolaroidImage({
   caption,
   showCaption = false,
   sizes = '100vw',
-  quality = 75,
+  quality = 90,
+  unoptimized = false,
   fill = false,
   onClick,
   style,
@@ -97,6 +99,7 @@ export function PolaroidImage({
       fill={fill}
       sizes={sizes}
       quality={quality}
+      unoptimized={unoptimized}
       priority={priority}
       loading={priority ? 'eager' : 'lazy'}
       placeholder="blur"

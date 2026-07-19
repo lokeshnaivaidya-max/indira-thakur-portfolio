@@ -30,7 +30,7 @@ export async function compressImage(
   const {
     maxWidth = 1920,
     maxHeight = 1080,
-    quality = 0.82,
+    quality = 0.90,
     outputType = 'image/jpeg',
   } = options;
 
