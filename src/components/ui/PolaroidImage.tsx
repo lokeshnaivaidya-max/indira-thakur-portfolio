@@ -53,6 +53,7 @@ export function PolaroidImage({
   bgColor = 'bg-cream',
 }: PolaroidImageProps) {
   const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const handleError = useCallback(() => {
     setHasError(true);
@@ -100,8 +101,10 @@ export function PolaroidImage({
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       onError={handleError}
+      onLoad={() => setIsLoaded(true)}
       className={cn(
-        'absolute inset-0 w-full h-full',
+        'absolute inset-0 w-full h-full transition-all duration-700 ease-out',
+        !isLoaded ? 'opacity-0 scale-95 blur-[2px]' : 'opacity-100 scale-100 blur-0',
         objectFit === 'cover' ? 'object-cover' : 'object-contain',
         positionClass,
         className
@@ -126,6 +129,23 @@ export function PolaroidImage({
         onClick={onClick}
       >
         {img}
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+            <svg
+              className="h-8 w-8 text-warm-gray/25 animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+        )}
       </div>
     );
   }
@@ -143,6 +163,23 @@ export function PolaroidImage({
     >
       <div className="relative w-full h-full">
         {img}
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+            <svg
+              className="h-8 w-8 text-warm-gray/25 animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+        )}
       </div>
       <figcaption className="px-3 py-2 bg-ivory border-t border-cream">
         <p className="text-sm font-medium text-rich-black">{caption}</p>

@@ -31,6 +31,7 @@ export function Gallery() {
   const [previewItem, setPreviewItem] = useState<GalleryItem | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
   const [formData, setFormData] = useState({
     id: '',
@@ -64,8 +65,11 @@ export function Gallery() {
     fetchItems();
   }, [fetchItems]);
 
-  const handleImageUpload = async (file: File): Promise<{ url: string; publicId: string; width: number; height: number }> => {
-    const data = await uploadImageDirect(file, 'gallery');
+  const handleImageUpload = async (
+    file: File, 
+    onProgress?: (percent: number) => void
+  ): Promise<{ url: string; publicId: string; width: number; height: number }> => {
+    const data = await uploadImageDirect(file, 'gallery', onProgress);
     return {
       url: data.url,
       publicId: data.publicId,
@@ -82,23 +86,55 @@ export function Gallery() {
       return;
     }
 
+    const isEdit = !!editingItem;
+    const tempId = isEdit ? editingItem._id : `optimistic-${Date.now()}`;
+    const submitData = {
+      ...formData,
+      width: parseInt(String(formData.width)) || 1200,
+      height: parseInt(String(formData.height)) || 1600,
+      order: parseInt(String(formData.order)) || 0,
+      featured: Boolean(formData.featured),
+    };
+
+    if (isEdit) {
+      submitData.id = editingItem._id;
+    }
+
+    // 1. Prepare optimistic item
+    const optimisticItem: GalleryItem = {
+      _id: tempId,
+      src: formData.src,
+      publicId: formData.publicId,
+      alt: formData.alt || formData.title || 'Gallery item',
+      title: formData.title || 'Untitled',
+      description: formData.description || '',
+      width: submitData.width,
+      height: submitData.height,
+      category: formData.category || 'Portrait',
+      featured: submitData.featured,
+      order: submitData.order,
+      createdAt: isEdit ? editingItem.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // 2. Insert or update locally immediately
+    if (isEdit) {
+      setItems(prev => prev.map(item => item._id === editingItem._id ? optimisticItem : item));
+    } else {
+      setItems(prev => [optimisticItem, ...prev]);
+    }
+
+    // 3. Clear and close form
+    setShowForm(false);
+    setEditingItem(null);
+    resetForm();
+
+    // 4. Save metadata in the background
     try {
-      const url = editingItem
-        ? `/api/gallery-images?id=${editingItem._id}`
+      const url = isEdit
+        ? `/api/gallery-images?id=${tempId}`
         : '/api/gallery-images';
-      const method = editingItem ? 'PUT' : 'POST';
-
-      const submitData = {
-        ...formData,
-        width: parseInt(String(formData.width)) || 800,
-        height: parseInt(String(formData.height)) || 1000,
-        order: parseInt(String(formData.order)) || 0,
-        featured: Boolean(formData.featured),
-      };
-
-      if (editingItem) {
-        submitData.id = editingItem._id;
-      }
+      const method = isEdit ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
@@ -106,14 +142,19 @@ export function Gallery() {
         body: JSON.stringify(submitData),
       });
 
-      if (!response.ok) throw new Error('Failed to save gallery item');
+      if (!response.ok) throw new Error('Failed to save gallery item metadata');
+      const savedRecord = await response.json();
 
-      await fetchItems();
-      setShowForm(false);
-      setEditingItem(null);
-      resetForm();
+      // 5. Replace the optimistic item with the final database record
+      setItems(prev => prev.map(item => item._id === tempId ? savedRecord : item));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+      setError(err instanceof Error ? err.message : 'Failed to save metadata');
+      // Only refetch or revert if save fails
+      if (isEdit) {
+        fetchItems(); // full sync to revert
+      } else {
+        setItems(prev => prev.filter(item => item._id !== tempId));
+      }
     }
   };
 
@@ -126,8 +167,8 @@ export function Gallery() {
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setError('File size must be less than 15MB');
+    if (file.size > 50 * 1024 * 1024) {
+      setError('File size must be less than 50MB');
       return;
     }
 
@@ -135,17 +176,68 @@ export function Gallery() {
     setUploadProgress(0);
 
     try {
-      const result = await handleImageUpload(file);
-      setFormData(prev => ({
-        ...prev,
+      const result = await handleImageUpload(file, (percent) => {
+        setUploadProgress(percent);
+      });
+
+      const tempId = `optimistic-${Date.now()}`;
+      const titleFromFilename = file.name.replace(/\.[^/.]+$/, '');
+      const optimisticItem: GalleryItem = {
+        _id: tempId,
         src: result.url,
         publicId: result.publicId,
-        width: result.width,
-        height: result.height,
-        alt: prev.alt || file.name,
-        title: prev.title || file.name.replace(/\.[^/.]+$/, ''),
-      }));
-      setUploadProgress(100);
+        alt: formData.alt || titleFromFilename,
+        title: formData.title || titleFromFilename,
+        description: formData.description || '',
+        width: result.width || 1200,
+        height: result.height || 1600,
+        category: formData.category || 'Portrait',
+        featured: formData.featured || false,
+        order: formData.order || 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // 1. Immediately insert optimistic item in state
+      setItems(prev => [optimisticItem, ...prev]);
+      
+      // 2. Reset form and close
+      setShowForm(false);
+      resetForm();
+
+      // 3. Save to database in the background!
+      (async () => {
+        try {
+          const response = await fetch('/api/gallery-images', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              src: optimisticItem.src,
+              publicId: optimisticItem.publicId,
+              alt: optimisticItem.alt,
+              title: optimisticItem.title,
+              description: optimisticItem.description,
+              width: optimisticItem.width,
+              height: optimisticItem.height,
+              category: optimisticItem.category,
+              featured: optimisticItem.featured,
+              order: optimisticItem.order
+            }),
+          });
+
+          if (!response.ok) throw new Error('Failed to save background metadata');
+          const savedRecord = await response.json();
+          
+          // 4. Replace temporary optimistic item with the final database record
+          setItems(prev => prev.map(item => item._id === tempId ? savedRecord : item));
+        } catch (err) {
+          console.error('Background metadata save failed:', err);
+          setError('Background save failed. Reverting item.');
+          // Remove the temporary optimistic item
+          setItems(prev => prev.filter(item => item._id !== tempId));
+        }
+      })();
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
@@ -163,8 +255,8 @@ export function Gallery() {
       alt: item.alt || '',
       title: item.title || '',
       description: item.description || '',
-      width: item.width || 800,
-      height: item.height || 1000,
+      width: item.width || 1200,
+      height: item.height || 1600,
       category: item.category || 'Portrait',
       featured: item.featured || false,
       order: item.order || 0,
@@ -176,19 +268,23 @@ export function Gallery() {
   const handleDelete = async (id: string, publicId: string) => {
     if (!confirm('Are you sure you want to delete this image?')) return;
 
+    const originalItems = [...items];
+    // Invalidate local cache and update UI immediately
+    setItems(prev => prev.filter(item => item._id !== id));
+
     try {
       // Delete from database
       const response = await fetch(`/api/gallery-images?id=${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete gallery item');
 
-      // Delete from Cloudinary if publicId exists
+      // Delete from Cloudinary/Vercel Blob in background
       if (publicId) {
-        await fetch(`/api/upload?publicId=${publicId}&isImage=true`, { method: 'DELETE' });
+        fetch(`/api/upload?publicId=${publicId}&isImage=true`, { method: 'DELETE' }).catch(console.error);
       }
-
-      await fetchItems();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete');
+      // Revert if delete fails
+      setItems(originalItems);
     }
   };
 
@@ -501,9 +597,21 @@ export function Gallery() {
                   <img
                     src={item.src || '/placeholder.svg'}
                     alt={item.alt || item.title || 'Gallery item'}
-                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    className={`w-full h-full object-contain transition-all duration-500 ${!loadedImages[item._id] ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'} group-hover:scale-105`}
                     loading="lazy"
+                    onLoad={() => setLoadedImages(prev => ({ ...prev, [item._id]: true }))}
                   />
+                  {!loadedImages[item._id] && !item._id.startsWith('optimistic-') && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+                      <HiPhoto className="w-10 h-10 text-warm-gray/20 animate-pulse" />
+                    </div>
+                  )}
+                  {item._id.startsWith('optimistic-') && (
+                    <div className="absolute inset-0 bg-rich-black/30 backdrop-blur-[1px] flex flex-col items-center justify-center p-4">
+                      <div className="w-8 h-8 border-2 border-magenta border-t-transparent rounded-full animate-spin mb-2" />
+                      <span className="font-sans text-[10px] text-white bg-rich-black/80 px-2 py-0.5 rounded tracking-wider uppercase">Saving...</span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-rich-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-4">
                     <button
                       onClick={() => handlePreview(item)}

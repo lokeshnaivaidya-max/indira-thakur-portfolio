@@ -607,6 +607,11 @@ export default function GalleryClient() {
               <HiXMark className="w-5 h-5" />
             </button>
 
+            {/* Premium, minimal image counter positioned elegantly in the top-right with spacious tracking */}
+            <div className="absolute top-[2.5rem] right-20 z-10 font-mono text-[11px] text-white/40 tracking-[0.25em] select-none uppercase">
+              {currentIndex + 1} / {filtered.length}
+            </div>
+
             <button
               onClick={goPrev}
               className="absolute left-4 md:left-6 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
@@ -643,33 +648,33 @@ export default function GalleryClient() {
               </AnimatePresence>
 
               <div className="mt-6 flex flex-col items-center gap-2">
-                <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.3em]">
-                  {currentIndex + 1} / {filtered.length}
-                </span>
                 {(currentImage.caption || currentImage.title) && (
-                  <p className="font-sans text-[11px] text-white/50 text-center max-w-md">
+                  <p className="font-sans text-[11px] text-white/50 text-center max-w-md tracking-wide">
                     {currentImage.caption || currentImage.title}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
-              {filtered.length > 15 ? (
-                <span className="font-sans text-[10px] text-white/50">
-                  {currentIndex + 1} of {filtered.length}
-                </span>
-              ) : (
-                filtered.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-2 h-2 rounded-full bg-white' : 'w-2 h-2 rounded-full bg-white/20'}`}
-                    aria-label={`Go to image ${i + 1}`}
-                  />
-                ))
-              )}
-            </div>
+            {/* Completely centered, independent, and minimal dot indicator */}
+            {filtered.length > 1 && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+                {filtered.length <= 15 ? (
+                  filtered.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentIndex(i)}
+                      className={`transition-all duration-300 rounded-full ${i === currentIndex ? 'w-5 h-1 bg-white' : 'w-1 h-1 bg-white/20 hover:bg-white/40'}`}
+                      aria-label={`Go to image ${i + 1}`}
+                    />
+                  ))
+                ) : (
+                  <span className="font-mono text-[10px] text-white/40 tracking-[0.1em]">
+                    {currentIndex + 1} of {filtered.length}
+                  </span>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
