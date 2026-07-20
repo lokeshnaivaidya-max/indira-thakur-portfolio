@@ -100,6 +100,7 @@ export function PolaroidImage({
       src={src}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
+      referrerPolicy="no-referrer"
       onError={handleError}
       onLoad={() => setIsLoaded(true)}
       className={cn(

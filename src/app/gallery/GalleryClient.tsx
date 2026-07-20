@@ -364,6 +364,7 @@ export default function GalleryClient() {
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm scale-110"
                           loading="lazy"
+                          referrerPolicy="no-referrer"
                           style={{
                             animation: `heroBgDrift ${8 + i * 3}s ease-in-out ${i * 1.5}s infinite alternate`,
                           }}
@@ -642,6 +643,8 @@ export default function GalleryClient() {
                   <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
+                    loading="eager"
+                    referrerPolicy="no-referrer"
                     className="max-h-[80vh] max-w-[90vw] w-auto mx-auto object-contain"
                   />
                 </motion.div>
