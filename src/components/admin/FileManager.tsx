@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { HiPlus, HiTrash, HiPencil, HiEye, HiArrowDownTray, HiDocumentText, HiPhoto, HiFilm, HiMusicalNote, HiArrowPath, HiXMark } from 'react-icons/hi2';
+import { uploadImageDirect } from '@/lib/uploadHelper';
 
 export interface FileItem {
   _id?: string;
@@ -134,21 +135,7 @@ export function FileManager({
   const handleUpload = async (file: File) => {
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', folder);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload failed');
-      }
-
-      const result = await response.json();
+      const result = await uploadImageDirect(file, folder);
       fetchFiles();
       return result;
     } catch (err) {

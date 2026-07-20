@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { HiPlus, HiTrash, HiPencil, HiStar, HiArrowDownTray, HiLink, HiXMark, HiPhoto } from 'react-icons/hi2';
+import { uploadImageDirect } from '@/lib/uploadHelper';
 
 interface Testimonial {
   _id: string;
@@ -57,21 +58,7 @@ export function Testimonials() {
   }, [fetchTestimonials]);
 
   const handleImageUpload = async (file: File): Promise<{ url: string; publicId: string }> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'testimonials');
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Upload failed');
-    }
-
-    const data = await response.json();
+    const data = await uploadImageDirect(file, 'testimonials');
     return { url: data.url, publicId: data.publicId };
   };
 

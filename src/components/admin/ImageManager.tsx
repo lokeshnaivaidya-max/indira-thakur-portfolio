@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, HiClipboardDocument } from 'react-icons/hi2';
 import { formatBytes } from '@/lib/compressImage';
+import { uploadImageDirect } from '@/lib/uploadHelper';
 
 interface SiteImage {
   url: string;
@@ -110,8 +111,8 @@ export default function ImageManager({
       });
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 15 MB.` }));
+    if (file.size > 50 * 1024 * 1024) {
+      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 50 MB.` }));
       return;
     }
 
@@ -140,47 +141,12 @@ export default function ImageManager({
     }, 300);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', folder);
-
-      abortControllerRef.current = new AbortController();
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-        signal: abortControllerRef.current.signal,
+      // Use our direct upload helper with real progress tracking!
+      const result = await uploadImageDirect(file, folder, (percent) => {
+        setUploadState(prev => ({ ...prev, progress: percent }));
       });
 
       clearInterval(progressInterval);
-
-      let result: any;
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        result = await response.json();
-      } else {
-        const text = await response.text();
-        if (!response.ok) {
-          const msg = text.substring(0, 200);
-          if (msg.includes('Request Entity Too Large') || msg.includes('413')) {
-            throw new Error('Image is too large for the server. Please use a smaller image.');
-          }
-          if (msg.includes('<!DOCTYPE') || msg.includes('<html')) {
-            throw new Error(`Server error (${response.status}). The image may be too large.`);
-          }
-          throw new Error(msg || `Upload failed with status ${response.status}`);
-        }
-        throw new Error('Server returned an unexpected response. Please try again.');
-      }
-
-      if (!response.ok) {
-        throw new Error(result.error || `Upload failed (${response.status})`);
-      }
-
-      if (!result.url) {
-        throw new Error('Upload succeeded but no URL was returned. Please try again.');
-      }
-
       URL.revokeObjectURL(localPreview);
 
       setUploadState(prev => ({
@@ -205,19 +171,6 @@ export default function ImageManager({
 
     } catch (err: any) {
       clearInterval(progressInterval);
-
-      if (err.name === 'AbortError') {
-        setUploadState(prev => ({
-          ...prev,
-          uploading: false,
-          progress: 0,
-          error: 'Upload was cancelled',
-          warning: null,
-          previewUrl: null,
-        }));
-        URL.revokeObjectURL(localPreview);
-        return;
-      }
 
       const errorMessage = err.message || 'Upload failed. Please check your connection and try again.';
 

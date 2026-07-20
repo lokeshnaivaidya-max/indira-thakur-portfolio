@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { HiPlus, HiTrash, HiPencil, HiPhoto, HiArrowDownTray, HiArrowUpTray, HiLink, HiXMark, HiEye, HiChevronLeft, HiChevronRight } from 'react-icons/hi2';
+import { uploadImageDirect } from '@/lib/uploadHelper';
 
 interface GalleryItem {
   _id: string;
@@ -64,21 +65,7 @@ export function Gallery() {
   }, [fetchItems]);
 
   const handleImageUpload = async (file: File): Promise<{ url: string; publicId: string; width: number; height: number }> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'gallery');
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Upload failed');
-    }
-
-    const data = await response.json();
+    const data = await uploadImageDirect(file, 'gallery');
     return {
       url: data.url,
       publicId: data.publicId,
