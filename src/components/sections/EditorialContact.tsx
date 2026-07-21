@@ -67,10 +67,10 @@ export default function EditorialContact() {
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0.95 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.5 }}
               >
                 <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
                   {contactData.eyebrow || 'COMMISSION INQUIRIES'}

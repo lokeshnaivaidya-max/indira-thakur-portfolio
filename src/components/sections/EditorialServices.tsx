@@ -103,10 +103,10 @@ export default function EditorialServices() {
           return (
             <motion.div
               key={service.title || i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0.95 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
               className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center p-8 md:p-14 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_40px_rgba(0,0,0,0.02)] ${
                 isEven ? '' : 'lg:flex-row-reverse'
               }`}

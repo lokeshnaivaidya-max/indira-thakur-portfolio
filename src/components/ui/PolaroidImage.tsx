@@ -146,9 +146,9 @@ export function PolaroidImage({
       >
         {img}
         {!isLoaded && (
-          <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#F4ECE8] flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
             <svg
-              className="h-8 w-8 text-warm-gray/25 animate-pulse"
+              className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -180,9 +180,9 @@ export function PolaroidImage({
       <div className="relative w-full h-full">
         {img}
         {!isLoaded && (
-          <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#F4ECE8] flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
             <svg
-              className="h-8 w-8 text-warm-gray/25 animate-pulse"
+              className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

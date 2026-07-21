@@ -132,10 +132,10 @@ export default function EditorialTestimonials() {
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
               className="flex flex-col items-center max-w-3xl"
             >
               <span className="font-serif text-6xl text-[#C39E96]/30 font-normal leading-none mb-2">“</span>

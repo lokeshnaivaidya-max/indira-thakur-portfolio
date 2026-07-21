@@ -104,10 +104,10 @@ export default function EditorialAbout() {
 
             {/* Overlapping Floating Inset Image */}
             <motion.div
-              initial={{ opacity: 0, x: 20, y: 20 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              initial={{ opacity: 0.95 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.3 }}
+              transition={{ duration: 0.6 }}
               className="hidden sm:flex absolute -bottom-8 -right-4 md:-right-8 w-56 md:w-72 min-h-[220px] md:min-h-[280px] bg-[#FAF6F3] p-2 border-4 border-[#FAF6F3] shadow-2xl overflow-hidden rounded-sm z-10 items-center justify-center"
             >
               <PolaroidImage

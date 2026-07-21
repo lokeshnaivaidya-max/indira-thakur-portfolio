@@ -25,7 +25,7 @@ export default function Preloader() {
           key="preloader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#FAF6F3] dark:bg-[#1C1817] text-[#2B2625] dark:text-[#FAF6F3] pointer-events-auto"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#FAF6F3] text-[#2B2625] pointer-events-auto"
         >
           {/* Ambient Radial Glow */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(195,158,150,0.12)_0%,transparent_70%)] pointer-events-none" />

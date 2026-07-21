@@ -330,14 +330,12 @@ const categoryTabs = [
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
   const { config } = useSiteConfig();
   const [activeCategory, setActiveCategory] = useState('all');
-  const [images, setImages] = useState<GalleryImageItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState<GalleryImageItem[]>(() => DEMO_GALLERY as any);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadGallery() {
       try {
-        setLoading(true);
         const res = await fetch('/api/gallery-images');
         if (res.ok) {
           const data = await res.json();
@@ -351,7 +349,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
               caption: img.description || img.caption || ''
             }));
             setImages(mapped);
-            setLoading(false);
             return;
           }
         }
@@ -359,7 +356,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
         console.error('Failed to load gallery images:', err);
       }
 
-      // Fallback from config or default fallback list
+      // Fallback from config if available
       const configFeatured = config?.galleryPreview?.featuredImages;
       if (Array.isArray(configFeatured) && configFeatured.length > 0) {
         const mappedConfig: GalleryImageItem[] = configFeatured.map((img: any, idx: number) => ({
@@ -371,10 +368,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
           caption: img.caption || ''
         }));
         setImages(mappedConfig);
-      } else {
-        setImages(DEMO_GALLERY as any);
       }
-      setLoading(false);
     }
 
     loadGallery();
@@ -445,58 +439,47 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
         </div>
 
         {/* Gallery Grid */}
-        {loading ? (
-          <div className="py-20 text-center font-mono text-xs uppercase tracking-[0.3em] text-[#7C706D]/60 animate-pulse">
-            Loading Fine Art Works...
-          </div>
-        ) : filteredImages.length === 0 ? (
+        {filteredImages.length === 0 ? (
           <div className="py-20 text-center font-sans text-sm text-[#7C706D]">
             No photographs found in this collection category.
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            <AnimatePresence>
-              {filteredImages.map((img, idx) => (
-                <motion.div
-                  key={img.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.6, delay: idx * 0.05 }}
-                  onClick={() => setSelectedImageIndex(idx)}
-                  className="group relative cursor-pointer overflow-hidden rounded-sm bg-white border border-[#E7DDD2] shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
-                >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF6F3]">
-                    <PolaroidImage
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      priority={idx < 6}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      objectFit="contain"
-                      className="!w-full !h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                      containerClassName="!w-full !h-full"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2B2625]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 text-white" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {filteredImages.map((img, idx) => (
+              <div
+                key={img.id}
+                onClick={() => setSelectedImageIndex(idx)}
+                className="group relative cursor-pointer overflow-hidden rounded-sm bg-white border border-[#E7DDD2] shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-opacity duration-300"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF6F3]">
+                  <PolaroidImage
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    priority={idx < 6}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    objectFit="contain"
+                    className="!w-full !h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                    containerClassName="!w-full !h-full"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#2B2625]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 text-white pointer-events-none" />
+                </div>
+                <div className="p-5 flex items-center justify-between border-t border-[#E7DDD2]/50 bg-white">
+                  <div>
+                    <h4 className="font-serif text-lg text-[#2B2625] leading-snug font-medium group-hover:text-[#C39E96] transition-colors">
+                      {img.title || 'Untitled Story'}
+                    </h4>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#7C706D] mt-0.5">
+                      {img.category}
+                    </p>
                   </div>
-                  <div className="p-5 flex items-center justify-between border-t border-[#E7DDD2]/50 bg-white">
-                    <div>
-                      <h4 className="font-serif text-lg text-[#2B2625] leading-snug font-medium group-hover:text-[#C39E96] transition-colors">
-                        {img.title || 'Untitled Story'}
-                      </h4>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#7C706D] mt-0.5">
-                        {img.category}
-                      </p>
-                    </div>
-                    <span className="font-mono text-xs text-[#C39E96] group-hover:translate-x-1 transition-transform">
-                      ↗
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                  <span className="font-mono text-xs text-[#C39E96] group-hover:translate-x-1 transition-transform">
+                    ↗
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {/* Lightbox Modal */}

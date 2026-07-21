@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
 import { useSiteConfig, SiteConfigData } from '@/hooks/useSiteConfig';
+import { DEMO_GALLERY } from '@/data/demoContent';
 
 interface GalleryImage {
   id?: string;
@@ -169,9 +170,9 @@ export default function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>(() => mapGalleryImages(DEMO_GALLERY as any));
   const [scImages, setScImages] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const { config } = useSiteConfig();
 

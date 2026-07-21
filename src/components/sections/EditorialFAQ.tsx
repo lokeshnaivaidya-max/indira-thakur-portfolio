@@ -46,10 +46,10 @@ export default function EditorialFAQ() {
     <section id="faq" className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625]">
       <div className="container-editorial max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0.95 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
           <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
