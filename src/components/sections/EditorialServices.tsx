@@ -100,14 +100,15 @@ export default function EditorialServices() {
             >
               {/* Image Spread */}
               <div className={`lg:col-span-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
-                <div className="relative h-[45vh] md:h-[60vh] overflow-hidden rounded-sm group">
+                <div className="relative min-h-[380px] md:min-h-[520px] overflow-hidden rounded-sm group bg-[#FAF6F3]">
                   {hasImage(service.image?.url) ? (
                     <PolaroidImage
                       src={service.image.url}
                       alt={service.image.alt || service.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
-                      className="!w-full !h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      objectFit="contain"
+                      className="!w-full !h-full transition-transform duration-1000 group-hover:scale-[1.02]"
                       containerClassName="!w-full !h-full"
                     />
                   ) : (

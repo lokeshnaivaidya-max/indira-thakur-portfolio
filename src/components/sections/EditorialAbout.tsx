@@ -77,14 +77,15 @@ export default function EditorialAbout() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-              className="relative h-[55vh] md:h-[70vh] rounded-sm overflow-hidden shadow-2xl border border-[#E7DDD2]"
+              className="relative min-h-[480px] md:min-h-[620px] rounded-sm overflow-hidden shadow-2xl border border-[#E7DDD2] bg-[#FAF6F3] p-2 md:p-3 flex items-center justify-center"
             >
               <PolaroidImage
                 src={mainImageUrl}
                 alt="Indira Thakur Portrait"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="!w-full !h-full object-cover"
+                objectFit="contain"
+                className="!w-full !h-full"
                 containerClassName="!w-full !h-full"
               />
             </motion.div>
@@ -95,14 +96,15 @@ export default function EditorialAbout() {
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="hidden sm:block absolute -bottom-10 -right-6 md:-right-10 w-48 md:w-64 h-60 md:h-80 border-4 border-[#FAF6F3] shadow-2xl overflow-hidden rounded-sm z-10"
+              className="hidden sm:flex absolute -bottom-8 -right-4 md:-right-8 w-56 md:w-72 min-h-[220px] md:min-h-[280px] bg-[#FAF6F3] p-2 border-4 border-[#FAF6F3] shadow-2xl overflow-hidden rounded-sm z-10 items-center justify-center"
             >
               <PolaroidImage
                 src={secondaryImageUrl}
                 alt="Fine Art Photography"
                 fill
                 sizes="300px"
-                className="!w-full !h-full object-cover"
+                objectFit="contain"
+                className="!w-full !h-full"
                 containerClassName="!w-full !h-full"
               />
             </motion.div>

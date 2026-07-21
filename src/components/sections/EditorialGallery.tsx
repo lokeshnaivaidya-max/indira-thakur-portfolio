@@ -455,13 +455,14 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                   onClick={() => setSelectedImageIndex(idx)}
                   className="group relative cursor-pointer overflow-hidden rounded-sm bg-white border border-[#E7DDD2] shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF6F3]">
                     <PolaroidImage
                       src={img.src}
                       alt={img.alt}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="!w-full !h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      objectFit="contain"
+                      className="!w-full !h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                       containerClassName="!w-full !h-full"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#2B2625]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 text-white" />

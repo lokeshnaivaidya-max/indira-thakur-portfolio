@@ -50,7 +50,7 @@ export function PolaroidImage({
   fill = false,
   onClick,
   style,
-  bgColor = 'bg-cream',
+  bgColor = 'bg-[#FAF6F3]',
 }: PolaroidImageProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -63,17 +63,11 @@ export function PolaroidImage({
 
   const positionClass = OBJECT_POSITION_CLASS[objectPosition] ?? 'object-center';
 
-  const responsiveSizes = sizes ?? (
-    fill
-      ? '100vw'
-      : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-  );
-
   if (hasError) {
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-charcoal text-warm-gray',
+          'flex items-center justify-center bg-[#2B2625] text-[#7C706D]',
           containerClassName
         )}
         style={!fill ? { aspectRatio: `${width} / ${height}` } : undefined}
@@ -96,22 +90,32 @@ export function PolaroidImage({
   }
 
   const img = (
-    <img
-      src={src}
-      alt={alt}
-      loading={priority ? 'eager' : 'lazy'}
-      referrerPolicy="no-referrer"
-      onError={handleError}
-      onLoad={() => setIsLoaded(true)}
-      className={cn(
-        'absolute inset-0 w-full h-full transition-all duration-700 ease-out',
-        !isLoaded ? 'opacity-0 scale-95 blur-[2px]' : 'opacity-100 scale-100 blur-0',
-        objectFit === 'cover' ? 'object-cover' : 'object-contain',
-        positionClass,
-        className
-      )}
-      style={style}
-    />
+    <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+      {/* Ambient Blurred Background to eliminate empty pillarbox/letterbox with soft matching photo hues */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110 pointer-events-none"
+      />
+      {/* Crisp Main Uncropped Photograph */}
+      <img
+        src={src}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        referrerPolicy="no-referrer"
+        onError={handleError}
+        onLoad={() => setIsLoaded(true)}
+        className={cn(
+          'relative z-10 w-full h-full transition-all duration-700 ease-out',
+          !isLoaded ? 'opacity-0 scale-95 blur-[2px]' : 'opacity-100 scale-100 blur-0',
+          objectFit === 'cover' ? 'object-cover' : 'object-contain',
+          positionClass,
+          className
+        )}
+        style={style}
+      />
+    </div>
   );
 
   if (!hasCaption) {

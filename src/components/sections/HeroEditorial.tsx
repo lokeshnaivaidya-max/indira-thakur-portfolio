@@ -56,17 +56,25 @@ export default function HeroEditorial() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full flex items-center justify-center bg-[#1C1817]"
           >
+            {/* Ambient Blurred Background to fill screen edges softly */}
+            <img
+              src={currentImg.url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 scale-110 pointer-events-none"
+            />
+            {/* Full Uncropped Photograph */}
             <img
               src={currentImg.url}
               alt={currentImg.alt || 'Indira Thakur Photography'}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center"
+              className="relative z-10 w-full h-full object-contain object-center"
             />
             {/* Subtle Luxury Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1817]/90 via-[#1C1817]/30 to-[#1C1817]/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1C1817]/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-[#1C1817]/90 via-[#1C1817]/20 to-[#1C1817]/30 pointer-events-none" />
+            <div className="absolute inset-0 z-20 bg-gradient-to-r from-[#1C1817]/60 via-transparent to-transparent pointer-events-none" />
           </motion.div>
         </AnimatePresence>
       </div>
@@ -146,7 +154,7 @@ export default function HeroEditorial() {
         </div>
 
         {/* Carousel Slide Indicators */}
-        <div className="flex items-center justify-between pointer-events-auto border-t border-white/15 pt-6">
+        <div className="flex items-center justify-between pointer-events-auto pt-4">
           {images.length > 1 ? (
             <div className="flex items-center gap-3">
               {images.map((_: any, i: number) => (
@@ -172,11 +180,6 @@ export default function HeroEditorial() {
           ) : (
             <div />
           )}
-
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">
-            <span>Scroll Down</span>
-            <span className="animate-bounce">↓</span>
-          </div>
         </div>
       </div>
     </section>
