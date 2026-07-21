@@ -1,54 +1,82 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HiHome, HiPhoto, HiCommandLine, HiUserGroup, HiStar, HiQuestionMarkCircle, HiCalendarDays, HiEnvelope, HiArrowRightOnRectangle, HiBars3, HiXMark, HiHeart, HiUsers, HiDocumentText, HiGlobeAlt, HiViewColumns, HiSwatch, HiBuildingStorefront, HiCog6Tooth } from 'react-icons/hi2';
+import { 
+  HiHome, 
+  HiPhoto, 
+  HiCommandLine, 
+  HiUserGroup, 
+  HiQuestionMarkCircle, 
+  HiCalendarDays, 
+  HiEnvelope, 
+  HiArrowRightOnRectangle, 
+  HiBars3, 
+  HiXMark, 
+  HiHeart, 
+  HiUsers, 
+  HiDocumentText, 
+  HiGlobeAlt, 
+  HiSwatch, 
+  HiBuildingStorefront, 
+  HiCog6Tooth,
+  HiStar,
+  HiArrowTopRightOnSquare
+} from 'react-icons/hi2';
 import ToastContainer from '@/components/admin/Toast';
 
 interface SidebarGroup {
   label: string;
-  links: { label: string; href: string; icon: any }[];
+  links: { label: string; description: string; href: string; icon: any }[];
 }
 
 const sidebarGroups: SidebarGroup[] = [
   {
-    label: 'Overview',
+    label: 'Main Dashboard',
     links: [
-      { label: 'Dashboard', href: '/admin/dashboard', icon: HiHome },
+      { label: 'Overview', description: 'Stats & quick updates', href: '/admin/dashboard', icon: HiHome },
     ],
   },
   {
-    label: 'Website Content',
+    label: 'Client Inquiries',
     links: [
-      { label: 'Home', href: '/admin/home', icon: HiHome },
-      { label: 'About', href: '/admin/about', icon: HiHeart },
-      { label: 'Services', href: '/admin/services-cms', icon: HiCommandLine },
-      { label: 'Gallery Preview', href: '/admin/gallery-cms', icon: HiPhoto },
-      { label: 'Testimonials', href: '/admin/testimonials-cms', icon: HiUserGroup },
-      { label: 'FAQ', href: '/admin/faq-cms', icon: HiQuestionMarkCircle },
-      { label: 'Contact', href: '/admin/contact-cms', icon: HiEnvelope },
-      { label: 'Footer', href: '/admin/footer-cms', icon: HiDocumentText },
-      { label: 'SEO', href: '/admin/seo-cms', icon: HiGlobeAlt },
-      { label: 'Theme', href: '/admin/theme', icon: HiSwatch },
-      { label: 'Brand', href: '/admin/brand', icon: HiBuildingStorefront },
-      { label: 'Page Builder', href: '/admin/sections', icon: HiViewColumns },
+      { label: 'Bookings', description: 'Session booking requests', href: '/admin/bookings', icon: HiCalendarDays },
+      { label: 'Contact Messages', description: 'Inquiries from contact form', href: '/admin/contact', icon: HiEnvelope },
     ],
   },
   {
-    label: 'Collections',
+    label: 'Portfolio & Media',
     links: [
-      { label: 'Gallery Images', href: '/admin/gallery', icon: HiPhoto },
-      { label: 'Reviews', href: '/admin/reviews', icon: HiStar },
+      { label: 'Gallery Images', description: 'Manage photos & albums', href: '/admin/gallery', icon: HiPhoto },
+      { label: 'Homepage Gallery', description: 'Featured preview photos', href: '/admin/gallery-cms', icon: HiPhoto },
+      { label: 'Services & Packages', description: 'Photography offerings', href: '/admin/services-cms', icon: HiCommandLine },
     ],
   },
   {
-    label: 'Operations',
+    label: 'Website Pages',
     links: [
-      { label: 'Bookings', href: '/admin/bookings', icon: HiCalendarDays },
-      { label: 'Contacts (DB)', href: '/admin/contact', icon: HiEnvelope },
-      { label: 'Users', href: '/admin/users', icon: HiUsers },
-      { label: 'Account', href: '/admin/account', icon: HiCog6Tooth },
+      { label: 'Home Page', description: 'Hero banner & main layout', href: '/admin/home', icon: HiHome },
+      { label: 'About Story', description: 'Bio, philosophy & portraits', href: '/admin/about', icon: HiHeart },
+      { label: 'Client Reviews', description: 'Testimonials & quotes', href: '/admin/testimonials-cms', icon: HiUserGroup },
+      { label: 'FAQs', description: 'Frequently asked questions', href: '/admin/faq-cms', icon: HiQuestionMarkCircle },
+      { label: 'Contact Details', description: 'Email, phone & location', href: '/admin/contact-cms', icon: HiEnvelope },
+      { label: 'Footer Settings', description: 'Copyright & social links', href: '/admin/footer-cms', icon: HiDocumentText },
+    ],
+  },
+  {
+    label: 'Branding & Design',
+    links: [
+      { label: 'Brand & Logo', description: 'Upload official logo', href: '/admin/brand', icon: HiBuildingStorefront },
+      { label: 'Color Theme', description: 'Palette & font style', href: '/admin/theme', icon: HiSwatch },
+      { label: 'SEO & Search', description: 'Google title & meta tags', href: '/admin/seo-cms', icon: HiGlobeAlt },
+    ],
+  },
+  {
+    label: 'System & Admin',
+    links: [
+      { label: 'Admin Accounts', description: 'Manage login credentials', href: '/admin/users', icon: HiUsers },
+      { label: 'My Account', description: 'Change password', href: '/admin/account', icon: HiCog6Tooth },
     ],
   },
 ];
@@ -64,76 +92,90 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/admin/login');
   };
 
-  // Don't show sidebar on login page
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
 
+  const activeLink = sidebarGroups.flatMap(g => g.links).find(l => pathname === l.href);
+
   return (
-    <div className="min-h-screen bg-ivory flex overflow-hidden">
-      {/* Mobile overlay - z-40 */}
+    <div className="min-h-screen bg-[#FAF6F3] text-[#2B2625] flex overflow-hidden font-sans selection:bg-[#C39E96] selection:text-white">
+      {/* Mobile Drawer Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-rich-black/20 lg:hidden"
+          className="fixed inset-0 z-40 bg-[#1C1817]/40 backdrop-blur-xs lg:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar - z-50, fixed height */}
+      {/* Sidebar Navigation */}
       <aside
-        className={`fixed lg:sticky top-0 z-50 h-screen w-72 bg-white border-r border-cream/50 transition-all duration-300 flex flex-col ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } ${sidebarCollapsed ? 'lg:w-20' : ''}`}
+        className={`fixed lg:sticky top-0 z-50 h-screen bg-white border-r border-[#E7DDD2]/60 shadow-sm transition-all duration-300 flex flex-col ${
+          sidebarOpen ? 'translate-x-0 w-80' : '-translate-x-full lg:translate-x-0'
+        } ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}`}
         role="navigation"
         aria-label="Admin sidebar"
       >
         <div className="flex flex-col h-full overflow-hidden">
-          {/* Logo */}
-          <div className="p-4 border-b border-cream/50 flex-shrink-0">
+          {/* Header & Logo */}
+          <div className="p-5 border-b border-[#E7DDD2]/50 flex-shrink-0 bg-[#FAF6F3]/50">
             <div className="flex items-center justify-between">
               <Link 
                 href="/admin/dashboard" 
-                className="font-serif text-xl text-rich-black flex items-center gap-2"
+                className="group flex items-center gap-3 text-[#2B2625]"
                 aria-label="Admin Panel Home"
               >
+                <div className="w-9 h-9 rounded-full bg-[#2B2625] flex items-center justify-center text-white font-serif font-bold text-sm shadow-sm group-hover:bg-[#C39E96] transition-colors">
+                  IT
+                </div>
                 {!sidebarCollapsed && (
-                  <span>Admin <span className="text-magenta/60">Panel</span></span>
+                  <div className="flex flex-col">
+                    <span className="font-serif text-lg font-medium leading-none tracking-tight text-[#2B2625]">
+                      Indira Thakur
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#7C706D] mt-1">
+                      Studio Manager
+                    </span>
+                  </div>
                 )}
-                {sidebarCollapsed && <span className="font-serif text-lg text-magenta/60 italic" title="Indira Thakur Photography">IT</span>}
               </Link>
               {!sidebarCollapsed && (
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden text-warm-brown w-11 h-11 inline-flex items-center justify-center"
+                  className="lg:hidden text-[#7C706D] p-2 hover:text-[#2B2625] rounded-md"
                   aria-label="Close sidebar"
                 >
                   <HiXMark className="w-5 h-5" />
                 </button>
               )}
             </div>
-            <div className={`hidden lg:flex mt-2 w-full p-2 text-xs text-warm-gray/60 hover:text-rich-black transition-colors items-center justify-center gap-2 ${sidebarCollapsed ? 'px-0' : ''}`}>
+            
+            {/* Collapse toggle button */}
+            <div className="hidden lg:flex mt-3">
               <button
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="flex items-center justify-center gap-2 w-full"
+                className={`flex items-center gap-2 w-full py-1.5 px-2 rounded-md font-sans text-xs text-[#7C706D] hover:bg-white hover:text-[#2B2625] transition-colors border border-transparent hover:border-[#E7DDD2]/50 ${
+                  sidebarCollapsed ? 'justify-center' : 'justify-start'
+                }`}
                 title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
-                <HiBars3 className="w-4 h-4" />
-                {!sidebarCollapsed && <span>Collapse</span>}
+                <HiBars3 className="w-4 h-4 flex-shrink-0" />
+                {!sidebarCollapsed && <span className="font-medium">Collapse Menu</span>}
               </button>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-4 space-y-4" role="navigation">
+          {/* Nav Groups */}
+          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6" role="navigation">
             {sidebarGroups.map((group) => (
               <div key={group.label}>
                 {!sidebarCollapsed && (
-                  <p className="px-4 mb-1 font-mono text-[11px] text-warm-gray/30 uppercase tracking-[0.2em]">
+                  <p className="px-3 mb-2 font-mono text-[10px] text-[#7C706D]/80 font-semibold uppercase tracking-[0.25em]">
                     {group.label}
                   </p>
                 )}
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {group.links.map((link) => {
                     const Icon = link.icon;
                     const isActive = pathname === link.href;
@@ -141,16 +183,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`flex items-center gap-3 px-4 py-2 min-h-[44px] rounded-lg font-sans text-sm transition-all duration-200 ${
+                        className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative ${
                           isActive
-                            ? 'bg-rich-black text-white'
-                            : 'text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black'
+                            ? 'bg-[#2B2625] text-white shadow-sm'
+                            : 'text-[#7C706D] hover:bg-[#FAF6F3] hover:text-[#2B2625]'
                         }`}
                         aria-current={isActive ? 'page' : undefined}
-                        title={sidebarCollapsed ? link.label : undefined}
+                        title={sidebarCollapsed ? `${link.label} — ${link.description}` : undefined}
                       >
-                        <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                        {!sidebarCollapsed && <span className="truncate">{link.label}</span>}
+                        <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? 'text-[#C39E96]' : 'text-[#7C706D] group-hover:text-[#2B2625]'}`} aria-hidden="true" />
+                        {!sidebarCollapsed && (
+                          <div className="flex flex-col min-w-0">
+                            <span className="truncate leading-tight">{link.label}</span>
+                            <span className={`text-[10px] font-normal truncate mt-0.5 ${isActive ? 'text-white/70' : 'text-[#7C706D]/60'}`}>
+                              {link.description}
+                            </span>
+                          </div>
+                        )}
                       </Link>
                     );
                   })}
@@ -159,53 +208,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             ))}
           </nav>
 
-          {/* Bottom */}
-          <div className="py-4 border-t border-cream/50 space-y-2 flex-shrink-0">
+          {/* Footer controls */}
+          <div className="p-3 border-t border-[#E7DDD2]/50 space-y-1.5 flex-shrink-0 bg-[#FAF6F3]/30">
             <Link
               href="/"
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-warm-gray/70 hover:bg-cream/50 hover:text-rich-black font-sans text-sm transition-all ${
+              target="_blank"
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium text-[#2B2625] hover:bg-white hover:shadow-xs transition-all border border-[#E7DDD2]/60 ${
                 sidebarCollapsed ? 'justify-center' : ''
               }`}
-              title={sidebarCollapsed ? 'View Website' : undefined}
+              title={sidebarCollapsed ? 'View Live Website' : undefined}
             >
-              <HiHome className="w-5 h-5 flex-shrink-0" />
-              {!sidebarCollapsed && <span>View Website</span>}
+              <HiArrowTopRightOnSquare className="w-4 h-4 text-[#C39E96] flex-shrink-0" />
+              {!sidebarCollapsed && <span>View Live Website</span>}
             </Link>
             <button
               onClick={handleLogout}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-warm-gray/70 hover:bg-magenta/10 hover:text-magenta font-sans text-sm transition-all w-full ${
+              className={`flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-rose-700 hover:bg-rose-50 transition-all w-full ${
                 sidebarCollapsed ? 'justify-center' : ''
               }`}
-              title={sidebarCollapsed ? 'Logout' : undefined}
+              title={sidebarCollapsed ? 'Sign Out' : undefined}
             >
-              <HiArrowRightOnRectangle className="w-5 h-5 flex-shrink-0" />
-              {!sidebarCollapsed && <span>Logout</span>}
+              <HiArrowRightOnRectangle className="w-4 h-4 flex-shrink-0" />
+              {!sidebarCollapsed && <span>Sign Out</span>}
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content - full height with single scrollbar */}
-      <main className="flex-1 min-w-0 lg:ml-0 flex flex-col">
-        {/* Mobile Top Bar - sticky */}
-        <header className="sticky top-0 z-30 lg:hidden bg-white/95 backdrop-blur-sm border-b border-cream/50 px-4 py-3 flex-shrink-0">
-          <div className="flex items-center gap-3">
+      {/* Main Content Workspace */}
+      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
+        {/* Top Header Bar */}
+        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E7DDD2]/60 px-6 py-4 flex items-center justify-between flex-shrink-0 shadow-2xs">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-warm-brown p-2"
+              className="text-[#2B2625] p-2 hover:bg-[#FAF6F3] rounded-lg lg:hidden"
               aria-label="Open sidebar"
               aria-expanded={sidebarOpen}
             >
               <HiBars3 className="w-6 h-6" />
             </button>
-            <span className="font-serif text-lg text-rich-black">
-              {sidebarGroups.flatMap(g => g.links).find(l => pathname === l.href)?.label || 'Admin'}
-            </span>
+            <div className="flex flex-col">
+              <span className="font-serif text-lg md:text-xl font-medium text-[#2B2625]">
+                {activeLink?.label || 'Studio Dashboard'}
+              </span>
+              <span className="font-sans text-xs text-[#7C706D] hidden sm:inline">
+                {activeLink?.description || 'Manage website content, inquiries & portfolio'}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#FAF6F3] border border-[#E7DDD2] text-[#2B2625] text-xs font-medium hover:bg-white hover:border-[#2B2625] transition-all shadow-2xs"
+            >
+              <HiArrowTopRightOnSquare className="w-3.5 h-3.5 text-[#C39E96]" />
+              <span className="hidden sm:inline">Preview Website</span>
+            </Link>
           </div>
         </header>
 
-        {/* Content area - scrollable, single scrollbar on main */}
-        <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10 lg:ml-0">
+        {/* Scrollable Main Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10 bg-[#FAF6F3]">
           {children}
         </div>
       </main>
@@ -213,3 +279,4 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
+

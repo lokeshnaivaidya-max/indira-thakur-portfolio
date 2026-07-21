@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import FloatingNavbar from './FloatingNavbar';
 import LuxuryFooter from './LuxuryFooter';
 import PageTransition from '@/components/premium/PageTransition';
+import Preloader from '@/components/ui/Preloader';
 import { AnimatePresence } from 'framer-motion';
 
 export default function PublicLayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default function PublicLayoutWrapper({ children }: { children: React.Reac
 
   return (
     <>
+      <Preloader />
       <FloatingNavbar />
       <main className="min-h-screen flex flex-col">
         <AnimatePresence mode="wait">
