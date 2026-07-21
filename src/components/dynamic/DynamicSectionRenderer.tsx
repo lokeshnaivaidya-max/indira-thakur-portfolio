@@ -279,12 +279,20 @@ function CardsSection({ section }: { section: IDynamicSection }) {
 
 function TestimonialsSection({ section }: { section: IDynamicSection }) {
   const [active, setActive] = useState(0);
-  if (!section.items.length) return null;
+  
+  const validItems = (section.items || []).filter(
+    (item) => item && ((item.body && item.body.trim().length > 0) || (item.heading && item.heading.trim().length > 0))
+  );
 
-  const next = () => setActive((prev) => (prev + 1) % section.items.length);
-  const prev = () => setActive((prev) => (prev - 1 + section.items.length) % section.items.length);
+  if (!validItems.length) return null;
 
-  const current = section.items[active];
+  const next = () => setActive((prev) => (prev + 1) % validItems.length);
+  const prev = () => setActive((prev) => (prev - 1 + validItems.length) % validItems.length);
+
+  const current = validItems[active] || validItems[0];
+  const bodyText = current.body?.trim();
+  if (!bodyText) return null;
+
   return (
     <div className={`${bgClasses[section.background] || ''} ${spacingClasses[section.spacing] || spacingClasses.medium}`}>
       <div className="max-w-3xl mx-auto px-6 text-center">
@@ -295,26 +303,28 @@ function TestimonialsSection({ section }: { section: IDynamicSection }) {
         )}
         <motion.div key={active} variants={fadeIn} initial="hidden" animate="visible" className="min-h-[200px] flex flex-col items-center justify-center">
           <p className="font-serif text-xl md:text-2xl text-rich-black leading-relaxed italic">
-            &ldquo;{current.body}&rdquo;
+            &ldquo;{bodyText}&rdquo;
           </p>
           <div className="mt-6">
             {current.heading && <p className="font-sans text-sm font-medium text-rich-black">{current.heading}</p>}
             {current.label && <p className="font-sans text-xs text-warm-gray/60 mt-1">{current.label}</p>}
           </div>
         </motion.div>
-        <div className="flex gap-4 justify-center mt-8">
-          <button onClick={prev} className="text-warm-gray/40 hover:text-rich-black transition-colors text-sm">Prev</button>
-          <div className="flex gap-1.5 items-center">
-            {section.items.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                className={`transition-all duration-500 ${i === active ? 'w-6 h-px bg-rich-black' : 'w-3 h-px bg-warm-gray/30'}`}
-              />
-            ))}
+        {validItems.length > 1 && (
+          <div className="flex gap-4 justify-center mt-8">
+            <button onClick={prev} className="text-warm-gray/40 hover:text-rich-black transition-colors text-sm">Prev</button>
+            <div className="flex gap-1.5 items-center">
+              {validItems.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`transition-all duration-500 ${i === active ? 'w-6 h-px bg-rich-black' : 'w-3 h-px bg-warm-gray/30'}`}
+                />
+              ))}
+            </div>
+            <button onClick={next} className="text-warm-gray/40 hover:text-rich-black transition-colors text-sm">Next</button>
           </div>
-          <button onClick={next} className="text-warm-gray/40 hover:text-rich-black transition-colors text-sm">Next</button>
-        </div>
+        )}
       </div>
     </div>
   );

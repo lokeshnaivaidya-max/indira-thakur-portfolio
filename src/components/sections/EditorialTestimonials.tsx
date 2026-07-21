@@ -39,24 +39,59 @@ const defaultTestimonials: TestimonialItem[] = [
 
 export default function EditorialTestimonials() {
   const { config } = useSiteConfig();
+  const [dbTestimonials, setDbTestimonials] = useState<TestimonialItem[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  useEffect(() => {
+    async function fetchDbTestimonials() {
+      try {
+        const res = await fetch('/api/testimonials');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            const mapped: TestimonialItem[] = data
+              .map((t: any) => ({
+                id: t._id || t.id,
+                name: t.name || t.author || 'Valued Client',
+                role: t.role || 'Fine Art Client',
+                quote: t.content || t.quote || t.message || '',
+                sessionType: t.sessionType || t.role || 'Fine Art Session',
+                avatarUrl: t.image || t.avatarUrl || '',
+              }))
+              .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0);
+            setDbTestimonials(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching DB testimonials:', err);
+      }
+    }
+    fetchDbTestimonials();
+  }, []);
+
   const testimonialsData: any = config?.testimonials || {};
+  const rawCmsList = testimonialsData.testimonials || testimonialsData.items || testimonialsData.reviews || [];
 
-  const rawList = testimonialsData.testimonials || testimonialsData.items || testimonialsData.reviews || [];
+  const mappedCmsReviews: TestimonialItem[] = Array.isArray(rawCmsList)
+    ? rawCmsList
+        .map((t: any) => ({
+          id: t.id || t._id,
+          name: t.name || t.author || t.clientName || 'Valued Client',
+          role: t.role || t.sessionType || 'Fine Art Commission',
+          quote: t.quote || t.message || t.text || t.content || '',
+          sessionType: t.sessionType || t.role || 'Fine Art Client',
+          avatarUrl: t.avatarUrl || t.avatar?.url || t.image?.url || (typeof t.avatar === 'string' ? t.avatar : ''),
+        }))
+        .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0)
+    : [];
 
-  const mappedReviews: TestimonialItem[] = Array.isArray(rawList) && rawList.length > 0
-    ? rawList.map((t: any) => ({
-        id: t.id || t._id,
-        name: t.name || t.author || t.clientName || 'Valued Client',
-        role: t.role || t.sessionType || 'Fine Art Commission',
-        quote: t.quote || t.message || t.text || t.content || '',
-        sessionType: t.sessionType || t.role || 'Fine Art Client',
-        avatarUrl: t.avatarUrl || t.avatar?.url || t.image?.url || (typeof t.avatar === 'string' ? t.avatar : ''),
-      })).filter((t: TestimonialItem) => t.quote.trim().length > 0)
-    : defaultTestimonials;
+  // Combine DB & CMS testimonials, prioritizing DB if available, then CMS, then default fallback
+  const combinedList = [...dbTestimonials, ...mappedCmsReviews].filter(
+    (item, index, self) =>
+      item.quote.trim().length > 0 && self.findIndex((o) => o.quote === item.quote) === index
+  );
 
-  const reviewsList = mappedReviews.length > 0 ? mappedReviews : defaultTestimonials;
+  const reviewsList = combinedList.length > 0 ? combinedList : defaultTestimonials;
 
   useEffect(() => {
     if (reviewsList.length <= 1) return;
@@ -67,6 +102,11 @@ export default function EditorialTestimonials() {
   }, [reviewsList.length]);
 
   const current = reviewsList[activeIndex] || reviewsList[0];
+
+  // Root Cause Safeguard: Never render empty quote cards
+  if (!current || !current.quote || current.quote.trim().length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-24 md:py-32 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
@@ -88,7 +128,7 @@ export default function EditorialTestimonials() {
         </motion.div>
 
         {/* Magazine Style Quote Feature */}
-        <div className="relative min-h-[280px] flex items-center justify-center my-6">
+        <div className="relative min-h-[260px] flex items-center justify-center my-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -99,13 +139,13 @@ export default function EditorialTestimonials() {
               className="flex flex-col items-center max-w-3xl"
             >
               <span className="font-serif text-6xl text-[#C39E96]/30 font-normal leading-none mb-2">“</span>
-              <p className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-[#2B2625] leading-relaxed font-normal">
-                {current.quote}
+              <p className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-[#2B2625] leading-relaxed font-normal px-4">
+                {current.quote.trim()}
               </p>
 
               <div className="mt-8 flex items-center gap-4">
                 {current.avatarUrl ? (
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-[#E7DDD2] bg-[#FAF6F3]">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-[#E7DDD2] bg-[#FAF6F3] shrink-0">
                     <img
                       src={current.avatarUrl}
                       alt={current.name}
@@ -114,8 +154,8 @@ export default function EditorialTestimonials() {
                     />
                   </div>
                 ) : (
-                  <div className="w-12 h-12 rounded-full border border-[#C39E96]/30 bg-[#C39E96]/10 flex items-center justify-center font-serif text-lg text-[#C39E96] font-semibold">
-                    {current.name.charAt(0)}
+                  <div className="w-12 h-12 rounded-full border border-[#C39E96]/30 bg-[#C39E96]/10 flex items-center justify-center font-serif text-lg text-[#C39E96] font-semibold shrink-0">
+                    {current.name ? current.name.charAt(0) : 'I'}
                   </div>
                 )}
                 <div className="text-left">

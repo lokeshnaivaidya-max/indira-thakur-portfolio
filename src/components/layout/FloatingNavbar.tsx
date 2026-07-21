@@ -67,33 +67,33 @@ export default function FloatingNavbar() {
           mobileMenuOpen
             ? 'bg-[#1C1817] py-4 border-b border-white/10'
             : scrolled
-            ? 'py-3 bg-[#FAF6F3]/95 backdrop-blur-md border-b border-[#E7DDD2]/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'
+            ? 'py-3.5 bg-[#FAF6F3]/95 backdrop-blur-md border-b border-[#E7DDD2]/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'
             : isDarkTop
-            ? 'py-5 md:py-7 bg-gradient-to-b from-[#2B2625]/90 via-[#2B2625]/30 to-transparent'
-            : 'py-5 md:py-7 bg-[#FAF6F3]/80 backdrop-blur-md border-b border-[#E7DDD2]/40'
+            ? 'py-5 sm:py-6 md:py-8 bg-gradient-to-b from-[#151211]/90 via-[#151211]/40 to-transparent'
+            : 'py-5 sm:py-6 md:py-8 bg-[#FAF6F3]/80 backdrop-blur-md border-b border-[#E7DDD2]/40'
         }`}
       >
-        <div className="max-w-[1680px] mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24">
-          <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] items-center gap-4 lg:gap-8">
-            {/* Editorial Brand Logo */}
+        <div className="max-w-[1720px] mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+          <div className="flex items-center justify-between gap-6 lg:gap-12">
+            {/* Brand Logo Container (Adaptive, Uncropped) */}
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="group flex items-center gap-3 shrink-0 justify-self-start"
+              className="group flex items-center shrink-0 py-1 pl-1"
               aria-label="Indira Thakur Photography"
             >
               {logoUrl && !logoError ? (
-                <div className={`relative flex items-center transition-all duration-300 ${
-                  scrolled 
-                    ? 'h-11 sm:h-13 md:h-15 max-w-[240px] sm:max-w-[280px]' 
-                    : 'h-14 sm:h-18 md:h-22 lg:h-24 max-w-[280px] sm:max-w-[360px] md:max-w-[420px]'
-                }`}>
+                <div className="relative flex items-center justify-start overflow-visible p-1">
                   <img
                     src={logoUrl}
                     alt={brand?.logo?.alt || 'Indira Thakur Photography Logo'}
                     onError={() => setLogoError(true)}
                     loading="eager"
-                    className={`h-full w-auto object-contain transition-all duration-300 ${
+                    className={`w-auto object-contain transition-all duration-300 ${
+                      scrolled
+                        ? 'h-10 sm:h-12 md:h-14 max-h-14 max-w-[220px] sm:max-w-[280px] md:max-w-[340px]'
+                        : 'h-12 sm:h-16 md:h-20 lg:h-24 max-h-24 max-w-[260px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-[500px]'
+                    } ${
                       isDarkTop || mobileMenuOpen
                         ? 'brightness-0 invert'
                         : 'brightness-100'
@@ -121,7 +121,7 @@ export default function FloatingNavbar() {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="desktop-nav hidden md:flex items-center justify-center gap-6 lg:gap-9 xl:gap-11 justify-self-center">
+            <nav className="desktop-nav hidden md:flex items-center justify-center gap-6 lg:gap-9 xl:gap-11">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -150,7 +150,7 @@ export default function FloatingNavbar() {
             </nav>
 
             {/* Detached CTA & Mobile Toggle */}
-            <div className="flex items-center justify-end gap-5 shrink-0 justify-self-end">
+            <div className="flex items-center justify-end gap-5 shrink-0">
               <Link
                 href="/contact"
                 className={`desktop-cta hidden md:inline-flex items-center justify-center px-5 py-2.5 lg:px-7 lg:py-3 font-sans text-[10px] lg:text-[11px] uppercase tracking-[0.22em] transition-all duration-300 shadow-sm ${
