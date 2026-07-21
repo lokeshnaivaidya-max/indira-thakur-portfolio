@@ -330,7 +330,7 @@ const categoryTabs = [
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
   const { config } = useSiteConfig();
   const [activeCategory, setActiveCategory] = useState('all');
-  const [images, setImages] = useState<GalleryImageItem[]>([]);
+  const [images, setImages] = useState<GalleryImageItem[]>(fallbackImages);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -399,28 +399,18 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
       <div className="container-editorial">
         {/* Gallery Title & Filters */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
+          <div>
             <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
               PORTFOLIO ARCHIVE
             </span>
             <h2 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-none">
               Editorial Gallery
             </h2>
-          </motion.div>
+          </div>
 
           {/* Filtering Tabs */}
           {!isPreview && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex flex-wrap items-center gap-2 md:gap-4"
-            >
+            <div className="flex flex-wrap items-center gap-2 md:gap-4">
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -434,7 +424,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                   {tab.label}
                 </button>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
 

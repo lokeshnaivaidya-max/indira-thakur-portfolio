@@ -91,7 +91,7 @@ export default function EditorialTestimonials() {
       item.quote.trim().length > 0 && self.findIndex((o) => o.quote === item.quote) === index
   );
 
-  const reviewsList = combinedList.length > 0 ? combinedList : defaultTestimonials;
+  const reviewsList = (combinedList.length > 0 ? combinedList : defaultTestimonials).slice(0, 3);
 
   useEffect(() => {
     if (reviewsList.length <= 1) return;
@@ -109,8 +109,8 @@ export default function EditorialTestimonials() {
   }
 
   return (
-    <section className="py-24 md:py-32 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
-      <div className="container-editorial max-w-5xl mx-auto text-center px-6">
+    <section className="py-16 md:py-24 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
+      <div className="container-editorial max-w-4xl mx-auto text-center px-6">
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -121,14 +121,14 @@ export default function EditorialTestimonials() {
           <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
             {testimonialsData.eyebrow || 'CLIENT PRAISE & REVIEWS'}
           </span>
-          <h2 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#2B2625] leading-tight">
             {testimonialsData.heading || 'Words From The Heart'}
           </h2>
-          <div className="w-12 h-px bg-[#C39E96]/40 mx-auto my-8" />
+          <div className="w-12 h-px bg-[#C39E96]/40 mx-auto my-6" />
         </motion.div>
 
         {/* Magazine Style Quote Feature */}
-        <div className="relative min-h-[260px] flex items-center justify-center my-6">
+        <div className="relative min-h-[200px] flex items-center justify-center my-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -136,10 +136,10 @@ export default function EditorialTestimonials() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="flex flex-col items-center max-w-3xl"
+              className="flex flex-col items-center max-w-2xl mx-auto"
             >
-              <span className="font-serif text-6xl text-[#C39E96]/30 font-normal leading-none mb-2">“</span>
-              <p className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-[#2B2625] leading-relaxed font-normal px-4">
+              <span className="font-serif text-4xl text-[#C39E96]/40 font-normal leading-none mb-2">“</span>
+              <p className="font-serif italic text-base sm:text-lg md:text-xl text-[#2B2625] leading-relaxed font-normal px-4">
                 {current.quote.trim()}
               </p>
 

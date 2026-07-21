@@ -100,10 +100,6 @@ export default function FloatingNavbar() {
                       scrolled
                         ? 'h-7 sm:h-8 md:h-9 max-h-9 max-w-[160px] sm:max-w-[200px]'
                         : 'h-8 sm:h-10 md:h-12 lg:h-14 max-h-14 max-w-[200px] sm:max-w-[260px] md:max-w-[320px]'
-                    } ${
-                      isDarkTop || mobileMenuOpen
-                        ? 'brightness-0 invert'
-                        : 'brightness-100'
                     }`}
                   />
                 </div>
