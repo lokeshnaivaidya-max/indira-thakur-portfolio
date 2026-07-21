@@ -388,6 +388,18 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     return isPreview ? list.slice(0, 6) : list;
   }, [images, activeCategory, isPreview]);
 
+  // Preload visible category images into browser cache so tab switches are instant
+  useEffect(() => {
+    if (filteredImages && filteredImages.length > 0) {
+      filteredImages.slice(0, 8).forEach((img) => {
+        if (img?.src) {
+          const preloader = new Image();
+          preloader.src = img.src;
+        }
+      });
+    }
+  }, [filteredImages]);
+
   return (
     <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative">
       <div className="container-editorial">
@@ -460,6 +472,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                       src={img.src}
                       alt={img.alt}
                       fill
+                      priority={idx < 6}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       objectFit="contain"
                       className="!w-full !h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"

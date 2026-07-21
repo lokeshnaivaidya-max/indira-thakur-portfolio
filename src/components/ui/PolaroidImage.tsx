@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { cn } from '@/lib/imageUtils';
 
 interface PolaroidImageProps {
@@ -54,10 +54,17 @@ export function PolaroidImage({
 }: PolaroidImageProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const handleError = useCallback(() => {
     setHasError(true);
   }, []);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
+  }, [src]);
 
   const hasCaption = showCaption && caption;
 
@@ -96,19 +103,23 @@ export function PolaroidImage({
         src={src}
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110 pointer-events-none"
+        decoding="async"
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-110 pointer-events-none"
       />
       {/* Crisp Main Uncropped Photograph */}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
         referrerPolicy="no-referrer"
         onError={handleError}
         onLoad={() => setIsLoaded(true)}
         className={cn(
-          'relative z-10 w-full h-full transition-all duration-700 ease-out',
-          !isLoaded ? 'opacity-0 scale-95 blur-[2px]' : 'opacity-100 scale-100 blur-0',
+          'relative z-10 w-full h-full transition-all duration-500 ease-out will-change-[opacity,transform]',
+          !isLoaded ? 'opacity-0 scale-98' : 'opacity-100 scale-100',
           objectFit === 'cover' ? 'object-cover' : 'object-contain',
           positionClass,
           className

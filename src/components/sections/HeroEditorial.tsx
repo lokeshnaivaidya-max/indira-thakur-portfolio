@@ -40,6 +40,18 @@ export default function HeroEditorial() {
     return () => clearInterval(interval);
   }, [images.length, nextSlide]);
 
+  // Preload all slideshow images in memory for zero-lag slide transitions
+  useEffect(() => {
+    if (images && images.length > 0) {
+      images.forEach((img: any) => {
+        if (img?.url) {
+          const preloader = new Image();
+          preloader.src = img.url;
+        }
+      });
+    }
+  }, [images]);
+
   const currentImg = images.length > 0 ? images[currentIndex] : null;
 
   return (

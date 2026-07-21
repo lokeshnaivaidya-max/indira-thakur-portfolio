@@ -91,8 +91,8 @@ export default function FloatingNavbar() {
                     loading="eager"
                     className={`w-auto object-contain transition-all duration-300 ${
                       scrolled
-                        ? 'h-10 sm:h-12 md:h-14 max-h-14 max-w-[220px] sm:max-w-[280px] md:max-w-[340px]'
-                        : 'h-12 sm:h-16 md:h-20 lg:h-24 max-h-24 max-w-[260px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-[500px]'
+                        ? 'h-7 sm:h-8 md:h-9 max-h-9 max-w-[160px] sm:max-w-[200px]'
+                        : 'h-8 sm:h-10 md:h-12 lg:h-14 max-h-14 max-w-[200px] sm:max-w-[260px] md:max-w-[320px]'
                     } ${
                       isDarkTop || mobileMenuOpen
                         ? 'brightness-0 invert'
