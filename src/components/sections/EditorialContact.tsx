@@ -115,9 +115,9 @@ export default function EditorialContact() {
               </div>
             </div>
 
-            {/* Studio Image */}
-            <div className="mt-12 relative h-64 md:h-80 rounded-sm overflow-hidden border border-[#E7DDD2] hidden lg:block">
-              {hasImage(contactData.studioImage?.url) ? (
+            {/* Studio Image OR Clean Luxury Quote Frame */}
+            {hasImage(contactData.studioImage?.url) ? (
+              <div className="mt-12 relative h-64 md:h-80 rounded-sm overflow-hidden border border-[#E7DDD2] hidden lg:block">
                 <PolaroidImage
                   src={contactData.studioImage.url}
                   alt={contactData.studioImage.alt || 'Studio Atmosphere'}
@@ -126,12 +126,20 @@ export default function EditorialContact() {
                   className="!w-full !h-full object-cover"
                   containerClassName="!w-full !h-full"
                 />
-              ) : (
-                <div className="w-full h-full bg-[#E7DDD2] flex items-center justify-center p-6 text-center font-serif text-lg italic text-[#7C706D]">
-                  Indira Thakur Photography Studio
+              </div>
+            ) : (
+              <div className="mt-12 pt-8 border-t border-[#E7DDD2] space-y-4">
+                <p className="font-serif italic text-lg text-[#2B2625]/90 leading-relaxed">
+                  “To capture a moment is to hold a memory frozen in time, forever pristine.”
+                </p>
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-px bg-[#C39E96]" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#C39E96]">
+                    Indira Thakur
+                  </span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Bespoke Inquiry Form */}

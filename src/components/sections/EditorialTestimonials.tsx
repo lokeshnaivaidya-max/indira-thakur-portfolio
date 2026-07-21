@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
 interface TestimonialItem {
   id?: string;
@@ -42,15 +41,22 @@ export default function EditorialTestimonials() {
   const { config } = useSiteConfig();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const testimonialsData: any = config?.testimonials || {
-    eyebrow: 'CLIENT PRAISE & REVIEWS',
-    heading: 'Words From The Heart',
-    items: defaultTestimonials
-  };
+  const testimonialsData: any = config?.testimonials || {};
 
-  const reviewsList: TestimonialItem[] = testimonialsData.items && testimonialsData.items.length > 0
-    ? testimonialsData.items
+  const rawList = testimonialsData.testimonials || testimonialsData.items || testimonialsData.reviews || [];
+
+  const mappedReviews: TestimonialItem[] = Array.isArray(rawList) && rawList.length > 0
+    ? rawList.map((t: any) => ({
+        id: t.id || t._id,
+        name: t.name || t.author || t.clientName || 'Valued Client',
+        role: t.role || t.sessionType || 'Fine Art Commission',
+        quote: t.quote || t.message || t.text || t.content || '',
+        sessionType: t.sessionType || t.role || 'Fine Art Client',
+        avatarUrl: t.avatarUrl || t.avatar?.url || t.image?.url || (typeof t.avatar === 'string' ? t.avatar : ''),
+      })).filter((t: TestimonialItem) => t.quote.trim().length > 0)
     : defaultTestimonials;
+
+  const reviewsList = mappedReviews.length > 0 ? mappedReviews : defaultTestimonials;
 
   useEffect(() => {
     if (reviewsList.length <= 1) return;
@@ -63,14 +69,14 @@ export default function EditorialTestimonials() {
   const current = reviewsList[activeIndex] || reviewsList[0];
 
   return (
-    <section className="py-28 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
-      <div className="container-editorial max-w-5xl mx-auto text-center">
+    <section className="py-24 md:py-32 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
+      <div className="container-editorial max-w-5xl mx-auto text-center px-6">
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
           <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
             {testimonialsData.eyebrow || 'CLIENT PRAISE & REVIEWS'}
@@ -82,14 +88,14 @@ export default function EditorialTestimonials() {
         </motion.div>
 
         {/* Magazine Style Quote Feature */}
-        <div className="relative min-h-[320px] flex items-center justify-center my-6">
+        <div className="relative min-h-[280px] flex items-center justify-center my-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
               className="flex flex-col items-center max-w-3xl"
             >
               <span className="font-serif text-6xl text-[#C39E96]/30 font-normal leading-none mb-2">“</span>
@@ -98,22 +104,24 @@ export default function EditorialTestimonials() {
               </p>
 
               <div className="mt-8 flex items-center gap-4">
-                {current.avatarUrl && (
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-[#E7DDD2]">
-                    <PolaroidImage
+                {current.avatarUrl ? (
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-[#E7DDD2] bg-[#FAF6F3]">
+                    <img
                       src={current.avatarUrl}
                       alt={current.name}
-                      width={48}
-                      height={48}
-                      objectFit="cover"
-                      className="!w-full !h-full"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                     />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full border border-[#C39E96]/30 bg-[#C39E96]/10 flex items-center justify-center font-serif text-lg text-[#C39E96] font-semibold">
+                    {current.name.charAt(0)}
                   </div>
                 )}
                 <div className="text-left">
-                  <h4 className="font-sans text-sm md:text-base font-semibold text-[#2B2625] tracking-wide">
+                  <h3 className="font-sans text-sm md:text-base font-semibold text-[#2B2625] tracking-wide">
                     {current.name}
-                  </h4>
+                  </h3>
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C39E96]">
                     {current.sessionType || current.role || 'Fine Art Client'}
                   </p>
@@ -125,7 +133,7 @@ export default function EditorialTestimonials() {
 
         {/* Navigation Dots */}
         {reviewsList.length > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-12">
+          <div className="flex items-center justify-center gap-3 mt-10">
             {reviewsList.map((_, idx) => (
               <button
                 key={idx}
@@ -134,7 +142,7 @@ export default function EditorialTestimonials() {
                 className="h-10 flex items-center cursor-pointer px-1"
               >
                 <span
-                  className="h-1 rounded-full transition-all duration-500"
+                  className="h-1 rounded-full transition-all duration-300"
                   style={{
                     width: activeIndex === idx ? 28 : 10,
                     backgroundColor: activeIndex === idx ? '#C39E96' : '#E7DDD2',

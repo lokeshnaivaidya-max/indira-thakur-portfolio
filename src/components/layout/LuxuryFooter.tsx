@@ -42,25 +42,14 @@ export default function LuxuryFooter() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Brand Info */}
           <div className="md:col-span-5 flex flex-col items-start">
-            {hasImage(footerData.logo?.url) ? (
-              <PolaroidImage
-                src={footerData.logo.url}
+            <Link href="/" className="mb-4 inline-block group">
+              <img
+                src={footerData.logo?.url || config?.brand?.logo?.url || '/indira-logo.svg'}
                 alt="Indira Thakur Photography Logo"
-                width={140}
-                height={56}
-                objectFit="contain"
-                containerClassName="!w-auto !h-14 !mb-4"
-                className="!w-auto !h-14"
+                className="h-14 md:h-16 w-auto object-contain brightness-0 invert transition-transform duration-300 group-hover:scale-[1.02]"
               />
-            ) : (
-              <div className="mb-4">
-                <span className="font-serif text-3xl text-white tracking-tight block">Indira Thakur</span>
-                <span className="font-mono text-[10px] text-[#C39E96]/80 uppercase tracking-[0.35em] block mt-1">
-                  {footerData.tagline || 'Fine Art Photography'}
-                </span>
-              </div>
-            )}
-            <p className="font-sans text-sm text-white/50 mt-4 max-w-md leading-relaxed">
+            </Link>
+            <p className="font-sans text-sm text-white/50 mt-2 max-w-md leading-relaxed">
               {footerData.description}
             </p>
             <div className="mt-8 flex items-center gap-4">

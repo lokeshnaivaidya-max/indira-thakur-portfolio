@@ -8,40 +8,7 @@ export interface DemoGalleryItem {
   featured?: boolean;
 }
 
-export const DEMO_HERO_SLIDES = [
-  {
-    url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Fine Art Newborn Storytelling in Natural Studio Light'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Couture Maternity Silk Drape Commission'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Editorial Fine Art Portraiture'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Generations of Family Connection'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Serene Sleeping Newborn Miracle'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Motherhood Divine Sunset Light'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=2000',
-    alt: 'First Year Milestone sitting session'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&q=80&w=2000',
-    alt: 'Luxury Celebration & Milestone Soiree'
-  }
-];
+export const DEMO_HERO_SLIDES = [];
 
 export const DEMO_GALLERY: DemoGalleryItem[] = [
   // NEWBORN (8)
