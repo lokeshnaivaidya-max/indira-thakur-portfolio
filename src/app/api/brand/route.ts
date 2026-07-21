@@ -10,12 +10,7 @@ export async function GET() {
     await connectToDatabase();
     let brand = await BrandSettings.findOne();
     if (!brand) {
-      brand = await BrandSettings.create({
-        logo: { url: '/indira-logo.svg', alt: 'Indira Thakur Photography Official Logo' }
-      });
-    } else if (!brand.logo?.url) {
-      brand.logo = { url: '/indira-logo.svg', alt: 'Indira Thakur Photography Official Logo' };
-      await brand.save();
+      brand = await BrandSettings.create({});
     }
     return NextResponse.json(brand);
   } catch (error) {

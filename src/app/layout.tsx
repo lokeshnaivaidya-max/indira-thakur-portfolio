@@ -31,11 +31,7 @@ export const metadata: Metadata = {
     template: '%s | Indira Thakur Photography',
   },
   description: 'Professional photographer specializing in newborn, maternity, portrait, and event photography. Based in Bangalore.',
-  icons: {
-    icon: '/indira-logo.svg',
-    shortcut: '/indira-logo.svg',
-    apple: '/indira-logo.svg',
-  },
+
   openGraph: {
     type: 'website',
     locale: 'en_US',

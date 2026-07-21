@@ -83,7 +83,11 @@ export default function FloatingNavbar() {
               aria-label="Indira Thakur Photography"
             >
               {logoUrl && !logoError ? (
-                <div className="relative flex items-center h-9 sm:h-10 md:h-11">
+                <div className={`relative flex items-center transition-all duration-300 ${
+                  scrolled 
+                    ? 'h-11 sm:h-13 md:h-15 max-w-[240px] sm:max-w-[280px]' 
+                    : 'h-14 sm:h-18 md:h-22 lg:h-24 max-w-[280px] sm:max-w-[360px] md:max-w-[420px]'
+                }`}>
                   <img
                     src={logoUrl}
                     alt={brand?.logo?.alt || 'Indira Thakur Photography Logo'}
@@ -99,14 +103,14 @@ export default function FloatingNavbar() {
               ) : (
                 <div className="flex flex-col">
                   <span
-                    className={`font-serif text-xl md:text-2xl lg:text-[22px] tracking-tight leading-none transition-colors duration-300 ${
+                    className={`font-serif text-2xl sm:text-3xl lg:text-3xl tracking-tight leading-none transition-colors duration-300 ${
                       mobileMenuOpen || isDarkTop ? 'text-white group-hover:text-[#C39E96]' : 'text-[#2B2625] group-hover:text-[#C39E96]'
                     }`}
                   >
                     Indira Thakur
                   </span>
                   <span
-                    className={`font-mono text-[8px] md:text-[9px] uppercase tracking-[0.35em] mt-1 transition-colors duration-300 ${
+                    className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.35em] mt-1.5 transition-colors duration-300 ${
                       mobileMenuOpen || isDarkTop ? 'text-white/70' : 'text-[#7C706D]/70'
                     }`}
                   >
