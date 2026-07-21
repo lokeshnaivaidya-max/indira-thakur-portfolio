@@ -21,13 +21,14 @@ if (!global.mongooseCache) {
 export async function connectToDatabase(): Promise<typeof mongoose> {
   if (cached.conn) return cached.conn;
 
-  if (!MONGODB_URI) {
+  const mongoUri = process.env.MONGODB_URI || '';
+  if (!mongoUri) {
     throw new Error('MONGODB_URI is not defined');
   }
 
   if (!cached.promise) {
     const opts = { bufferCommands: false, serverSelectionTimeoutMS: 5000 };
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => mongoose);
+    cached.promise = mongoose.connect(mongoUri, opts).then((mongoose) => mongoose);
   }
 
   try {

@@ -109,7 +109,7 @@ export default function Testimonials() {
                   className="h-[3px] rounded-full transition-all duration-700 ease-out"
                   style={{
                     width: i === current ? 24 : 12,
-                    backgroundColor: i === current ? 'rgba(180,80,120,0.5)' : 'rgba(219,206,178,0.6)',
+                    backgroundColor: i === current ? 'var(--color-primary)' : 'var(--color-card-border, rgba(219,206,178,0.6))',
                   }}
                 />
               </button>

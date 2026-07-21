@@ -10,14 +10,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rich-black: #2B2625;
+  --color-rich-black: var(--color-text, #2B2625);
   --color-charcoal: #3D3534;
-  --color-magenta: #C39E96;
-  --color-raspberry: #A88179;
-  --color-ivory: #FAF6F3;
-  --color-cream: #F4ECE8;
+  --color-magenta: var(--color-primary, #C39E96);
+  --color-raspberry: var(--color-secondary, #A88179);
+  --color-ivory: var(--color-bg, #FAF6F3);
+  --color-cream: var(--color-card-border, #F4ECE8);
   --color-beige: #E7DDD2;
-  --color-warm-gray: #7C706D;
+  --color-warm-gray: var(--color-muted, #7C706D);
   --color-pure-white: #FFFFFF;
 
   --font-serif: 'Playfair Display', Georgia, serif;
@@ -98,7 +98,7 @@
     @apply transition-colors duration-500 ease-out;
   }
   .hover-luxury:hover {
-    color: #B76E79;
+    color: var(--color-primary, #C39E96);
   }
 }
 

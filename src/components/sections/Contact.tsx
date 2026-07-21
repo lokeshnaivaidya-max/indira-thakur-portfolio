@@ -112,7 +112,7 @@ export default function Contact() {
                 <div className="flex gap-4">
                   {contactData.socialLinks.map((link: { platform: string; url: string }, i: number) => (
                     link.url && (
-                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-magenta/60 hover:text-[#B76E79] transition-colors py-1.5 min-h-[44px] inline-flex items-center">
+                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-magenta/60 hover:text-magenta transition-colors py-1.5 min-h-[44px] inline-flex items-center">
                         {link.platform || 'Social'}
                       </a>
                     )
