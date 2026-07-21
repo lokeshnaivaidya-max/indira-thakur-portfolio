@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -57,6 +58,18 @@ export default function EditorialServices() {
   const servicesList = servicesData.services && servicesData.services.length > 0
     ? servicesData.services
     : defaultServices;
+
+  // Preload service images on component mount for zero-lag viewport reveals
+  useEffect(() => {
+    if (servicesList && servicesList.length > 0) {
+      servicesList.forEach((s: any) => {
+        if (s?.image?.url) {
+          const preloader = new Image();
+          preloader.src = s.image.url;
+        }
+      });
+    }
+  }, [servicesList]);
 
   const hasImage = (url?: string) => url && url.trim() !== '';
 

@@ -26,7 +26,13 @@ export default function HeroEditorial() {
 
   const rawImages = homeConfig?.heroImages;
   const images = Array.isArray(rawImages)
-    ? rawImages.filter((img: any) => img && typeof img.url === 'string' && img.url.trim().length > 0)
+    ? rawImages.filter(
+        (img: any) =>
+          img &&
+          typeof img.url === 'string' &&
+          img.url.trim().length > 0 &&
+          !img.url.toLowerCase().includes('logo')
+      )
     : [];
 
   const nextSlide = useCallback(() => {
@@ -56,24 +62,33 @@ export default function HeroEditorial() {
 
   return (
     <section className="relative h-screen w-full bg-[#151211] text-white overflow-hidden flex flex-col justify-between">
-      {/* 1. Full-Screen Cinematic Photograph Layer */}
+      {/* 1. Full-Screen Cinematic Photograph Layer (Uncropped Composition) */}
       {currentImg ? (
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, scale: 1.05 }}
+            initial={{ opacity: 0, scale: 1.03 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="absolute inset-0 w-full h-full"
+            transition={{ duration: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
+            className="absolute inset-0 w-full h-full overflow-hidden"
           >
+            {/* Ambient Lighting Backdrop Fill (Matches photo colors) */}
+            <img
+              src={currentImg.url}
+              alt=""
+              aria-hidden="true"
+              referrerPolicy="no-referrer"
+              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-35 scale-110 pointer-events-none"
+            />
+            {/* Complete Uncropped Main Photograph */}
             <img
               src={currentImg.url}
               alt={currentImg.alt || 'Indira Thakur Fine Art Photography'}
               referrerPolicy="no-referrer"
               loading="eager"
               decoding="async"
-              className="w-full h-full object-cover object-center"
+              className="relative z-10 w-full h-full object-contain object-center transition-all duration-700"
             />
           </motion.div>
         </AnimatePresence>

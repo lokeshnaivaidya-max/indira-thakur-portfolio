@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -42,6 +43,17 @@ export default function EditorialAbout() {
     (config?.about?.images?.storyImage?.url && config.about.images.storyImage.url.trim()) ||
     ((config?.about as any)?.secondaryImage?.url && (config?.about as any).secondaryImage.url.trim()) ||
     'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000';
+
+  useEffect(() => {
+    if (mainImageUrl) {
+      const p1 = new Image();
+      p1.src = mainImageUrl;
+    }
+    if (secondaryImageUrl) {
+      const p2 = new Image();
+      p2.src = secondaryImageUrl;
+    }
+  }, [mainImageUrl, secondaryImageUrl]);
 
   return (
     <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden">

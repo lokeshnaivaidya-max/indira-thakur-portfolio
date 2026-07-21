@@ -24,7 +24,8 @@ export default function FloatingNavbar() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
+          const isScrolled = window.scrollY > 20;
+          setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
           ticking = false;
         });
         ticking = true;
@@ -78,8 +79,14 @@ export default function FloatingNavbar() {
             {/* Brand Logo Container (Adaptive, Uncropped) */}
             <Link
               href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="group flex items-center shrink-0 py-1 pl-1"
+              onClick={(e) => {
+                setMobileMenuOpen(false);
+                if (pathname === '/') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="group flex items-center shrink-0 py-1 pl-1 cursor-pointer"
               aria-label="Indira Thakur Photography"
             >
               {logoUrl && !logoError ? (
