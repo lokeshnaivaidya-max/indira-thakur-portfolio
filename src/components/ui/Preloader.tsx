@@ -42,11 +42,11 @@ export default function Preloader() {
                 <img
                   src={loadingLogoUrl}
                   alt={config?.brand?.preloaderLogo?.alt || config?.brand?.logo?.alt || 'Indira Thakur Photography'}
-                  className="max-h-28 max-w-[240px] w-auto h-auto object-contain filter dark:invert dark:brightness-200 transition-opacity duration-300"
+                  className="max-h-28 max-w-[240px] w-auto h-auto object-contain transition-opacity duration-300"
                 />
               ) : (
                 <div className="flex flex-col items-center">
-                  <span className="font-serif text-3xl sm:text-4xl tracking-tight text-[#2B2625] dark:text-[#FAF6F3]">
+                  <span className="font-serif text-3xl sm:text-4xl tracking-tight text-[#2B2625]">
                     {config?.brand?.siteName || 'Indira Thakur'}
                   </span>
                   <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#C39E96] mt-1.5 font-medium">
