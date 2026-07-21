@@ -330,7 +330,7 @@ const categoryTabs = [
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
   const { config } = useSiteConfig();
   const [activeCategory, setActiveCategory] = useState('all');
-  const [images, setImages] = useState<GalleryImageItem[]>(() => DEMO_GALLERY as any);
+  const [images, setImages] = useState<GalleryImageItem[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
