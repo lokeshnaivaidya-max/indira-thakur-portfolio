@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useSiteConfig, SiteConfigProvider } from '@/hooks/useSiteConfig';
 import { useThemeSettings } from '@/hooks/useThemeSettings';
 import DynamicHead from './DynamicHead';
 import PublicLayoutWrapper from './PublicLayoutWrapper';
@@ -70,7 +70,7 @@ export default function AppProviders({ initialConfig, initialTheme, initialBrand
   console.log('[AppProviders] render', { pathname: typeof window !== 'undefined' ? window.location.pathname : 'ssr', isClient, hasInitialData, isLoading });
 
   return (
-    <>
+    <SiteConfigProvider initialConfig={initialConfig}>
       {effectiveTheme && (
         <style
           dangerouslySetInnerHTML={{
@@ -103,6 +103,6 @@ export default function AppProviders({ initialConfig, initialTheme, initialBrand
       )}
       <DynamicHead />
       <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
-    </>
+    </SiteConfigProvider>
   );
 }

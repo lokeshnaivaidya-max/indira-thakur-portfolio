@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
 export default function LuxuryFooter() {
   const { config } = useSiteConfig();
+  const [logoError, setLogoError] = useState(false);
 
   const footerData: any = config?.footer || {
     tagline: 'Fine Art Photography',
@@ -17,6 +19,9 @@ export default function LuxuryFooter() {
     backgroundFooter: { url: '', alt: '' },
     logo: { url: '', alt: '' },
   };
+
+  const logoUrl = config?.brand?.logo?.url || footerData.logo?.url;
+  const logoAlt = config?.brand?.logo?.alt || footerData.logo?.alt || 'Indira Thakur Photography Logo';
 
   const hasImage = (url?: string) => url && url.trim() !== '';
 
@@ -43,11 +48,13 @@ export default function LuxuryFooter() {
           {/* Brand Info */}
           <div className="md:col-span-5 flex flex-col items-start">
             <Link href="/" className="mb-4 inline-block group">
-              {(config?.brand?.logo?.url || footerData.logo?.url) ? (
+              {logoUrl && !logoError ? (
                 <img
-                  src={config?.brand?.logo?.url || footerData.logo?.url}
-                  alt={config?.brand?.logo?.alt || 'Indira Thakur Photography Logo'}
-                  className="h-14 md:h-16 w-auto object-contain brightness-0 invert transition-transform duration-300 group-hover:scale-[1.02]"
+                  src={logoUrl}
+                  alt={logoAlt}
+                  onError={() => setLogoError(true)}
+                  loading="eager"
+                  className="h-12 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
                 />
               ) : (
                 <div className="flex flex-col">

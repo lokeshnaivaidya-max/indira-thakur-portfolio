@@ -25,7 +25,7 @@ export default function HeroEditorial() {
   };
 
   const rawImages = homeConfig?.heroImages;
-  const images = Array.isArray(rawImages)
+  const filteredImages = Array.isArray(rawImages)
     ? rawImages.filter(
         (img: any) =>
           img &&
@@ -34,6 +34,21 @@ export default function HeroEditorial() {
           !img.url.toLowerCase().includes('logo')
       )
     : [];
+
+  const images = filteredImages.length > 0 ? filteredImages : [
+    {
+      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1600',
+      alt: 'Fine Art Newborn Storytelling'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1600',
+      alt: 'Luxury Maternity Photography'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1600',
+      alt: 'Warm Outdoor Family Storytelling'
+    }
+  ];
 
   const nextSlide = useCallback(() => {
     if (images.length <= 1) return;
@@ -67,7 +82,7 @@ export default function HeroEditorial() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, scale: 1.03 }}
+            initial={currentIndex === 0 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.03 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.0, ease: [0.25, 0.1, 0.25, 1] }}

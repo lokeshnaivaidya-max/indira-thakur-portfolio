@@ -9,30 +9,68 @@ import { PolaroidImage } from '@/components/ui/PolaroidImage';
 export default function EditorialAbout() {
   const { config } = useSiteConfig();
 
-  const aboutData: any = config?.about || {
-    eyebrow: 'THE ARTIST & VISION',
-    heading: 'Indira Thakur',
-    headingItalic: 'Fine Art Photographer',
-    bio: [
+  const eyebrow = config?.about?.eyebrow || (config?.about as any)?.eyebrow || 'THE ARTIST & VISION';
+  const heading = config?.about?.heading || (config?.about as any)?.heading || 'Indira Thakur';
+  const headingItalic = config?.about?.subheading || (config?.about as any)?.headingItalic || 'Fine Art Photographer';
+
+  const rawQuote =
+    (config?.about?.philosophy && config.about.philosophy.trim()) ||
+    ((config?.about as any)?.philosophyQuote && (config?.about as any).philosophyQuote.trim()) ||
+    (config?.about?.story && config.about.story.trim());
+
+  const getBioParagraphs = (): string[] => {
+    if (Array.isArray((config?.about as any)?.bio) && (config?.about as any).bio.length > 0) {
+      return (config?.about as any).bio;
+    }
+    if (typeof (config?.about as any)?.bio === 'string' && (config?.about as any).bio.trim().length > 0) {
+      return [(config?.about as any).bio.trim()];
+    }
+
+    const paragraphs: string[] = [];
+    if (config?.about?.story?.trim()) paragraphs.push(config.about.story.trim());
+    if (config?.about?.storyContinued?.trim()) paragraphs.push(config.about.storyContinued.trim());
+    if (config?.about?.philosophyContinued?.trim()) paragraphs.push(config.about.philosophyContinued.trim());
+    if (config?.about?.journey?.trim()) paragraphs.push(config.about.journey.trim());
+    if (config?.about?.journeyContinued?.trim()) paragraphs.push(config.about.journeyContinued.trim());
+    if (config?.about?.welcomeMessage?.trim()) paragraphs.push(config.about.welcomeMessage.trim());
+
+    if (paragraphs.length > 0) return paragraphs;
+
+    return [
       "With over a decade dedicated to mastering the delicate nuances of natural light and human connection, Indira Thakur creates fine art photography that transcends traditional portraiture.",
       "Specializing in luxury newborn, maternity, and expressive portraiture, her work is defined by emotional depth, soft organic tones, and timeless aesthetic restraint.",
       "Every frame is curated as a heirloom—preserving your family's most sacred chapters in museum-grade visual stories."
-    ],
-    philosophyQuote: "Photography is not merely capturing what stands before the lens; it is capturing how love feels in its most silent, profound moments.",
-    milestones: [
+    ];
+  };
+
+  const bioParagraphs = getBioParagraphs();
+
+  const getMilestones = () => {
+    if (config?.about?.stats && config.about.stats.length > 0 && config.about.stats.some((s: any) => s.label || s.value)) {
+      return config.about.stats.map((s: any) => ({
+        year: s.value || '★',
+        label: s.label || '',
+        detail: ''
+      }));
+    }
+    if (config?.about?.achievements && config.about.achievements.length > 0 && config.about.achievements.some((a: any) => a.title)) {
+      return config.about.achievements.map((a: any) => ({
+        year: a.year || '★',
+        label: a.title || '',
+        detail: a.description || ''
+      }));
+    }
+    if (Array.isArray((config?.about as any)?.milestones) && (config?.about as any).milestones.length > 0) {
+      return (config?.about as any).milestones;
+    }
+    return [
       { year: '12+', label: 'Years of Experience', detail: 'Mastering fine art lighting & emotive posing' },
       { year: '800+', label: 'Milestone Families', detail: 'Newborns, mothers & couples documented' },
       { year: '15+', label: 'National Accolades', detail: 'Exhibited in premier editorial features' },
-    ],
-    mainImage: {
-      url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200',
-      alt: 'Indira Thakur Fine Art Portrait'
-    },
-    secondaryImage: {
-      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000',
-      alt: 'Newborn Photography Artistry'
-    }
+    ];
   };
+
+  const milestones = getMilestones();
 
   const mainImageUrl =
     (config?.about?.images?.founderPortrait?.url && config.about.images.founderPortrait.url.trim()) ||
@@ -67,13 +105,13 @@ export default function EditorialAbout() {
             transition={{ duration: 0.8 }}
           >
             <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
-              {aboutData.eyebrow || 'THE ARTIST & VISION'}
+              {eyebrow}
             </span>
             <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#2B2625] leading-[1.05] tracking-tight">
-              {aboutData.heading || 'Indira Thakur'}
+              {heading}
               <br />
               <span className="font-serif italic text-[#7C706D] font-normal text-3xl sm:text-4xl md:text-5xl">
-                {aboutData.headingItalic || 'Fine Art Photographer'}
+                {headingItalic}
               </span>
             </h2>
             <div className="w-12 h-px bg-[#C39E96]/40 mt-6" />
@@ -124,34 +162,32 @@ export default function EditorialAbout() {
 
           {/* Right Column: Bio Narrative & Milestones */}
           <div className="lg:col-span-6 flex flex-col justify-center">
-            {/* Quote Feature */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="p-8 md:p-10 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_30px_rgba(0,0,0,0.02)] mb-8 rounded-sm relative"
-            >
-              <span className="font-serif text-5xl text-[#C39E96]/40 absolute top-3 left-4 font-normal">“</span>
-              <p className="font-serif italic text-lg md:text-xl text-[#2B2625] leading-relaxed relative z-10 pt-2">
-                {aboutData.philosophyQuote}
-              </p>
-            </motion.div>
+            {/* Quote Feature - ONLY render if quote text exists, NEVER render an empty card */}
+            {rawQuote ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="p-8 md:p-10 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_30px_rgba(0,0,0,0.02)] mb-8 rounded-sm relative"
+              >
+                <span className="font-serif text-5xl text-[#C39E96]/40 absolute top-3 left-4 font-normal">“</span>
+                <p className="font-serif italic text-lg md:text-xl text-[#2B2625] leading-relaxed relative z-10 pt-2">
+                  {rawQuote}
+                </p>
+              </motion.div>
+            ) : null}
 
             {/* Bio Paragraphs */}
             <div className="space-y-4 font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
-              {Array.isArray(aboutData.bio) ? (
-                aboutData.bio.map((paragraph: string, idx: number) => (
-                  <p key={idx}>{paragraph}</p>
-                ))
-              ) : (
-                <p>{aboutData.bio}</p>
-              )}
+              {bioParagraphs.map((paragraph: string, idx: number) => (
+                <p key={idx}>{paragraph}</p>
+              ))}
             </div>
 
             {/* Milestones Stats Bar */}
             <div className="grid grid-cols-3 gap-6 my-10 pt-8 border-t border-[#E7DDD2]">
-              {aboutData.milestones?.map((item: any, idx: number) => (
+              {milestones.map((item: any, idx: number) => (
                 <div key={idx} className="flex flex-col">
                   <span className="font-serif text-3xl md:text-4xl text-[#2B2625] font-semibold">
                     {item.year}
