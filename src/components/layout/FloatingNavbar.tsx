@@ -14,7 +14,7 @@ export default function FloatingNavbar() {
   const { config } = useSiteConfig();
 
   const brand = config?.brand;
-  const logoUrl = brand?.logo?.url || config?.footer?.logo?.url || '/indira-logo.svg';
+  const logoUrl = brand?.logo?.url || config?.footer?.logo?.url;
 
   const isHome = pathname === '/';
   const isDarkTop = isHome && !scrolled && !mobileMenuOpen;

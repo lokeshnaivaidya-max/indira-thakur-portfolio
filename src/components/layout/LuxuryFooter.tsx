@@ -43,11 +43,22 @@ export default function LuxuryFooter() {
           {/* Brand Info */}
           <div className="md:col-span-5 flex flex-col items-start">
             <Link href="/" className="mb-4 inline-block group">
-              <img
-                src={footerData.logo?.url || config?.brand?.logo?.url || '/indira-logo.svg'}
-                alt="Indira Thakur Photography Logo"
-                className="h-14 md:h-16 w-auto object-contain brightness-0 invert transition-transform duration-300 group-hover:scale-[1.02]"
-              />
+              {(config?.brand?.logo?.url || footerData.logo?.url) ? (
+                <img
+                  src={config?.brand?.logo?.url || footerData.logo?.url}
+                  alt={config?.brand?.logo?.alt || 'Indira Thakur Photography Logo'}
+                  className="h-14 md:h-16 w-auto object-contain brightness-0 invert transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              ) : (
+                <div className="flex flex-col">
+                  <span className="font-serif text-3xl text-white tracking-tight">
+                    {config?.brand?.siteName || 'Indira Thakur'}
+                  </span>
+                  <span className="font-mono text-[9px] text-[#C39E96] uppercase tracking-[0.35em] mt-1">
+                    {config?.brand?.tagline || 'FINE ART PHOTOGRAPHY'}
+                  </span>
+                </div>
+              )}
             </Link>
             <p className="font-sans text-sm text-white/50 mt-2 max-w-md leading-relaxed">
               {footerData.description}

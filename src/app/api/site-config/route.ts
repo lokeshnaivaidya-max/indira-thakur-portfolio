@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import SiteConfig from '@/models/SiteConfig';
+import BrandSettings from '@/models/BrandSettings';
 import { requireAuth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -8,11 +9,12 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     await connectToDatabase();
-    let config = await SiteConfig.findOne();
+    let config = await SiteConfig.findOne().lean();
     if (!config) {
       config = await SiteConfig.create({});
     }
-    return NextResponse.json(config);
+    const brand = await BrandSettings.findOne().lean();
+    return NextResponse.json({ ...config, brand: brand || {} });
   } catch (error) {
     console.error('SiteConfig GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch site configuration' }, { status: 500 });

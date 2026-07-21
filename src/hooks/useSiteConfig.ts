@@ -121,7 +121,18 @@ export interface SiteConfigData {
   };
   brand?: {
     name?: string;
+    siteName?: string;
+    tagline?: string;
     logo?: SiteImage;
+    preloaderLogo?: SiteImage;
+    favicon?: SiteImage;
+    copyright?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    contactLocation?: string;
+    instagramUrl?: string;
+    facebookUrl?: string;
+    defaultOgImage?: SiteImage;
   };
   hero?: any;
   [key: string]: any;

@@ -11,6 +11,7 @@ interface BrandData {
   siteName: string;
   tagline: string;
   logo: { url: string; alt: string };
+  preloaderLogo: { url: string; alt: string };
   favicon: { url: string; alt: string };
   contactEmail: string;
   contactPhone: string;
@@ -25,6 +26,7 @@ const DEFAULTS: BrandData = {
   siteName: 'Indira Thakur Photography',
   tagline: "Capturing Life's Precious Moments",
   logo: { url: '', alt: '' },
+  preloaderLogo: { url: '', alt: '' },
   favicon: { url: '', alt: '' },
   contactEmail: 'hello@indirathakur.com',
   contactPhone: '+91 99999 99999',
@@ -124,10 +126,10 @@ export default function AdminBrandPage() {
           <FieldInput label="Site Name" value={brand.siteName} onChange={v => update('siteName', v)} placeholder="Indira Thakur Photography" />
           <FieldInput label="Tagline" value={brand.tagline} onChange={v => update('tagline', v)} placeholder="Capturing Life's Precious Moments" />
           <FieldInput label="Copyright" value={brand.copyright} onChange={v => update('copyright', v)} placeholder="© 2025 ..." />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             <ImageManager
-              label="Logo"
-              description="Site logo displayed in navigation"
+              label="Brand Logo"
+              description="Primary official logo displayed in Navbar, Footer, Favicon, and social previews"
               value={brand.logo}
               onChange={img => update('logo', img)}
               aspect="aspect-[3/1]"
@@ -135,8 +137,17 @@ export default function AdminBrandPage() {
               sectionIndicator="Brand"
             />
             <ImageManager
-              label="Favicon"
-              description="Small icon shown in browser tabs"
+              label="Loading Screen Logo"
+              description="Dedicated logo displayed on the intro loading screen (falls back to Brand Logo if empty)"
+              value={brand.preloaderLogo || { url: '', alt: '' }}
+              onChange={img => update('preloaderLogo', img)}
+              aspect="aspect-square"
+              folder="brand"
+              sectionIndicator="Brand"
+            />
+            <ImageManager
+              label="Favicon Icon"
+              description="Small icon shown in browser tabs and bookmarks"
               value={brand.favicon}
               onChange={img => update('favicon', img)}
               aspect="aspect-square"
