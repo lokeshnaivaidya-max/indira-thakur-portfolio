@@ -63,7 +63,8 @@ export interface SiteConfigData {
   services: {
     eyebrow: string;
     heading: string;
-    services: { title: string; subtitle: string; description: string; gradient: string; image: SiteImage }[];
+    description?: string;
+    services: { title: string; subtitle: string; description: string; gradient: string; image: SiteImage; tagline?: string; features?: string[] }[];
     bannerImage: SiteImage;
   };
   galleryPreview: {
@@ -118,6 +119,12 @@ export interface SiteConfigData {
     keywords: string[];
     ogImage: SiteImage;
   };
+  brand?: {
+    name?: string;
+    logo?: SiteImage;
+  };
+  hero?: any;
+  [key: string]: any;
 }
 
 let cachedConfig: SiteConfigData | null = null;
@@ -129,8 +136,6 @@ export function useSiteConfig() {
 
   useEffect(() => {
     if (cachedConfig) {
-      setConfig(cachedConfig);
-      setLoading(false);
       return;
     }
 

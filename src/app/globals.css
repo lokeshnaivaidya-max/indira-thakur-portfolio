@@ -102,6 +102,31 @@
   }
 }
 
+/* Explicit Navigation Breakpoint Enforcement (Desktops & Tablets >= 768px) */
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: flex !important;
+  }
+  .desktop-cta {
+    display: inline-flex !important;
+  }
+  .mobile-hamburger {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .desktop-cta {
+    display: none !important;
+  }
+  .mobile-hamburger {
+    display: flex !important;
+  }
+}
+
 @media (max-width: 768px) {
   .heading-xl { font-size: 2.25rem; line-height: 1.1; }
   .heading-lg { font-size: 1.875rem; }

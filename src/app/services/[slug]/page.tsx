@@ -3,47 +3,50 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { HiArrowLeft } from 'react-icons/hi2';
-
-const servicesData: Record<string, { title: string; description: string; heroGradient: string }> = {};
 
 export default function ServiceDetailPage() {
   const params = useParams();
-  const slug = params.slug as string;
-  const service = servicesData[slug];
+  const slug = (params.slug as string) || '';
 
-  if (!service) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-ivory">
-        <div className="text-center px-6">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-            <span className="font-mono text-[9px] text-magenta/40 uppercase tracking-[0.3em]">Coming Soon</span>
-            <h1 className="font-serif text-3xl md:text-4xl text-rich-black mt-4">This service page is being crafted</h1>
-            <p className="font-sans text-sm text-warm-gray/50 mt-4">Each service is a unique experience. We&apos;re putting the finishing touches on this one.</p>
-            <Link href="/services" className="inline-flex items-center gap-2 mt-8 font-sans text-[10px] text-magenta/50 uppercase tracking-[0.2em] hover:text-magenta transition-colors">
-              <HiArrowLeft className="w-3 h-3" /> Back to Services
-            </Link>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
+  const formattedTitle = slug
+    ? slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    : 'Bespoke Experience';
 
   return (
-    <div className="pt-0">
-      <section className={`min-h-[80vh] bg-gradient-to-br ${service.heroGradient} flex items-end relative`}>
-        <div className="absolute inset-0 bg-gradient-to-t from-ivory/20 via-transparent to-black/30" />
-        <div className="container-editorial relative z-10 pb-16 md:pb-24">
-          <Link href="/services" className="inline-flex items-center gap-2 text-white/40 hover:text-white font-sans text-[10px] tracking-[0.2em] uppercase transition-colors mb-8">
-            <HiArrowLeft className="w-3 h-3" /> All Services
-          </Link>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white max-w-3xl leading-[1.1]">{service.title}</h1>
-          <p className="font-sans text-sm md:text-base text-white/50 mt-4 max-w-xl leading-relaxed">{service.description}</p>
-          <a href="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-rich-black font-sans text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-500 hover:bg-white/90 mt-8">
-            Book This Session
-          </a>
-        </div>
-      </section>
+    <div className="min-h-screen bg-[#FAF6F3] text-[#2B2625] pt-32 pb-24 flex items-center justify-center">
+      <div className="container-editorial max-w-3xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
+            FINE ART COMMISSION
+          </span>
+          <h1 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-tight">
+            {formattedTitle}
+          </h1>
+          <div className="w-10 h-px bg-[#C39E96]/40 mx-auto my-6" />
+          <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed max-w-xl mx-auto">
+            Every {formattedTitle.toLowerCase()} commission with Indira Thakur includes bespoke styling consultation, guided direction, expert retouching, and delivery of heirloom album keepsakes.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
+            <Link
+              href={`/contact?service=${encodeURIComponent(slug)}`}
+              className="px-8 py-4 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.25em] font-medium hover:bg-[#3D3534] transition-colors shadow-sm"
+            >
+              Inquire For This Session
+            </Link>
+            <Link
+              href="/services"
+              className="font-sans text-xs text-[#C39E96] uppercase tracking-[0.2em] hover:text-[#2B2625] transition-colors"
+            >
+              ← Back To All Services
+            </Link>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

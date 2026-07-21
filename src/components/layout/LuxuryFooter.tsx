@@ -1,0 +1,171 @@
+'use client';
+
+import Link from 'next/link';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
+
+export default function LuxuryFooter() {
+  const { config } = useSiteConfig();
+
+  const footerData: any = config?.footer || {
+    tagline: 'Fine Art Photography',
+    description: "Capturing life's most precious moments with emotional resonance, timeless artistry, and an unwavering attention to detail.",
+    email: 'hello@indirathakur.com',
+    phone: '+91 99999 99999',
+    instagramUrl: 'https://instagram.com',
+    facebookUrl: 'https://facebook.com',
+    backgroundFooter: { url: '', alt: '' },
+    logo: { url: '', alt: '' },
+  };
+
+  const hasImage = (url?: string) => url && url.trim() !== '';
+
+  return (
+    <footer className="relative bg-[#2B2625] text-white/70 overflow-hidden border-t border-white/5">
+      {hasImage(footerData.backgroundFooter?.url) && (
+        <div className="absolute inset-0 pointer-events-none">
+          <PolaroidImage
+            src={footerData.backgroundFooter.url}
+            alt={footerData.backgroundFooter.alt || ''}
+            objectFit="cover"
+            sizes="100vw"
+            className="!w-full !h-full opacity-10 blur-xs"
+            containerClassName="!w-full !h-full !absolute !inset-0"
+          />
+        </div>
+      )}
+
+      {/* Subtle Top Accent */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#C39E96]/40 to-transparent" />
+
+      <div className="container-editorial py-24 md:py-32 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Brand Info */}
+          <div className="md:col-span-5 flex flex-col items-start">
+            {hasImage(footerData.logo?.url) ? (
+              <PolaroidImage
+                src={footerData.logo.url}
+                alt="Indira Thakur Photography Logo"
+                width={140}
+                height={56}
+                objectFit="contain"
+                containerClassName="!w-auto !h-14 !mb-4"
+                className="!w-auto !h-14"
+              />
+            ) : (
+              <div className="mb-4">
+                <span className="font-serif text-3xl text-white tracking-tight block">Indira Thakur</span>
+                <span className="font-mono text-[10px] text-[#C39E96]/80 uppercase tracking-[0.35em] block mt-1">
+                  {footerData.tagline || 'Fine Art Photography'}
+                </span>
+              </div>
+            )}
+            <p className="font-sans text-sm text-white/50 mt-4 max-w-md leading-relaxed">
+              {footerData.description}
+            </p>
+            <div className="mt-8 flex items-center gap-4">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white text-white hover:text-[#2B2625] font-sans text-[11px] uppercase tracking-[0.2em] transition-all duration-500 rounded-sm"
+              >
+                <span>Book a Session</span>
+                <span className="text-xs">→</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <nav className="md:col-span-3" aria-label="Footer Navigation">
+            <h4 className="font-mono text-[11px] text-[#C39E96]/80 uppercase tracking-[0.3em] mb-6">Explore</h4>
+            <ul className="space-y-3.5">
+              {[
+                { href: '/', label: 'Home' },
+                { href: '/about', label: 'About Story' },
+                { href: '/services', label: 'Services & Experience' },
+                { href: '/gallery', label: 'Portfolio Gallery' },
+                { href: '/testimonials', label: 'Client Praise' },
+                { href: '/contact', label: 'Inquiries & Contact' },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="font-sans text-xs text-white/50 hover:text-white transition-colors duration-300 py-1 inline-block"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Connect */}
+          <nav className="md:col-span-4" aria-label="Footer Contact Information">
+            <h4 className="font-mono text-[11px] text-[#C39E96]/80 uppercase tracking-[0.3em] mb-6">Get In Touch</h4>
+            <ul className="space-y-4 font-sans text-xs text-white/50">
+              <li>
+                <span className="block text-[10px] uppercase font-mono text-white/30 tracking-[0.2em] mb-1">Direct Email</span>
+                <a
+                  href={`mailto:${footerData.email}`}
+                  className="text-white/80 hover:text-[#C39E96] transition-colors duration-300"
+                >
+                  {footerData.email}
+                </a>
+              </li>
+              <li>
+                <span className="block text-[10px] uppercase font-mono text-white/30 tracking-[0.2em] mb-1">Phone / WhatsApp</span>
+                <a
+                  href={`tel:${footerData.phone?.replace(/\s/g, '')}`}
+                  className="text-white/80 hover:text-[#C39E96] transition-colors duration-300"
+                >
+                  {footerData.phone}
+                </a>
+              </li>
+              {(footerData.instagramUrl || footerData.facebookUrl) && (
+                <li className="pt-2">
+                  <span className="block text-[10px] uppercase font-mono text-white/30 tracking-[0.2em] mb-2">Social Journal</span>
+                  <div className="flex gap-4">
+                    {footerData.instagramUrl && (
+                      <a
+                        href={footerData.instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-white/70 hover:text-[#C39E96] transition-colors duration-300"
+                      >
+                        Instagram ↗
+                      </a>
+                    )}
+                    {footerData.facebookUrl && (
+                      <a
+                        href={footerData.facebookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-white/70 hover:text-[#C39E96] transition-colors duration-300"
+                      >
+                        Facebook ↗
+                      </a>
+                    )}
+                  </div>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </div>
+
+        <div className="w-full h-px bg-white/10 mt-20 mb-8" />
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="font-sans text-xs text-white/40">
+            &copy; {new Date().getFullYear()} Indira Thakur Photography. All rights reserved.
+          </p>
+          <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+            <span>Bangalore, India</span>
+            <span>·</span>
+            <Link href="/admin/login" className="hover:text-white/60 transition-colors">
+              Client Portal / CMS
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

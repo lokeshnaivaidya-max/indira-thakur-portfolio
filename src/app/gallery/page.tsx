@@ -1,17 +1,15 @@
+import EditorialGallery from '@/components/sections/EditorialGallery';
 import type { Metadata } from 'next';
-import GalleryClient from './GalleryClient';
 
 export const metadata: Metadata = {
-  title: 'Gallery',
-  description: 'Explore the photography portfolio of Indira Thakur — newborn, maternity, portrait, and event photography.',
-  openGraph: {
-    title: 'Gallery | Indira Thakur Photography',
-    description: 'Explore the photography portfolio of Indira Thakur — newborn, maternity, portrait, and event photography.',
-    url: 'https://indirathakurphotography.com/gallery',
-  },
+  title: 'Portfolio Gallery | Indira Thakur Photography',
+  description: 'Explore the fine art collection of newborn, maternity, portrait, and event photography.',
 };
 
 export default function GalleryPage() {
-  console.log('[GalleryPage] render');
-  return <GalleryClient />;
+  return (
+    <div className="pt-24 bg-[#FAF6F3]">
+      <EditorialGallery />
+    </div>
+  );
 }

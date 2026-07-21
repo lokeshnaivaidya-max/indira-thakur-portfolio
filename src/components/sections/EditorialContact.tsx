@@ -1,0 +1,262 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { PolaroidImage } from '@/components/ui/PolaroidImage';
+
+export default function EditorialContact() {
+  const { config } = useSiteConfig();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [service, setService] = useState('Newborn Storytelling');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+
+  const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!name.trim()) { setError('Please provide your name.'); return; }
+    if (!email.trim()) { setError('Please provide your email.'); return; }
+    if (!validateEmail(email)) { setError('Please enter a valid email address.'); return; }
+
+    setSubmitting(true);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, service, message }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Submission failed. Please try again.');
+      }
+      setSubmitted(true);
+      setName(''); setEmail(''); setPhone(''); setMessage('');
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const contactData: any = config?.contact || {
+    eyebrow: "COMMISSION INQUIRIES",
+    heading: 'Begin Your Story',
+    description: 'Every bespoke photograph begins with a quiet conversation. Reach out to reserve your date or inquire about fine art sessions.',
+    email: 'hello@indirathakur.com',
+    phone: '+91 99999 99999',
+    location: 'Bangalore, India · Available Worldwide',
+    studioImage: { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000', alt: 'Indira Thakur Studio' }
+  };
+
+  const hasImage = (url?: string) => url && url.trim() !== '';
+
+  return (
+    <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative">
+      <div className="container-editorial">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+          {/* Left Column: Direct Info & Studio Atmosphere */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
+                  {contactData.eyebrow || 'COMMISSION INQUIRIES'}
+                </span>
+                <h2 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-none mb-4">
+                  {contactData.heading || 'Begin Your Story'}
+                </h2>
+                <div className="w-10 h-px bg-[#C39E96]/40 my-6" />
+                <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed mb-8">
+                  {contactData.description}
+                </p>
+              </motion.div>
+
+              {/* Direct Details */}
+              <div className="space-y-6 pt-6 border-t border-[#E7DDD2]">
+                <div>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#C39E96] block mb-1">
+                    Studio Email
+                  </span>
+                  <a href={`mailto:${contactData.email}`} className="font-serif text-xl text-[#2B2625] hover:text-[#C39E96] transition-colors">
+                    {contactData.email}
+                  </a>
+                </div>
+
+                <div>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#C39E96] block mb-1">
+                    Direct Line / WhatsApp
+                  </span>
+                  <a href={`tel:${contactData.phone?.replace(/\s/g, '')}`} className="font-serif text-xl text-[#2B2625] hover:text-[#C39E96] transition-colors">
+                    {contactData.phone}
+                  </a>
+                </div>
+
+                <div>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#C39E96] block mb-1">
+                    Primary Studio Location
+                  </span>
+                  <p className="font-sans text-sm text-[#7C706D]">
+                    {contactData.location}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Studio Image */}
+            <div className="mt-12 relative h-64 md:h-80 rounded-sm overflow-hidden border border-[#E7DDD2] hidden lg:block">
+              {hasImage(contactData.studioImage?.url) ? (
+                <PolaroidImage
+                  src={contactData.studioImage.url}
+                  alt={contactData.studioImage.alt || 'Studio Atmosphere'}
+                  fill
+                  sizes="400px"
+                  className="!w-full !h-full object-cover"
+                  containerClassName="!w-full !h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#E7DDD2] flex items-center justify-center p-6 text-center font-serif text-lg italic text-[#7C706D]">
+                  Indira Thakur Photography Studio
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Bespoke Inquiry Form */}
+          <div className="lg:col-span-7 bg-white p-8 md:p-14 border border-[#E7DDD2] shadow-[0_10px_40px_rgba(0,0,0,0.02)] rounded-sm">
+            <h3 className="font-serif text-2xl text-[#2B2625] mb-2">
+              Send a Private Message
+            </h3>
+            <p className="font-sans text-xs text-[#7C706D] mb-8">
+              Please share a few details regarding your desired session date and vision.
+            </p>
+
+            <AnimatePresence mode="wait">
+              {submitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="p-8 bg-[#FAF6F3] border border-[#C39E96]/30 text-center rounded-sm my-8"
+                >
+                  <span className="font-serif text-3xl text-[#2B2625] block mb-2">Thank You</span>
+                  <p className="font-sans text-sm text-[#7C706D] leading-relaxed">
+                    Your inquiry has been gracefully received. Indira will respond personally within 24 to 48 hours.
+                  </p>
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="mt-6 px-6 py-2.5 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.2em]"
+                  >
+                    Send Another Note
+                  </button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 text-red-700 font-sans text-xs">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
+                        Your Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Ananya Sharma"
+                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="ananya@example.com"
+                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
+                        Commission Category
+                      </label>
+                      <select
+                        value={service}
+                        onChange={(e) => setService(e.target.value)}
+                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
+                      >
+                        <option value="Newborn Storytelling">Newborn Storytelling</option>
+                        <option value="Maternity Portraits">Maternity Portraits</option>
+                        <option value="Fine Art Portraiture">Fine Art Portraiture</option>
+                        <option value="Events & Collaborations">Events & Collaborations</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
+                      Your Vision / Session Details
+                    </label>
+                    <textarea
+                      rows={5}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Share estimated dates, locations, or special moments you wish to capture..."
+                      className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors resize-y"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full py-4 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.25em] font-medium hover:bg-[#3D3534] transition-all duration-500 shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    {submitting ? 'Transmitting Note...' : 'Submit Private Inquiry'}
+                  </button>
+                </form>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
