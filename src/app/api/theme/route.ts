@@ -11,6 +11,19 @@ export async function GET() {
     let theme = await ThemeSettings.findOne();
     if (!theme) {
       theme = await ThemeSettings.create({});
+    } else if (theme.primaryColor === '#C2186A') {
+      theme.primaryColor = '#C39E96';
+      theme.secondaryColor = '#A88179';
+      theme.accentColor = '#E2C3BC';
+      theme.backgroundColor = '#FAF6F3';
+      theme.textColor = '#2B2625';
+      theme.mutedTextColor = '#7C706D';
+      theme.cardBorder = '#F4ECE8';
+      theme.navBackground = '#FAF6F3';
+      theme.navTextColor = '#2B2625';
+      theme.footerBackground = '#2B2625';
+      theme.footerTextColor = '#FAF6F3';
+      await theme.save();
     }
     return NextResponse.json(theme);
   } catch (error) {

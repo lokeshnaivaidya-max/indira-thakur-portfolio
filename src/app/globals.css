@@ -10,14 +10,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rich-black: #111111;
-  --color-charcoal: #222222;
-  --color-magenta: #C2186A;
-  --color-raspberry: #9D1457;
-  --color-ivory: #F8F5F1;
-  --color-cream: #F4EEE7;
+  --color-rich-black: #2B2625;
+  --color-charcoal: #3D3534;
+  --color-magenta: #C39E96;
+  --color-raspberry: #A88179;
+  --color-ivory: #FAF6F3;
+  --color-cream: #F4ECE8;
   --color-beige: #E7DDD2;
-  --color-warm-gray: #6E655D;
+  --color-warm-gray: #7C706D;
   --color-pure-white: #FFFFFF;
 
   --font-serif: 'Playfair Display', Georgia, serif;

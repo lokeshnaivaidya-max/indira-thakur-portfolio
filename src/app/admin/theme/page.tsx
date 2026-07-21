@@ -4,24 +4,25 @@ import { useState, useEffect } from 'react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import { toast } from '@/lib/toast';
 import StickySaveBar from '@/components/admin/StickySaveBar';
+import { invalidateThemeSettingsCache } from '@/hooks/useThemeSettings';
 
 const DEFAULTS = {
-  primaryColor: '#C2186A',
-  secondaryColor: '#9D1457',
-  accentColor: '#C2186A',
-  backgroundColor: '#F8F5F1',
+  primaryColor: '#C39E96',
+  secondaryColor: '#A88179',
+  accentColor: '#E2C3BC',
+  backgroundColor: '#FAF6F3',
   surfaceColor: '#FFFFFF',
-  textColor: '#111111',
-  mutedTextColor: '#6E655D',
+  textColor: '#2B2625',
+  mutedTextColor: '#7C706D',
   cardBackground: '#FFFFFF',
-  cardBorder: '#F4EEE7',
+  cardBorder: '#F4ECE8',
   cardRadius: '0px',
   buttonRadius: '0px',
   buttonStyle: 'filled' as const,
-  navBackground: '#F8F5F1',
-  navTextColor: '#111111',
-  footerBackground: '#111111',
-  footerTextColor: '#FFFFFF',
+  navBackground: '#FAF6F3',
+  navTextColor: '#2B2625',
+  footerBackground: '#2B2625',
+  footerTextColor: '#FAF6F3',
   headingFont: 'Playfair Display',
   bodyFont: 'Inter',
   shadowIntensity: 'light' as 'none' | 'light' | 'medium' | 'heavy',
@@ -78,6 +79,12 @@ export default function AdminThemePage() {
       const { _id, __v, createdAt, updatedAt, ...rest } = saved;
       setTheme(prev => ({ ...prev, ...rest }));
       setDirty(false);
+      
+      // Invalidate client-side theme caches
+      invalidateThemeSettingsCache();
+      // Notify other tabs and iframes (e.g. preview)
+      localStorage.setItem('theme-updated', Date.now().toString());
+      
       toast.success('Changes Saved Successfully');
     } catch {
       toast.error('Failed to Save Changes');

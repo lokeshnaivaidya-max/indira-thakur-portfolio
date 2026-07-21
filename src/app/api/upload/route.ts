@@ -5,6 +5,14 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '100mb',
+    },
+  },
+};
+
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 50 * 1024 * 1024;
 
@@ -150,7 +158,7 @@ export async function POST(request: Request) {
     if (file.size > MAX_SIZE) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
       return jsonError(
-        `File is too large (${sizeMB} MB). Maximum upload size is 15 MB.`,
+        `File is too large (${sizeMB} MB). Maximum upload size is 50 MB.`,
         400
       );
     }

@@ -3,6 +3,8 @@ import { Playfair_Display, Inter, DM_Mono } from 'next/font/google';
 import './globals.css';
 import ServerDataProvider from '@/components/layout/ServerDataProvider';
 
+export const dynamic = 'force-dynamic';
+
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',

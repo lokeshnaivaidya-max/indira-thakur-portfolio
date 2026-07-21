@@ -71,6 +71,7 @@ export default function AdminBrandPage() {
       const saved = await res.json();
       const { _id, __v, createdAt, updatedAt, ...rest } = saved;
       invalidateSiteConfigCache();
+      localStorage.setItem('brand-updated', Date.now().toString());
       setBrand(prev => ({ ...prev, ...rest }));
       setDirty(false);
       toast.success('Changes Saved Successfully');
