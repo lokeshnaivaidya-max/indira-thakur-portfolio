@@ -1,5 +1,6 @@
 import { upload } from '@vercel/blob/client';
 import { MAX_IMAGE_UPLOAD_SIZE, MAX_IMAGE_UPLOAD_SIZE_MB, IMAGE_UPLOAD_ERROR } from '@/lib/uploadConstants';
+import { compressImage, CLOUDINARY_UPLOAD_LIMIT } from '@/lib/compressImage';
 
 export interface UploadProgressCallback {
   (progress: number): void;
@@ -19,6 +20,20 @@ export async function uploadImageDirect(
 ): Promise<UploadResult> {
   if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
     throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum upload size is ${MAX_IMAGE_UPLOAD_SIZE_MB} MB.`);
+  }
+
+  let uploadFile = file;
+  let compressed = false;
+  if (file.size > CLOUDINARY_UPLOAD_LIMIT) {
+    try {
+      const result = await compressImage(file, { quality: 0.85, maxWidth: 3840, outputType: 'image/jpeg' });
+      if (result.compressedSize < file.size) {
+        uploadFile = result.file;
+        compressed = true;
+      }
+    } catch {
+      // compression failed — upload original and let Cloudinary reject if needed
+    }
   }
 
   // 1. Fetch server configuration and signature/token
@@ -63,7 +78,7 @@ export async function uploadImageDirect(
       const xhr = new XMLHttpRequest();
       const formData = new FormData();
 
-      formData.append('file', file);
+      formData.append('file', uploadFile);
       formData.append('api_key', config.apiKey);
       formData.append('timestamp', String(config.timestamp));
       formData.append('signature', config.signature);
@@ -93,8 +108,12 @@ export async function uploadImageDirect(
             height: responseJson.height,
           });
         } else {
-          const msg = responseJson.error?.message || `Upload failed with status ${xhr.status}`;
-          reject(new Error(msg));
+          const rawMsg = responseJson.error?.message || '';
+          if (rawMsg.toLowerCase().includes('file size too large') || rawMsg.toLowerCase().includes('maximum upload')) {
+            reject(new Error(`The image is too large for Cloudinary's plan limit (max 10 MB). ${compressed ? 'Compression was applied but could not reduce the file enough.' : 'Automatic compression was skipped. Please try a smaller image.'} If you need higher limits, upgrade your Cloudinary account.`));
+          } else {
+            reject(new Error(rawMsg || `Upload failed with status ${xhr.status}.`));
+          }
         }
       });
 
