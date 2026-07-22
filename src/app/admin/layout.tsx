@@ -50,6 +50,7 @@ const sidebarGroups: SidebarGroup[] = [
     links: [
       { label: 'Gallery Images', description: 'Manage photos & albums', href: '/admin/gallery', icon: HiPhoto },
       { label: 'Homepage Gallery', description: 'Featured preview photos', href: '/admin/gallery-cms', icon: HiPhoto },
+      { label: 'Films & Cinema', description: 'Manage video highlights & shorts', href: '/admin/films-cms', icon: HiCommandLine },
       { label: 'Services & Packages', description: 'Photography offerings', href: '/admin/services-cms', icon: HiCommandLine },
     ],
   },

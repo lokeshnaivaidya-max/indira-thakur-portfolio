@@ -13,13 +13,33 @@ interface TestimonialItem {
   avatarUrl?: string;
 }
 
+function formatTestimonialCategory(raw?: string): string {
+  if (!raw) return 'Fine Art Commission';
+  const lower = raw.toLowerCase().trim();
+  if (lower.includes('newborn')) return 'Newborn Storytelling';
+  if (lower.includes('maternity')) return 'Maternity Portraiture';
+  if (lower.includes('family')) return 'Family Legacy';
+  if (lower.includes('baby')) return 'Milestone Session';
+  if (lower.includes('portrait')) return 'Fine Art Portraiture';
+  if (lower.includes('wedding')) return 'Weddings & Celebrations';
+  if (lower.includes('event')) return 'Bespoke Events';
+  return raw.replace(/client|session/gi, '').trim() || 'Fine Art Commission';
+}
+
 const defaultTestimonials: TestimonialItem[] = [
   {
     name: 'Ananya & Rohan Sharma',
-    role: 'Maternity & Newborn Client',
+    role: 'Newborn Client',
     quote: "Indira's gentle demeanor and extraordinary eye for light created portraits of our newborn that brought tears to our eyes. She didn't just take pictures; she immortalized the quiet soul of our family's newest chapter.",
     sessionType: 'Newborn Storytelling',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    name: 'Meera & Dev Kapur',
+    role: 'Maternity Client',
+    quote: "The images captured during my sunset maternity session look straight out of Vogue. Indira has an undeniable gift for making mothers feel like royalty in front of the lens.",
+    sessionType: 'Maternity Portraiture',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300'
   },
   {
     name: 'Dr. Priya & Vikram Nair',
@@ -29,11 +49,18 @@ const defaultTestimonials: TestimonialItem[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300'
   },
   {
-    name: 'Meera & Dev Kapur',
-    role: 'Maternity Session',
-    quote: "The images captured during my sunset maternity session look straight out of Vogue. Indira has an undeniable gift for making mothers feel like royalty.",
-    sessionType: 'Luxury Maternity',
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300'
+    name: 'Kavita & Aditya Mehta',
+    role: 'Family Legacy Client',
+    quote: "Capturing three generations of our family in one portrait session felt daunting, but Indira guided us seamlessly. The warmth and connection in each frame is truly priceless.",
+    sessionType: 'Family Legacy',
+    avatarUrl: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    name: 'Siddharth & Tanya Verma',
+    role: 'Weddings Client',
+    quote: "Indira captured our wedding with a cinematic restrain that feels timeless. Every emotion, every whisper, every sacred moment was documented like poetry.",
+    sessionType: 'Weddings & Celebrations',
+    avatarUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=300'
   }
 ];
 
@@ -91,7 +118,7 @@ export default function EditorialTestimonials() {
       item.quote.trim().length > 0 && self.findIndex((o) => o.quote === item.quote) === index
   );
 
-  const reviewsList = (combinedList.length > 0 ? combinedList : defaultTestimonials).slice(0, 3);
+  const reviewsList = (combinedList.length > 0 ? combinedList : defaultTestimonials).slice(0, 6);
 
   useEffect(() => {
     if (reviewsList.length <= 1) return;
@@ -163,7 +190,7 @@ export default function EditorialTestimonials() {
                     {current.name}
                   </h3>
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C39E96]">
-                    {current.sessionType || current.role || 'Fine Art Client'}
+                    {formatTestimonialCategory(current.sessionType || current.role)}
                   </p>
                 </div>
               </div>

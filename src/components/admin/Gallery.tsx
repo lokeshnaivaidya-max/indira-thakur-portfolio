@@ -20,7 +20,7 @@ interface GalleryItem {
   updatedAt: string;
 }
 
-const CATEGORIES = ['Portrait', 'Landscapes', 'Maternity', 'Newborn', 'Wedding', 'Family', 'Events', 'Other'];
+const CATEGORIES = ['Newborn', 'Maternity', 'Family', 'Baby', 'Portrait', 'Wedding', 'Events', 'Other'];
 
 export function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);

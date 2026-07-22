@@ -2,7 +2,7 @@ export interface DemoGalleryItem {
   id: string;
   src: string;
   alt: string;
-  category: 'newborn' | 'maternity' | 'family' | 'baby' | 'couple' | 'portrait' | 'events';
+  category: 'newborn' | 'maternity' | 'family' | 'baby' | 'couple' | 'portrait' | 'events' | 'wedding';
   title: string;
   caption: string;
   featured?: boolean;
@@ -411,11 +411,11 @@ export const DEMO_GALLERY: DemoGalleryItem[] = [
   },
   {
     id: 'evt-3',
-    src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=1200',
-    alt: 'First Birthday Soiree',
+    src: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=1200',
+    alt: 'Gala Gathering & Celebrations',
     category: 'events',
-    title: 'Year One Soiree',
-    caption: 'Curated editorial coverage for intimate milestone birthdays.'
+    title: 'Evening Festivities',
+    caption: 'Curated editorial coverage for intimate milestone celebrations.'
   },
   {
     id: 'evt-4',
@@ -440,6 +440,33 @@ export const DEMO_GALLERY: DemoGalleryItem[] = [
     category: 'events',
     title: 'Under Starlight',
     caption: 'Ambient outdoor celebration lighting captured with cinematic flair.'
+  },
+
+  // WEDDING (4)
+  {
+    id: 'wdg-1',
+    src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=1200',
+    alt: 'Bespoke Wedding Celebration',
+    category: 'wedding',
+    title: 'Sacred Promises',
+    caption: 'Cinematic fine art wedding photography documenting timeless vows.',
+    featured: true
+  },
+  {
+    id: 'wdg-2',
+    src: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200',
+    alt: 'Ethereal Bridal Embrace',
+    category: 'wedding',
+    title: 'Eternal Bond',
+    caption: 'Intimate fine art bridal portraiture in soft natural light.'
+  },
+  {
+    id: 'wdg-3',
+    src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1200',
+    alt: 'Royal Wedding Heritage',
+    category: 'wedding',
+    title: 'Legacy of Devotion',
+    caption: 'Regal wedding moments captured with quiet artistic restraint.'
   }
 ];
 

@@ -317,19 +317,45 @@ const fallbackImages: GalleryImageItem[] = [
   }
 ];
 
-const categoryTabs = [
-  { id: 'all', label: 'All Collection' },
-  { id: 'newborn', label: 'Newborn' },
-  { id: 'maternity', label: 'Maternity' },
-  { id: 'family', label: 'Family' },
-  { id: 'baby', label: 'Baby' },
-  { id: 'portrait', label: 'Fine Art Portrait' },
-  { id: 'events', label: 'Events' }
-];
+function cleanDisplayTitle(rawTitle?: string, alt?: string, category?: string): string {
+  if (!rawTitle) return alt && !isFileName(alt) ? alt : formatCategoryTitle(category);
+  if (isFileName(rawTitle)) {
+    if (alt && !isFileName(alt)) return alt;
+    return formatCategoryTitle(category);
+  }
+  return rawTitle;
+}
+
+function isFileName(str: string): boolean {
+  if (!str) return false;
+  const lower = str.toLowerCase().trim();
+  return (
+    /\.(jpg|jpeg|png|webp|gif|svg|avif)$/i.test(lower) ||
+    /^img[_-]?\d+/i.test(lower) ||
+    /^dsc[_-]?\d+/i.test(lower) ||
+    /^photo[_-]?\d+/i.test(lower)
+  );
+}
+
+function formatCategoryTitle(category?: string): string {
+  if (!category) return 'Fine Art Story';
+  const clean = category.toLowerCase().trim();
+  const map: Record<string, string> = {
+    newborn: 'Newborn Storytelling',
+    maternity: 'Maternity Portraiture',
+    family: 'Family Legacy',
+    baby: 'Milestone Portrait',
+    portrait: 'Fine Art Portrait',
+    wedding: 'Weddings & Celebrations',
+    weddings: 'Weddings & Celebrations',
+    events: 'Bespoke Events',
+    couple: 'Couples & Romance',
+  };
+  return map[clean] || `${clean.charAt(0).toUpperCase()}${clean.slice(1)} Story`;
+}
 
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
   const { config } = useSiteConfig();
-  const [activeCategory, setActiveCategory] = useState('all');
   const [images, setImages] = useState<GalleryImageItem[]>(fallbackImages);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
@@ -344,8 +370,8 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
               id: img.id || img._id || `img-${idx}`,
               src: img.src || img.url,
               alt: img.alt || img.title || 'Indira Thakur Photography',
-              category: (img.category || 'portrait').toLowerCase(),
-              title: img.title || 'Portfolio Work',
+              category: (img.category || 'portrait').toLowerCase().trim(),
+              title: cleanDisplayTitle(img.title, img.alt, img.category),
               caption: img.description || img.caption || ''
             }));
             setImages(mapped);
@@ -364,7 +390,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
           src: img.url,
           alt: img.alt || 'Indira Thakur Fine Art',
           category: 'portrait',
-          title: img.caption || 'Fine Art Highlight',
+          title: cleanDisplayTitle(img.caption, img.alt, 'portrait'),
           caption: img.caption || ''
         }));
         setImages(mappedConfig);
@@ -374,9 +400,48 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     loadGallery();
   }, [config]);
 
+  // Compute available categories dynamically from present images only
+  const categoryTabs = useMemo(() => {
+    const presentCategories = Array.from(
+      new Set(images.map((img) => img.category.toLowerCase().trim()))
+    ).filter(Boolean);
+
+    const labelMap: Record<string, string> = {
+      newborn: 'Newborn',
+      maternity: 'Maternity',
+      family: 'Family',
+      baby: 'Baby',
+      portrait: 'Fine Art Portrait',
+      wedding: 'Weddings',
+      weddings: 'Weddings',
+      events: 'Events',
+      couple: 'Couples',
+    };
+
+    return presentCategories.map((catKey) => ({
+      id: catKey,
+      label: labelMap[catKey] || catKey.charAt(0).toUpperCase() + catKey.slice(1),
+    }));
+  }, [images]);
+
+  // Configurable default category from CMS or first category with images
+  const cmsDefaultCategory = (config?.galleryPreview as any)?.defaultCategory?.toLowerCase()?.trim();
+  
+  const [activeCategory, setActiveCategory] = useState<string>('');
+
+  useEffect(() => {
+    if (categoryTabs.length > 0) {
+      if (cmsDefaultCategory && categoryTabs.some((t) => t.id === cmsDefaultCategory)) {
+        setActiveCategory(cmsDefaultCategory);
+      } else {
+        setActiveCategory(categoryTabs[0].id);
+      }
+    }
+  }, [categoryTabs, cmsDefaultCategory]);
+
   const filteredImages = useMemo(() => {
     let list = images;
-    if (activeCategory !== 'all') {
+    if (activeCategory) {
       list = images.filter((img) => img.category.includes(activeCategory.toLowerCase()));
     }
     return isPreview ? list.slice(0, 6) : list;
@@ -408,16 +473,16 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
             </h2>
           </div>
 
-          {/* Filtering Tabs */}
-          {!isPreview && (
-            <div className="flex flex-wrap items-center gap-2 md:gap-4">
+          {/* Filtering Tabs - NO "All Collection" tab */}
+          {!isPreview && categoryTabs.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveCategory(tab.id)}
-                  className={`px-5 py-2 font-mono text-[11px] uppercase tracking-[0.25em] transition-all duration-300 rounded-full cursor-pointer ${
+                  className={`h-10 px-5 py-2.5 inline-flex items-center justify-center font-mono text-[11px] uppercase tracking-[0.2em] transition-all duration-300 rounded-full cursor-pointer whitespace-nowrap ${
                     activeCategory === tab.id
-                      ? 'bg-[#2B2625] text-white shadow-sm'
+                      ? 'bg-[#2B2625] text-white shadow-sm border border-[#2B2625]'
                       : 'bg-white text-[#7C706D] hover:text-[#2B2625] border border-[#E7DDD2]'
                   }`}
                 >

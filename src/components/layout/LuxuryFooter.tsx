@@ -11,9 +11,9 @@ export default function LuxuryFooter() {
 
   const footerData: any = config?.footer || {
     tagline: 'Fine Art Photography',
-    description: "Capturing life's most precious moments with emotional resonance, timeless artistry, and an unwavering attention to detail.",
-    email: 'hello@indirathakur.com',
-    phone: '+91 99999 99999',
+    description: "Photography for me is all about preserving emotions, celebrating families, documenting milestones, and creating timeless memories that people will treasure for generations.",
+    email: 'photography@indirathakur.com',
+    phone: '+91 9819620484',
     instagramUrl: 'https://instagram.com',
     facebookUrl: 'https://facebook.com',
     backgroundFooter: { url: '', alt: '' },
@@ -165,7 +165,7 @@ export default function LuxuryFooter() {
             &copy; {new Date().getFullYear()} Indira Thakur Photography. All rights reserved.
           </p>
           <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-            <span>Bangalore, India</span>
+            <span>Mumbai & Bangalore, India</span>
             <span>·</span>
             <Link href="/admin/login" className="hover:text-white/60 transition-colors">
               Client Portal / CMS

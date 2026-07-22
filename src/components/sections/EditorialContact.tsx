@@ -51,9 +51,9 @@ export default function EditorialContact() {
     eyebrow: "COMMISSION INQUIRIES",
     heading: 'Begin Your Story',
     description: 'Every bespoke photograph begins with a quiet conversation. Reach out to reserve your date or inquire about fine art sessions.',
-    email: 'hello@indirathakur.com',
-    phone: '+91 99999 99999',
-    location: 'Bangalore, India · Available Worldwide',
+    email: 'photography@indirathakur.com',
+    phone: '+91 9819620484',
+    location: 'Mumbai, India · Available Worldwide',
     studioImage: { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000', alt: 'Indira Thakur Studio' }
   };
 
