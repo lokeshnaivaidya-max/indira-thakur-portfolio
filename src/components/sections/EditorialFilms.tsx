@@ -12,39 +12,8 @@ interface FilmItem {
   category: string;
   duration?: string;
 }
-
-const fallbackFilms: FilmItem[] = [
-  {
-    id: 'film-1',
-    title: 'Dadasaheb Phalke Chitranagri Filmcity Feature',
-    description: 'A special cinematic documentary created for Filmcity Goregaon, premiered at Chitrapataka Film Festival.',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518173946687-a4c8a383392e?auto=format&fit=crop&q=80&w=1200',
-    category: 'Documentary',
-    duration: '4:12',
-  },
-  {
-    id: 'film-2',
-    title: 'Whispers of Newborn Dawn',
-    description: 'An intimate short film highlighting the gentle first days and tender embrace of new life.',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200',
-    category: 'Newborn Story',
-    duration: '2:45',
-  },
-  {
-    id: 'film-3',
-    title: 'Grace & Anticipation: Maternity Film',
-    description: 'Celebrating maternal radiance and golden hour serenity with movement and motion.',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1200',
-    category: 'Maternity',
-    duration: '3:15',
-  },
-];
-
 export default function EditorialFilms() {
-  const [films, setFilms] = useState<FilmItem[]>(fallbackFilms);
+  const [films, setFilms] = useState<FilmItem[]>([]);
   const [activeFilm, setActiveFilm] = useState<FilmItem | null>(null);
 
   useEffect(() => {
@@ -114,8 +83,18 @@ export default function EditorialFilms() {
           </motion.div>
         </div>
 
-        {/* Films Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        {films.length === 0 ? (
+          <div className="text-center py-16 md:py-24">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 border border-white/10 mb-6">
+              <span className="text-3xl opacity-60">◆</span>
+            </div>
+            <h3 className="font-serif text-3xl md:text-4xl text-white mb-4">Films Coming Soon</h3>
+            <p className="font-sans text-sm text-white/50 max-w-md mx-auto leading-relaxed">
+              Cinematic films and short stories are in production. They will be showcased here upon completion.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
           {films.map((film) => (
             <div
               key={film.id}
@@ -163,6 +142,7 @@ export default function EditorialFilms() {
             </div>
           ))}
         </div>
+        )}
 
         {/* Video Player Modal */}
         <AnimatePresence>
