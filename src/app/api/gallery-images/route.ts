@@ -1,15 +1,50 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import GalleryImage from '@/models/GalleryImage';
 import { requireAuth } from '@/lib/auth';
+import { getThumbnailUrl } from '@/lib/cloudinaryUrl';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    const items = await GalleryImage.find({}).sort({ order: 1, createdAt: -1 });
-    return NextResponse.json(items);
+
+    const { searchParams } = request.nextUrl;
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '30', 10)));
+    const category = searchParams.get('category');
+    const featured = searchParams.get('featured');
+
+    const filter: Record<string, unknown> = {};
+    if (category) filter.category = category;
+    if (featured === 'true') filter.featured = true;
+
+    const [total, rawItems] = await Promise.all([
+      GalleryImage.countDocuments(filter),
+      GalleryImage.find(filter)
+        .sort({ order: 1, createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
+
+    const items = rawItems.map((item) => {
+      const doc = item as Record<string, unknown>;
+      const src = doc.src as string;
+      const publicId = doc.publicId as string;
+      return {
+        ...doc,
+        thumbnail: getThumbnailUrl(src, publicId),
+      };
+    });
+
+    return NextResponse.json({
+      items,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error('GalleryImage GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch gallery images' }, { status: 500 });

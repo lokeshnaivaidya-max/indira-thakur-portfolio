@@ -31,4 +31,8 @@ const GalleryImageSchema = new Schema<IGalleryImage>(
   { timestamps: true }
 );
 
+GalleryImageSchema.index({ order: 1, createdAt: -1 });
+GalleryImageSchema.index({ category: 1, order: 1, createdAt: -1 });
+GalleryImageSchema.index({ featured: -1 });
+
 export default mongoose.models.GalleryImage || mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema);

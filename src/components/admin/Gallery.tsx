@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { HiPlus, HiTrash, HiPencil, HiPhoto, HiArrowDownTray, HiArrowUpTray, HiLink, HiXMark, HiEye, HiChevronLeft, HiChevronRight } from 'react-icons/hi2';
+import { useState, useEffect, useCallback, memo, useRef, useMemo } from 'react';
+import {
+  HiPlus, HiTrash, HiPencil, HiPhoto, HiArrowDownTray, HiArrowUpTray,
+  HiLink, HiXMark, HiEye, HiChevronLeft, HiChevronRight,
+} from 'react-icons/hi2';
 import { uploadImageDirect } from '@/lib/uploadHelper';
+import { getThumbnailUrl } from '@/lib/cloudinaryUrl';
+
+// ---- Types ----
 
 interface GalleryItem {
   _id: string;
   src: string;
+  thumbnail: string;
   publicId: string;
   alt: string;
   title: string;
@@ -20,11 +27,131 @@ interface GalleryItem {
   updatedAt: string;
 }
 
+interface PaginatedResponse {
+  items: GalleryItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 const CATEGORIES = ['Newborn', 'Maternity', 'Family', 'Baby', 'Portrait', 'Wedding', 'Events', 'Other'];
+const PAGE_LIMIT = 30;
+
+// ---- Helpers ----
+
+function shimmerClasses(loaded: boolean): string {
+  if (loaded) return 'opacity-100 scale-100 blur-0';
+  return 'opacity-0 scale-95 blur-sm';
+}
+
+// ---- Gallery Card (memoized) ----
+
+const GalleryCard = memo(function GalleryCard({
+  item,
+  loaded,
+  onLoad,
+  onPreview,
+  onEdit,
+  onDownload,
+  onDelete,
+}: {
+  item: GalleryItem;
+  loaded: boolean;
+  onLoad: () => void;
+  onPreview: () => void;
+  onEdit: () => void;
+  onDownload: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="group bg-white border border-cream/50 rounded-lg overflow-hidden hover:shadow-lg transition-all">
+      <div className="relative aspect-[4/5] overflow-hidden bg-cream/50">
+        <img
+          src={item.thumbnail || item.src || '/placeholder.svg'}
+          alt={item.alt || item.title || 'Gallery item'}
+          className={`w-full h-full object-contain transition-all duration-500 ${shimmerClasses(loaded)} group-hover:scale-105`}
+          loading="lazy"
+          onLoad={onLoad}
+        />
+        {!loaded && !item._id.startsWith('optimistic-') && (
+          <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
+            <HiPhoto className="w-10 h-10 text-warm-gray/20 animate-pulse" />
+          </div>
+        )}
+        {item._id.startsWith('optimistic-') && (
+          <div className="absolute inset-0 bg-rich-black/30 backdrop-blur-[1px] flex flex-col items-center justify-center p-4">
+            <div className="w-8 h-8 border-2 border-magenta border-t-transparent rounded-full animate-spin mb-2" />
+            <span className="font-sans text-[10px] text-white bg-rich-black/80 px-2 py-0.5 rounded tracking-wider uppercase">Saving...</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-rich-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-4">
+          <ActionButton onClick={onPreview} ariaLabel="Preview"><HiEye className="w-5 h-5 text-rich-black" /></ActionButton>
+          <ActionButton onClick={onEdit} ariaLabel="Edit"><HiPencil className="w-5 h-5 text-rich-black" /></ActionButton>
+          <ActionButton onClick={onDownload} ariaLabel="Download"><HiArrowDownTray className="w-5 h-5 text-rich-black" /></ActionButton>
+          <ActionButton onClick={onDelete} ariaLabel="Delete" hoverBg="hover:bg-rose-50"><HiTrash className="w-5 h-5 text-rose-500" /></ActionButton>
+        </div>
+        {item.featured && (
+          <span className="absolute top-2 left-2 px-2 py-1 bg-magenta/90 text-white font-sans text-[10px] tracking-wider uppercase rounded">
+            Featured
+          </span>
+        )}
+      </div>
+      <div className="p-4">
+        <h4 className="font-serif text-base text-rich-black truncate">{item.title || 'Untitled'}</h4>
+        <div className="flex items-center gap-2 mt-2 text-xs">
+          <span className="px-2 py-0.5 bg-cream text-warm-gray rounded">{item.category}</span>
+          <span className="text-warm-gray/50">Order: {item.order}</span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+function ActionButton({
+  children,
+  onClick,
+  ariaLabel,
+  hoverBg = 'hover:bg-cream',
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  ariaLabel: string;
+  hoverBg?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-10 h-10 rounded-full bg-white flex items-center justify-center ${hoverBg} transition-colors`}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ---- Skeleton ----
+
+function ShimmerCard() {
+  return (
+    <div className="bg-white border border-cream/50 rounded-lg overflow-hidden animate-pulse">
+      <div className="aspect-[4/5] bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40" />
+      <div className="p-4 space-y-2">
+        <div className="h-4 bg-cream/60 rounded w-3/4" />
+        <div className="h-3 bg-cream/40 rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
+
+// ---- Main Gallery Component ----
 
 export function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
@@ -32,6 +159,7 @@ export function Gallery() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     id: '',
@@ -48,26 +176,54 @@ export function Gallery() {
     uploadMethod: 'url' as 'url' | 'upload',
   });
 
-  const fetchItems = useCallback(async () => {
+  // ---- Fetch ----
+
+  const fetchPage = useCallback(async (pageNum: number, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     try {
-      const response = await fetch('/api/gallery-images');
-      if (!response.ok) throw new Error('Failed to fetch gallery items');
-      const data = await response.json();
-      setItems(data);
+      const res = await fetch(`/api/gallery-images?page=${pageNum}&limit=${PAGE_LIMIT}`);
+      if (!res.ok) throw new Error('Failed to fetch gallery items');
+      const data: PaginatedResponse = await res.json();
+      if (append) {
+        setItems(prev => [...prev, ...data.items]);
+      } else {
+        setItems(data.items);
+      }
+      setTotal(data.total);
+      setTotalPages(data.totalPages);
+      setPage(data.page);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    fetchPage(1);
+  }, [fetchPage]);
 
-  const handleImageUpload = async (
-    file: File, 
-    onProgress?: (percent: number) => void
+  const handleLoadMore = useCallback(() => {
+    if (page < totalPages && !loadingMore) {
+      fetchPage(page + 1, true);
+    }
+  }, [page, totalPages, loadingMore, fetchPage]);
+
+  const handleRefresh = useCallback(() => {
+    setLoadedImages({});
+    fetchPage(1);
+  }, [fetchPage]);
+
+  // ---- Image Upload ----
+
+  const handleImageUpload = useCallback(async (
+    file: File,
+    onProgress?: (percent: number) => void,
   ): Promise<{ url: string; publicId: string; width: number; height: number }> => {
     const data = await uploadImageDirect(file, 'gallery', onProgress);
     return {
@@ -76,11 +232,26 @@ export function Gallery() {
       width: data.width || 1200,
       height: data.height || 1600,
     };
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // ---- CRUD Handlers ----
+
+  const resetForm = useCallback(() => {
+    setFormData({
+      id: '', src: '', publicId: '', alt: '', title: '', description: '',
+      width: 800, height: 1000, category: 'Portrait', featured: false, order: 0, uploadMethod: 'url',
+    });
+    setEditingItem(null);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setShowForm(false);
+    resetForm();
+  }, [resetForm]);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.src && formData.uploadMethod === 'url') {
       setError('Image URL is required');
       return;
@@ -97,13 +268,13 @@ export function Gallery() {
     };
 
     if (isEdit) {
-      submitData.id = editingItem._id;
+      (submitData as Record<string, unknown>).id = editingItem._id;
     }
 
-    // 1. Prepare optimistic item
     const optimisticItem: GalleryItem = {
       _id: tempId,
       src: formData.src,
+      thumbnail: formData.src,
       publicId: formData.publicId,
       alt: formData.alt || formData.title || 'Gallery item',
       title: formData.title || 'Untitled',
@@ -114,28 +285,22 @@ export function Gallery() {
       featured: submitData.featured,
       order: submitData.order,
       createdAt: isEdit ? editingItem.createdAt : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
-    // 2. Insert or update locally immediately
     if (isEdit) {
       setItems(prev => prev.map(item => item._id === editingItem._id ? optimisticItem : item));
     } else {
       setItems(prev => [optimisticItem, ...prev]);
     }
 
-    // 3. Clear and close form
     setShowForm(false);
     setEditingItem(null);
     resetForm();
 
-    // 4. Save metadata in the background
     try {
-      const url = isEdit
-        ? `/api/gallery-images?id=${tempId}`
-        : '/api/gallery-images';
+      const url = isEdit ? `/api/gallery-images?id=${tempId}` : '/api/gallery-images';
       const method = isEdit ? 'PUT' : 'POST';
-
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -145,20 +310,18 @@ export function Gallery() {
       if (!response.ok) throw new Error('Failed to save gallery item metadata');
       const savedRecord = await response.json();
 
-      // 5. Replace the optimistic item with the final database record
-      setItems(prev => prev.map(item => item._id === tempId ? savedRecord : item));
+      setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: getThumbnailUrl(savedRecord.src, savedRecord.publicId) } : item));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save metadata');
-      // Only refetch or revert if save fails
       if (isEdit) {
-        fetchItems(); // full sync to revert
+        fetchPage(page);
       } else {
         setItems(prev => prev.filter(item => item._id !== tempId));
       }
     }
-  };
+  }, [formData, editingItem, resetForm, fetchPage, page]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -182,9 +345,11 @@ export function Gallery() {
 
       const tempId = `optimistic-${Date.now()}`;
       const titleFromFilename = file.name.replace(/\.[^/.]+$/, '');
+      const thumbnail = getThumbnailUrl(result.url, result.publicId);
       const optimisticItem: GalleryItem = {
         _id: tempId,
         src: result.url,
+        thumbnail,
         publicId: result.publicId,
         alt: formData.alt || titleFromFilename,
         title: formData.title || titleFromFilename,
@@ -195,17 +360,13 @@ export function Gallery() {
         featured: formData.featured || false,
         order: formData.order || 0,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
-      // 1. Immediately insert optimistic item in state
       setItems(prev => [optimisticItem, ...prev]);
-      
-      // 2. Reset form and close
       setShowForm(false);
       resetForm();
 
-      // 3. Save to database in the background!
       (async () => {
         try {
           const response = await fetch('/api/gallery-images', {
@@ -221,101 +382,63 @@ export function Gallery() {
               height: optimisticItem.height,
               category: optimisticItem.category,
               featured: optimisticItem.featured,
-              order: optimisticItem.order
+              order: optimisticItem.order,
             }),
           });
 
           if (!response.ok) throw new Error('Failed to save background metadata');
           const savedRecord = await response.json();
-          
-          // 4. Replace temporary optimistic item with the final database record
-          setItems(prev => prev.map(item => item._id === tempId ? savedRecord : item));
+          setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: getThumbnailUrl(savedRecord.src, savedRecord.publicId) } : item));
         } catch (err) {
           console.error('Background metadata save failed:', err);
           setError('Background save failed. Reverting item.');
-          // Remove the temporary optimistic item
           setItems(prev => prev.filter(item => item._id !== tempId));
         }
       })();
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);
     }
-  };
+  }, [handleImageUpload, formData, resetForm]);
 
-  const handleEdit = (item: GalleryItem) => {
+  const handleEdit = useCallback((item: GalleryItem) => {
     setEditingItem(item);
     setFormData({
-      id: item._id,
-      src: item.src || '',
-      publicId: item.publicId || '',
-      alt: item.alt || '',
-      title: item.title || '',
-      description: item.description || '',
-      width: item.width || 1200,
-      height: item.height || 1600,
-      category: item.category || 'Portrait',
-      featured: item.featured || false,
-      order: item.order || 0,
-      uploadMethod: 'url',
+      id: item._id, src: item.src || '', publicId: item.publicId || '',
+      alt: item.alt || '', title: item.title || '', description: item.description || '',
+      width: item.width || 1200, height: item.height || 1600,
+      category: item.category || 'Portrait', featured: item.featured || false,
+      order: item.order || 0, uploadMethod: 'url',
     });
     setShowForm(true);
-  };
+    if (containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
-  const handleDelete = async (id: string, publicId: string) => {
+  const handleDelete = useCallback(async (id: string, publicId: string) => {
     if (!confirm('Are you sure you want to delete this image?')) return;
-
     const originalItems = [...items];
-    // Invalidate local cache and update UI immediately
     setItems(prev => prev.filter(item => item._id !== id));
-
     try {
-      // Delete from database
       const response = await fetch(`/api/gallery-images?id=${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete gallery item');
-
-      // Delete from Cloudinary/Vercel Blob in background
       if (publicId) {
-        fetch(`/api/upload?publicId=${publicId}&isImage=true`, { method: 'DELETE' }).catch(console.error);
+        fetch(`/api/upload?publicId=${publicId}&isImage=true`, { method: 'DELETE' }).catch(() => {});
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete');
-      // Revert if delete fails
       setItems(originalItems);
     }
-  };
+  }, [items]);
 
-  const handlePreview = (item: GalleryItem) => {
+  const handlePreview = useCallback((item: GalleryItem) => {
     setPreviewItem(item);
-  };
+  }, []);
 
-  const resetForm = () => {
-    setFormData({
-      id: '',
-      src: '',
-      publicId: '',
-      alt: '',
-      title: '',
-      description: '',
-      width: 800,
-      height: 1000,
-      category: 'Portrait',
-      featured: false,
-      order: 0,
-      uploadMethod: 'url',
-    });
-    setEditingItem(null);
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
-    resetForm();
-  };
-
-  const handleDownload = async (item: GalleryItem) => {
+  const handleDownload = useCallback(async (item: GalleryItem) => {
     try {
       const response = await fetch(item.src);
       const blob = await response.blob();
@@ -327,16 +450,51 @@ export function Gallery() {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      setTimeout(() => {
-        if (a.parentNode) document.body.removeChild(a);
-      }, 0);
+      setTimeout(() => { if (a.parentNode) document.body.removeChild(a); }, 0);
     } catch {
       setError('Failed to download image');
     }
-  };
+  }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64">Loading gallery...</div>;
-  if (error) return <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>;
+  const handleImageLoad = useCallback((id: string) => {
+    setLoadedImages(prev => ({ ...prev, [id]: true }));
+  }, []);
+
+  // ---- Derived ----
+
+  const hasMore = page < totalPages;
+
+  // ---- Render ----
+
+  if (loading) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="h-8 bg-cream/60 rounded w-64 animate-pulse" />
+            <div className="h-4 bg-cream/40 rounded w-40 mt-2 animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => <ShimmerCard key={i} />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>
+        <button
+          onClick={handleRefresh}
+          className="px-5 py-3 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -344,15 +502,25 @@ export function Gallery() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h2 className="font-serif text-2xl md:text-3xl text-rich-black">Gallery Management</h2>
-          <p className="font-sans text-sm text-warm-gray/60 mt-1">Manage your portfolio images</p>
+          <p className="font-sans text-sm text-warm-gray/60 mt-1">
+            {total} image{total !== 1 ? 's' : ''} &middot; Page {page} of {totalPages}
+          </p>
         </div>
-        <button
-          onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-5 py-3 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all"
-        >
-          <HiPlus className="w-4 h-4" />
-          Add Image
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-4 py-3 border border-cream/60 text-warm-gray/70 font-sans text-xs tracking-wider uppercase hover:bg-cream transition-all"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="flex items-center gap-2 px-5 py-3 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all"
+          >
+            <HiPlus className="w-4 h-4" />
+            Add Image
+          </button>
+        </div>
       </div>
 
       {/* Upload Progress */}
@@ -363,10 +531,7 @@ export function Gallery() {
             <span className="font-mono text-sm text-magenta">{uploadProgress}%</span>
           </div>
           <div className="w-full h-2 bg-cream rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-magenta transition-all duration-300" 
-              style={{ width: `${uploadProgress}%` }}
-            />
+            <div className="h-full bg-magenta transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
           </div>
         </div>
       )}
@@ -388,13 +553,12 @@ export function Gallery() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Upload Method Tabs */}
             <div className="flex gap-4 border-b border-cream">
-              {['url', 'upload'].map(method => (
+              {(['url', 'upload'] as const).map(method => (
                 <button
                   key={method}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, uploadMethod: method as 'url' | 'upload' }))}
+                  onClick={() => setFormData(prev => ({ ...prev, uploadMethod: method }))}
                   className={`py-2 px-4 font-sans text-sm font-medium transition-colors ${
                     formData.uploadMethod === method
                       ? 'text-magenta border-b-2 border-magenta'
@@ -406,12 +570,9 @@ export function Gallery() {
               ))}
             </div>
 
-            {/* URL Input */}
             {formData.uploadMethod === 'url' && (
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Image URL
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Image URL</label>
                 <input
                   type="url"
                   value={formData.src}
@@ -423,12 +584,9 @@ export function Gallery() {
               </div>
             )}
 
-            {/* File Upload */}
             {formData.uploadMethod === 'upload' && (
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Select Image File
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Select Image File</label>
                 <div
                   className="border-2 border-dashed border-cream/60 rounded-lg p-8 text-center hover:border-magenta/40 transition-colors cursor-pointer"
                   onClick={() => document.getElementById('gallery-image-upload')?.click()}
@@ -456,12 +614,9 @@ export function Gallery() {
               </div>
             )}
 
-            {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Alt Text
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Alt Text</label>
                 <input
                   type="text"
                   value={formData.alt}
@@ -471,9 +626,7 @@ export function Gallery() {
                 />
               </div>
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Title
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Title</label>
                 <input
                   type="text"
                   value={formData.title}
@@ -483,9 +636,7 @@ export function Gallery() {
                 />
               </div>
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Width (px)
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Width (px)</label>
                 <input
                   type="number"
                   value={formData.width}
@@ -495,9 +646,7 @@ export function Gallery() {
                 />
               </div>
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Height (px)
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Height (px)</label>
                 <input
                   type="number"
                   value={formData.height}
@@ -507,9 +656,7 @@ export function Gallery() {
                 />
               </div>
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Category
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Category</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -521,9 +668,7 @@ export function Gallery() {
                 </select>
               </div>
               <div>
-                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                  Order
-                </label>
+                <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Order</label>
                 <input
                   type="number"
                   value={formData.order}
@@ -540,16 +685,12 @@ export function Gallery() {
                   onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                   className="h-4 w-4 text-magenta focus:ring-magenta/50 border-cream/60 rounded"
                 />
-                <label htmlFor="featured" className="ml-2 font-sans text-sm text-warm-gray/70">
-                  Featured Image
-                </label>
+                <label htmlFor="featured" className="ml-2 font-sans text-sm text-warm-gray/70">Featured Image</label>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">
-                Description
-              </label>
+              <label className="block font-sans text-xs tracking-wider uppercase text-warm-gray/60 mb-2">Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -560,17 +701,10 @@ export function Gallery() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t border-cream">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-5 py-3 border border-cream/60 text-warm-gray/70 font-sans text-xs tracking-wider uppercase hover:bg-cream transition-all"
-              >
+              <button type="button" onClick={handleCancel} className="px-5 py-3 border border-cream/60 text-warm-gray/70 font-sans text-xs tracking-wider uppercase hover:bg-cream transition-all">
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-5 py-3 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all"
-              >
+              <button type="submit" className="px-5 py-3 bg-rich-black text-white font-sans text-xs tracking-wider uppercase hover:bg-charcoal transition-all">
                 {editingItem ? 'Update' : 'Create'}
               </button>
             </div>
@@ -579,7 +713,7 @@ export function Gallery() {
       )}
 
       {/* Gallery Grid */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={containerRef} className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-96 text-center">
             <HiPhoto className="w-16 h-16 text-warm-gray/30 mb-4" />
@@ -587,77 +721,41 @@ export function Gallery() {
             <p className="font-sans text-sm text-warm-gray/40 mt-1">Click "Add Image" to get started</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {items.map((item) => (
-              <div
-                key={item._id}
-                className="group bg-white border border-cream/50 rounded-lg overflow-hidden hover:shadow-lg transition-all"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-cream/50">
-                  <img
-                    src={item.src || '/placeholder.svg'}
-                    alt={item.alt || item.title || 'Gallery item'}
-                    className={`w-full h-full object-contain transition-all duration-500 ${!loadedImages[item._id] ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'} group-hover:scale-105`}
-                    loading="lazy"
-                    onLoad={() => setLoadedImages(prev => ({ ...prev, [item._id]: true }))}
-                  />
-                  {!loadedImages[item._id] && !item._id.startsWith('optimistic-') && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-cream/40 via-cream/60 to-cream/40 animate-pulse flex items-center justify-center">
-                      <HiPhoto className="w-10 h-10 text-warm-gray/20 animate-pulse" />
-                    </div>
-                  )}
-                  {item._id.startsWith('optimistic-') && (
-                    <div className="absolute inset-0 bg-rich-black/30 backdrop-blur-[1px] flex flex-col items-center justify-center p-4">
-                      <div className="w-8 h-8 border-2 border-magenta border-t-transparent rounded-full animate-spin mb-2" />
-                      <span className="font-sans text-[10px] text-white bg-rich-black/80 px-2 py-0.5 rounded tracking-wider uppercase">Saving...</span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-rich-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-4">
-                    <button
-                      onClick={() => handlePreview(item)}
-                      className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-cream transition-colors"
-                      aria-label="Preview"
-                    >
-                      <HiEye className="w-5 h-5 text-rich-black" />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-cream transition-colors"
-                      aria-label="Edit"
-                    >
-                      <HiPencil className="w-5 h-5 text-rich-black" />
-                    </button>
-                    <button
-                      onClick={() => handleDownload(item)}
-                      className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-cream transition-colors"
-                      aria-label="Download"
-                    >
-                      <HiArrowDownTray className="w-5 h-5 text-rich-black" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item._id, item.publicId)}
-                      className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-rose-50 transition-colors"
-                      aria-label="Delete"
-                    >
-                      <HiTrash className="w-5 h-5 text-rose-500" />
-                    </button>
-                  </div>
-                  {item.featured && (
-                    <span className="absolute top-2 left-2 px-2 py-1 bg-magenta/90 text-white font-sans text-[10px] tracking-wider uppercase rounded">
-                      Featured
-                    </span>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h4 className="font-serif text-base text-rich-black truncate">{item.title || 'Untitled'}</h4>
-                  <div className="flex items-center gap-2 mt-2 text-xs">
-                    <span className="px-2 py-0.5 bg-cream text-warm-gray rounded">{item.category}</span>
-                    <span className="text-warm-gray/50">Order: {item.order}</span>
-                  </div>
-                </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {items.map((item) => (
+                <GalleryCard
+                  key={item._id}
+                  item={item}
+                  loaded={!!loadedImages[item._id]}
+                  onLoad={() => handleImageLoad(item._id)}
+                  onPreview={() => handlePreview(item)}
+                  onEdit={() => handleEdit(item)}
+                  onDownload={() => handleDownload(item)}
+                  onDelete={() => handleDelete(item._id, item.publicId)}
+                />
+              ))}
+              {loadingMore && Array.from({ length: 4 }).map((_, i) => <ShimmerCard key={`skel-${i}`} />)}
+            </div>
+
+            {/* Load More */}
+            {hasMore && !loadingMore && (
+              <div className="flex justify-center py-8">
+                <button
+                  onClick={handleLoadMore}
+                  className="flex items-center gap-2 px-8 py-3 border border-cream/60 text-warm-gray/70 font-sans text-xs tracking-wider uppercase hover:bg-cream transition-all"
+                >
+                  Load More ({total - items.length} remaining)
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+
+            {!hasMore && items.length > 0 && (
+              <div className="flex justify-center py-6">
+                <span className="font-sans text-xs text-warm-gray/40">All {total} images loaded</span>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -676,28 +774,16 @@ export function Gallery() {
                 {previewItem.title || 'Image Preview'}
               </h3>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDownload(previewItem)}
-                  className="p-2 hover:bg-cream rounded-lg transition-colors"
-                  aria-label="Download"
-                >
+                <button onClick={() => handleDownload(previewItem)} className="p-2 hover:bg-cream rounded-lg transition-colors" aria-label="Download">
                   <HiArrowDownTray className="w-5 h-5 text-rich-black" />
                 </button>
-                <button
-                  onClick={() => setPreviewItem(null)}
-                  className="p-2 hover:bg-cream rounded-lg transition-colors"
-                  aria-label="Close"
-                >
+                <button onClick={() => setPreviewItem(null)} className="p-2 hover:bg-cream rounded-lg transition-colors" aria-label="Close">
                   <HiXMark className="w-5 h-5 text-rich-black" />
                 </button>
               </div>
             </div>
             <div className="flex items-center justify-center p-4 bg-gray-100 min-h-[60vh] max-h-[70vh] overflow-auto">
-              <img
-                src={previewItem.src}
-                alt={previewItem.alt || previewItem.title}
-                className="max-w-full max-h-full object-contain"
-              />
+              <img src={previewItem.src} alt={previewItem.alt || previewItem.title} className="max-w-full max-h-full object-contain" />
             </div>
             <div className="p-4 border-t border-cream bg-cream/30">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-sans">
@@ -707,7 +793,7 @@ export function Gallery() {
                 </div>
                 <div>
                   <p className="text-warm-gray/60">Dimensions</p>
-                  <p className="text-rich-black">{previewItem.width} × {previewItem.height} px</p>
+                  <p className="text-rich-black">{previewItem.width} &times; {previewItem.height} px</p>
                 </div>
                 <div>
                   <p className="text-warm-gray/60">Order</p>
