@@ -54,7 +54,7 @@ export default function EditorialContact() {
     email: 'photography@indirathakur.com',
     phone: '+91 9819620484',
     location: 'Mumbai, India · Available Worldwide',
-    studioImage: { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000', alt: 'Indira Thakur Studio' }
+    studioImage: { url: '', alt: '' }
   };
 
   const hasImage = (url?: string) => url && url.trim() !== '';
@@ -72,12 +72,16 @@ export default function EditorialContact() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
-                  {contactData.eyebrow || 'COMMISSION INQUIRIES'}
-                </span>
-                <h2 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-none mb-4">
-                  {contactData.heading || 'Begin Your Story'}
-                </h2>
+                {contactData.eyebrow && (
+                  <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
+                    {contactData.eyebrow}
+                  </span>
+                )}
+                {contactData.heading && (
+                  <h2 className="font-serif text-4xl sm:text-5xl text-[#2B2625] leading-none mb-4">
+                    {contactData.heading}
+                  </h2>
+                )}
                 <div className="w-10 h-px bg-[#C39E96]/40 my-6" />
                 <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed mb-8">
                   {contactData.description}

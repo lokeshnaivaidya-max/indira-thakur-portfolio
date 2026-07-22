@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -9,57 +9,13 @@ import { PolaroidImage } from '@/components/ui/PolaroidImage';
 export default function EditorialServices() {
   const { config } = useSiteConfig();
 
-  const defaultServices = [
-    {
-      title: 'Newborn Storytelling',
-      subtitle: '01',
-      tagline: 'Gentle, Timeless & Pure',
-      description: 'Capturing the quiet innocence, delicate features, and fleeting first weeks of your newborn baby in a soothing, safety-first studio environment.',
-      features: ['Curated Studio Wardrobe & Hand-Knit Wraps', 'Safety-Certified Newborn Posing Specialist', 'Family & Sibling Portraits Included', 'High-Resolution Edited Digital Gallery'],
-      gradient: 'from-[#1A1110] via-[#2C1810] to-[#1A1A1A]',
-      image: { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200', alt: 'Newborn Fine Art Photography' }
-    },
-    {
-      title: 'Maternity Portraits',
-      subtitle: '02',
-      tagline: 'Radiant, Regal & Emotional',
-      description: 'Celebrating the divine beauty of motherhood with couture-styled portraiture that captures the anticipation and love surrounding new life.',
-      features: ['Couture Gown Access', 'Partner & Children Co-Starring', 'Indoor Studio or Sunset Outdoor Location', 'Master Retouching & Album Keepsakes'],
-      gradient: 'from-[#2C1810] via-[#3D2C25] to-[#1A1110]',
-      image: { url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1200', alt: 'Luxury Maternity Experience' }
-    },
-    {
-      title: 'Fine Art Portraits',
-      subtitle: '03',
-      tagline: 'Editorial, Soulful & Expressive',
-      description: 'Custom portraiture tailored for individuals, couples, and creative visionaries seeking timeless artwork that belongs on gallery walls.',
-      features: ['Creative Direction & Concept Design', 'Master Lighting & Color Grading', 'Retouched Print-Ready Files', 'Framed Fine-Art Canvas Options'],
-      gradient: 'from-[#1A1A1A] via-[#2C1810] to-[#3D2C25]',
-      image: { url: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&q=80&w=1200', alt: 'Fine Art Portraiture' }
-    },
-    {
-      title: 'Events & Collaborations',
-      subtitle: '04',
-      tagline: 'Refined, Authentic & Impactful',
-      description: 'High-end documentation of intimate celebrations, milestone galas, brand activations, and cultural films created with cinematic flair.',
-      features: ['Multi-Angle Event Coverage', 'Express Delivery Highlight Reel', 'Commercial Usage Licensing', 'Direct Director Collaboration'],
-      gradient: 'from-[#3D2C25] via-[#2C1810] to-[#2C2C2C]',
-      image: { url: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&q=80&w=1200', alt: 'Event Documentation' }
-    },
-  ];
-
-  const servicesData: any = config?.services || {
-    eyebrow: 'BESPOKE COMMISSIONS',
-    heading: 'Curated Photography Experiences',
-    description: 'Each session is an exclusive, bespoke collaboration tailored to preserve your milestone moments with grace and timeless art.',
-    services: defaultServices,
-  };
-
+  const servicesData: any = config?.services || {};
   const servicesList = servicesData.services && servicesData.services.length > 0
     ? servicesData.services
-    : defaultServices;
+    : [];
 
-  // Preload service images on component mount for zero-lag viewport reveals
+  const hasImage = (url?: string) => url && url.trim() !== '';
+
   useEffect(() => {
     if (servicesList && servicesList.length > 0) {
       servicesList.forEach((s: any) => {
@@ -71,11 +27,10 @@ export default function EditorialServices() {
     }
   }, [servicesList]);
 
-  const hasImage = (url?: string) => url && url.trim() !== '';
+  if (!servicesList.length) return null;
 
   return (
     <section className="py-28 bg-[#FAF6F3] text-[#2B2625]">
-      {/* Header */}
       <div className="container-editorial mb-20 text-center max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -83,20 +38,25 @@ export default function EditorialServices() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium">
-            {servicesData.eyebrow || 'BESPOKE COMMISSIONS'}
-          </span>
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#2B2625] leading-[1.05] mt-3">
-            {servicesData.heading || 'Curated Photography Experiences'}
-          </h2>
+          {servicesData.eyebrow && (
+            <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium">
+              {servicesData.eyebrow}
+            </span>
+          )}
+          {servicesData.heading && (
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#2B2625] leading-[1.05] mt-3">
+              {servicesData.heading}
+            </h2>
+          )}
           <div className="w-8 h-px bg-[#C39E96]/30 mx-auto my-6" />
-          <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
-            {servicesData.description || 'Each session is an exclusive, bespoke collaboration tailored to preserve your milestone moments with grace and timeless art.'}
-          </p>
+          {servicesData.description && (
+            <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
+              {servicesData.description}
+            </p>
+          )}
         </motion.div>
       </div>
 
-      {/* Editorial Feature Spreads - NO cards */}
       <div className="space-y-16 md:space-y-28 max-w-[1500px] mx-auto px-6 md:px-12">
         {servicesList.map((service: any, i: number) => {
           const isEven = i % 2 === 0;
@@ -111,7 +71,6 @@ export default function EditorialServices() {
                 isEven ? '' : 'lg:flex-row-reverse'
               }`}
             >
-              {/* Image Spread */}
               <div className={`lg:col-span-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                 <div className="relative min-h-[380px] md:min-h-[520px] overflow-hidden rounded-sm group bg-[#FAF6F3]">
                   {hasImage(service.image?.url) ? (
@@ -140,7 +99,6 @@ export default function EditorialServices() {
                 </div>
               </div>
 
-              {/* Story Narrative */}
               <div className={`lg:col-span-6 ${isEven ? 'lg:order-2' : 'lg:order-1'} flex flex-col justify-center`}>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-[#C39E96] uppercase tracking-[0.3em] font-medium">
@@ -162,10 +120,9 @@ export default function EditorialServices() {
                 <div className="w-8 h-px bg-[#C39E96]/30 my-5" />
 
                 <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
-                  {service.description || 'Custom styled session focusing on emotional depth, organic moments, and editorial photography.'}
+                  {service.description || ''}
                 </p>
 
-                {/* Features List */}
                 {service.features && service.features.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-[#E7DDD2]">
                     <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D]/60 mb-3">

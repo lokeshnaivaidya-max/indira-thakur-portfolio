@@ -28,7 +28,7 @@ export default function EditorialFilms() {
               title: f.title || 'Cinematic Film',
               description: f.description || '',
               videoUrl: f.videoUrl,
-              thumbnailUrl: f.thumbnailUrl || 'https://images.unsplash.com/photo-1518173946687-a4c8a383392e?auto=format&fit=crop&q=80&w=1200',
+              thumbnailUrl: f.thumbnailUrl || '',
               category: f.category || 'Films',
               duration: f.duration || '2:30',
             }));

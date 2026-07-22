@@ -9,9 +9,9 @@ import { PolaroidImage } from '@/components/ui/PolaroidImage';
 export default function EditorialAbout() {
   const { config } = useSiteConfig();
 
-  const eyebrow = config?.about?.eyebrow || (config?.about as any)?.eyebrow || 'THE ARTIST & VISION';
-  const heading = config?.about?.heading || (config?.about as any)?.heading || 'Indira Thakur';
-  const headingItalic = config?.about?.subheading || (config?.about as any)?.headingItalic || 'Fine Art Photographer';
+  const eyebrow = config?.about?.eyebrow || (config?.about as any)?.eyebrow || '';
+  const heading = config?.about?.heading || (config?.about as any)?.heading || '';
+  const headingItalic = config?.about?.subheading || (config?.about as any)?.headingItalic || '';
 
   const rawQuote =
     (config?.about?.philosophy && config.about.philosophy.trim()) ||
@@ -34,16 +34,14 @@ export default function EditorialAbout() {
     if (config?.about?.journeyContinued?.trim()) paragraphs.push(config.about.journeyContinued.trim());
     if (config?.about?.welcomeMessage?.trim()) paragraphs.push(config.about.welcomeMessage.trim());
 
-    if (paragraphs.length > 0) return paragraphs;
-
-    return [
-      "With over a decade dedicated to mastering the delicate nuances of natural light and human connection, Indira Thakur creates fine art photography that transcends traditional portraiture.",
-      "Specializing in luxury newborn, maternity, and expressive portraiture, her work is defined by emotional depth, soft organic tones, and timeless aesthetic restraint.",
-      "Every frame is curated as a heirloom—preserving your family's most sacred chapters in museum-grade visual stories."
-    ];
+    return paragraphs;
   };
 
   const bioParagraphs = getBioParagraphs();
+
+  if (!bioParagraphs.length && !eyebrow && !heading && !config?.about?.images?.founderPortrait?.url) {
+    return null;
+  }
 
   const getMilestones = () => {
     if (config?.about?.stats && config.about.stats.length > 0 && config.about.stats.some((s: any) => s.label || s.value)) {
@@ -63,11 +61,7 @@ export default function EditorialAbout() {
     if (Array.isArray((config?.about as any)?.milestones) && (config?.about as any).milestones.length > 0) {
       return (config?.about as any).milestones;
     }
-    return [
-      { year: '12+', label: 'Years of Experience', detail: 'Mastering fine art lighting & emotive posing' },
-      { year: '800+', label: 'Milestone Families', detail: 'Newborns, mothers & couples documented' },
-      { year: '15+', label: 'National Accolades', detail: 'Exhibited in premier editorial features' },
-    ];
+    return [];
   };
 
   const milestones = getMilestones();
@@ -75,12 +69,12 @@ export default function EditorialAbout() {
   const mainImageUrl =
     (config?.about?.images?.founderPortrait?.url && config.about.images.founderPortrait.url.trim()) ||
     ((config?.about as any)?.mainImage?.url && (config?.about as any).mainImage.url.trim()) ||
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200';
+    '';
 
   const secondaryImageUrl =
     (config?.about?.images?.storyImage?.url && config.about.images.storyImage.url.trim()) ||
     ((config?.about as any)?.secondaryImage?.url && (config?.about as any).secondaryImage.url.trim()) ||
-    'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000';
+    '';
 
   useEffect(() => {
     if (mainImageUrl) {

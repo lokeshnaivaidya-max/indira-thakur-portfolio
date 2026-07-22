@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
-import { DEMO_GALLERY } from '@/data/demoContent';
 
 interface GalleryImageItem {
   id: string;
@@ -15,307 +14,12 @@ interface GalleryImageItem {
   caption?: string;
 }
 
-const fallbackImages: GalleryImageItem[] = [
-  // NEWBORN
-  {
-    id: 'nb-1',
-    src: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Fine Art Newborn Storytelling',
-    category: 'newborn',
-    title: 'Silent Beginnings',
-    caption: 'Soft, organic newborn portraiture in natural studio light with silk wrap.'
-  },
-  {
-    id: 'nb-2',
-    src: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Newborn Sleeping Lightly',
-    category: 'newborn',
-    title: 'Innocence Preserved',
-    caption: 'Delicate fingers and peaceful slumber captured in warmth.'
-  },
-  {
-    id: 'nb-3',
-    src: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Swaddled Newborn Miracle',
-    category: 'newborn',
-    title: 'The First Dawn',
-    caption: 'Hand-knit organic blanket texture celebrating new life.'
-  },
-  {
-    id: 'nb-4',
-    src: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Peaceful Newborn Nest',
-    category: 'newborn',
-    title: 'Warmth of Sanctuary',
-    caption: 'Minimalist studio setup highlighting tender newborn expressions.'
-  },
-  {
-    id: 'nb-5',
-    src: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Gentle Hands with Newborn',
-    category: 'newborn',
-    title: 'An Eternal Bond',
-    caption: 'Father’s gentle hands cradling a newborn in serene light.'
-  },
-  {
-    id: 'nb-6',
-    src: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Golden Hour Newborn Details',
-    category: 'newborn',
-    title: 'Quiet Whispers',
-    caption: 'Macro portraiture focusing on tiny lashes and peaceful breath.'
-  },
-
-  // MATERNITY
-  {
-    id: 'mat-1',
-    src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Luxury Maternity Photography',
-    category: 'maternity',
-    title: 'Grace in Expectation',
-    caption: 'Couture silk drape maternity storytelling celebrating mothers in Bangalore.'
-  },
-  {
-    id: 'mat-2',
-    src: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Motherhood Serenity',
-    category: 'maternity',
-    title: 'Motherhood Divine',
-    caption: 'Radiant motherhood portrait surrounded by natural warm light.'
-  },
-  {
-    id: 'mat-3',
-    src: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Sunset Maternity Glow',
-    category: 'maternity',
-    title: 'Golden Sanctuary',
-    caption: 'Outdoor golden hour maternity commission at a scenic landscape.'
-  },
-  {
-    id: 'mat-4',
-    src: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Minimalist Studio Maternity',
-    category: 'maternity',
-    title: 'Form & Feeling',
-    caption: 'Editorial monochrome studio portraiture focusing on silhouette.'
-  },
-  {
-    id: 'mat-5',
-    src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Ethereal Maternity Portrait',
-    category: 'maternity',
-    title: 'Ethereal Light',
-    caption: 'Soft linen studio drapes enhancing natural maternal elegance.'
-  },
-  {
-    id: 'mat-6',
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Intimate Couple Maternity',
-    category: 'maternity',
-    title: 'Shared Anticipation',
-    caption: 'Emotive couple portrait embracing the arrival of new life.'
-  },
-
-  // FAMILY
-  {
-    id: 'fam-1',
-    src: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Warm Outdoor Family Storytelling',
-    category: 'family',
-    title: 'Generations of Joy',
-    caption: 'Unscripted, organic family connection under canopy of light.'
-  },
-  {
-    id: 'fam-2',
-    src: 'https://images.unsplash.com/photo-1475503572774-15a45e5d60b9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Sunset Beach Family Memory',
-    category: 'family',
-    title: 'Coastal Embrace',
-    caption: 'Candid laughter and warmth captured in golden sunset tide.'
-  },
-  {
-    id: 'fam-3',
-    src: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Intergenerational Legacy',
-    category: 'family',
-    title: 'Roots & Heritage',
-    caption: 'Timeless multi-generational portrait for family archives.'
-  },
-  {
-    id: 'fam-4',
-    src: 'https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Laughter in the Meadows',
-    category: 'family',
-    title: 'Meadow Reverie',
-    caption: 'Relaxed outdoor lifestyle session in Bangalore estate grounds.'
-  },
-  {
-    id: 'fam-5',
-    src: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Home Studio Connection',
-    category: 'family',
-    title: 'Quiet Domesticity',
-    caption: 'Natural, documentary family moments captured at home.'
-  },
-  {
-    id: 'fam-6',
-    src: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Parents holding children high',
-    category: 'family',
-    title: 'Unbound Happiness',
-    caption: 'Joyful expressions captured during golden hour play.'
-  },
-
-  // BABY
-  {
-    id: 'bb-1',
-    src: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Milestone Baby Portrait',
-    category: 'baby',
-    title: 'The First Year Milestone',
-    caption: 'Expressive 6-month sitting session with natural wooden props.'
-  },
-  {
-    id: 'bb-2',
-    src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Curious Toddler Gaze',
-    category: 'baby',
-    title: 'Wonder in Eyes',
-    caption: 'Capturing innocent curiosity and pure soulfulness.'
-  },
-  {
-    id: 'bb-3',
-    src: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Playful Baby Smile',
-    category: 'baby',
-    title: 'Giggles & Light',
-    caption: 'Soft studio lighting bringing out joyful dimples and laughter.'
-  },
-  {
-    id: 'bb-4',
-    src: 'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&q=80&w=1200',
-    alt: 'First Steps & Exploration',
-    category: 'baby',
-    title: 'First Discoveries',
-    caption: 'Unscripted toddler milestone captures in natural surroundings.'
-  },
-  {
-    id: 'bb-5',
-    src: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Sleepy Baby Moment',
-    category: 'baby',
-    title: 'Soft Reverie',
-    caption: 'Quiet afternoon studio session with organic textures.'
-  },
-  {
-    id: 'bb-6',
-    src: 'https://images.unsplash.com/photo-1508807526345-15e9b5f4eaff?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Interactive Baby Play',
-    category: 'baby',
-    title: 'Pure Delight',
-    caption: 'Authentic emotion captured without artificial posing.'
-  },
-
-  // PORTRAIT
-  {
-    id: 'prt-1',
-    src: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Editorial Fine Art Portrait',
-    category: 'portrait',
-    title: 'Eternal Expression',
-    caption: 'Soulful fine art portraiture with painterly light and shadow.'
-  },
-  {
-    id: 'prt-2',
-    src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200',
-    alt: 'High Fashion Fine Art',
-    category: 'portrait',
-    title: 'Solitude & Serenity',
-    caption: 'Editorial studio composition with rich tonality.'
-  },
-  {
-    id: 'prt-3',
-    src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Classic Character Portrait',
-    category: 'portrait',
-    title: 'Depth of Soul',
-    caption: 'Intimate monochrome portrait highlighting human depth.'
-  },
-  {
-    id: 'prt-4',
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Natural Window Light Portrait',
-    category: 'portrait',
-    title: 'Morning Solace',
-    caption: 'Natural window light streaming onto warm linen.'
-  },
-  {
-    id: 'prt-5',
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Luminous Personal Portrait',
-    category: 'portrait',
-    title: 'Quiet Confidence',
-    caption: 'Fine art personal branding and legacy portraiture.'
-  },
-  {
-    id: 'prt-6',
-    src: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Moody Fine Art Portrait',
-    category: 'portrait',
-    title: 'Chiaroscuro Reflection',
-    caption: 'Classic Rembrandt lighting setup in studio environment.'
-  },
-
-  // EVENTS
-  {
-    id: 'evt-1',
-    src: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Celebration Event',
-    category: 'events',
-    title: 'Intimate Gathering',
-    caption: 'Cinematic documentary coverage of bespoke family celebrations.'
-  },
-  {
-    id: 'evt-2',
-    src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Luxury Celebration Table',
-    category: 'events',
-    title: 'Grand Occasion',
-    caption: 'Atmospheric detail captures at luxury milestone events.'
-  },
-  {
-    id: 'evt-3',
-    src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=1200',
-    alt: 'First Birthday Soiree',
-    category: 'events',
-    title: 'Year One Soiree',
-    caption: 'Curated editorial coverage for intimate milestone birthdays.'
-  },
-  {
-    id: 'evt-4',
-    src: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Candid Joyful Toast',
-    category: 'events',
-    title: 'Toasts & Memories',
-    caption: 'Authentic emotional reactions during family speeches.'
-  },
-  {
-    id: 'evt-5',
-    src: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Floral Aesthetics & Decor',
-    category: 'events',
-    title: 'Editorial Details',
-    caption: 'Fine art event styling and architectural ambient light.'
-  },
-  {
-    id: 'evt-6',
-    src: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Twilight Celebration',
-    category: 'events',
-    title: 'Under Starlight',
-    caption: 'Ambient outdoor celebration lighting captured with cinematic flair.'
-  }
-];
+interface PaginatedResponse {
+  items: GalleryImageItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
 
 function cleanDisplayTitle(rawTitle?: string, alt?: string, category?: string): string {
   if (!rawTitle) return alt && !isFileName(alt) ? alt : formatCategoryTitle(category);
@@ -356,17 +60,18 @@ function formatCategoryTitle(category?: string): string {
 
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
   const { config } = useSiteConfig();
-  const [images, setImages] = useState<GalleryImageItem[]>(fallbackImages);
+  const [images, setImages] = useState<GalleryImageItem[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadGallery() {
       try {
-        const res = await fetch('/api/gallery-images');
+        const res = await fetch('/api/gallery-images?page=1&limit=50');
         if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const mapped: GalleryImageItem[] = data.map((img: any, idx: number) => ({
+          const data: PaginatedResponse = await res.json();
+          const items = data.items || (Array.isArray(data) ? data : []);
+          if (items.length > 0) {
+            const mapped: GalleryImageItem[] = items.map((img: any, idx: number) => ({
               id: img.id || img._id || `img-${idx}`,
               src: img.src || img.url,
               alt: img.alt || img.title || 'Indira Thakur Photography',
@@ -382,7 +87,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
         console.error('Failed to load gallery images:', err);
       }
 
-      // Fallback from config if available
       const configFeatured = config?.galleryPreview?.featuredImages;
       if (Array.isArray(configFeatured) && configFeatured.length > 0) {
         const mappedConfig: GalleryImageItem[] = configFeatured.map((img: any, idx: number) => ({
@@ -400,7 +104,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     loadGallery();
   }, [config]);
 
-  // Compute available categories dynamically from present images only
   const categoryTabs = useMemo(() => {
     const presentCategories = Array.from(
       new Set(images.map((img) => img.category.toLowerCase().trim()))
@@ -424,7 +127,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     }));
   }, [images]);
 
-  // Configurable default category from CMS or first category with images
   const cmsDefaultCategory = (config?.galleryPreview as any)?.defaultCategory?.toLowerCase()?.trim();
   
   const [activeCategory, setActiveCategory] = useState<string>('');
@@ -447,7 +149,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     return isPreview ? list.slice(0, 6) : list;
   }, [images, activeCategory, isPreview]);
 
-  // Preload visible category images into browser cache so tab switches are instant
   useEffect(() => {
     if (filteredImages && filteredImages.length > 0) {
       filteredImages.slice(0, 8).forEach((img) => {
@@ -462,7 +163,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
   return (
     <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative">
       <div className="container-editorial">
-        {/* Gallery Title & Filters */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div>
             <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block font-medium mb-2">
@@ -473,7 +173,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
             </h2>
           </div>
 
-          {/* Filtering Tabs - NO "All Collection" tab */}
           {!isPreview && categoryTabs.length > 0 && (
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               {categoryTabs.map((tab) => (
@@ -493,7 +192,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
           )}
         </div>
 
-        {/* Gallery Grid */}
         {filteredImages.length === 0 ? (
           <div className="py-20 text-center font-sans text-sm text-[#7C706D]">
             No photographs found in this collection category.
@@ -537,7 +235,6 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
           </div>
         )}
 
-        {/* Lightbox Modal */}
         <AnimatePresence>
           {selectedImageIndex !== null && filteredImages[selectedImageIndex] && (
             <motion.div

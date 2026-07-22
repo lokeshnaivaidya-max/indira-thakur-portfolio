@@ -13,56 +13,21 @@ interface TestimonialItem {
   avatarUrl?: string;
 }
 
-function formatTestimonialCategory(raw?: string): string {
+function cleanCategory(raw?: string): string {
   if (!raw) return '';
   const lower = raw.toLowerCase().trim();
-  if (lower.includes('newborn')) return 'Newborn Storytelling';
-  if (lower.includes('maternity')) return 'Maternity Portraiture';
-  if (lower.includes('family')) return 'Family Legacy';
-  if (lower.includes('baby')) return 'Milestone Session';
-  if (lower.includes('portrait')) return 'Fine Art Portraiture';
-  if (lower.includes('wedding')) return 'Weddings & Celebrations';
-  if (lower.includes('event')) return 'Bespoke Events';
-  return raw.replace(/client|session/gi, '').trim();
+  if (lower.includes('newborn')) return 'Newborn';
+  if (lower.includes('maternity')) return 'Maternity';
+  if (lower.includes('family')) return 'Family';
+  if (lower.includes('baby')) return 'Baby';
+  if (lower.includes('portrait')) return 'Portrait';
+  if (lower.includes('wedding')) return 'Wedding';
+  if (lower.includes('event')) return 'Event';
+  if (lower.includes('brand')) return 'Brand';
+  if (lower.includes('couple')) return 'Couple';
+  if (lower.includes('engagement')) return 'Engagement';
+  return raw;
 }
-
-const defaultTestimonials: TestimonialItem[] = [
-  {
-    name: 'Ananya & Rohan Sharma',
-    role: 'Newborn Client',
-    quote: "Indira's gentle demeanor and extraordinary eye for light created portraits of our newborn that brought tears to our eyes. She didn't just take pictures; she immortalized the quiet soul of our family's newest chapter.",
-    sessionType: 'Newborn Storytelling',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300'
-  },
-  {
-    name: 'Meera & Dev Kapur',
-    role: 'Maternity Client',
-    quote: "The images captured during my sunset maternity session look straight out of Vogue. Indira has an undeniable gift for making mothers feel like royalty in front of the lens.",
-    sessionType: 'Maternity Portraiture',
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=300'
-  },
-  {
-    name: 'Dr. Priya & Vikram Nair',
-    role: 'Fine Art Portrait Client',
-    quote: "Working with Indira felt like being part of an artistic masterpiece. Her attention to detail, styling guidance, and effortless direction made us feel completely relaxed. The framed gallery prints are the crown jewel of our home.",
-    sessionType: 'Fine Art Portraiture',
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300'
-  },
-  {
-    name: 'Kavita & Aditya Mehta',
-    role: 'Family Legacy Client',
-    quote: "Capturing three generations of our family in one portrait session felt daunting, but Indira guided us seamlessly. The warmth and connection in each frame is truly priceless.",
-    sessionType: 'Family Legacy',
-    avatarUrl: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&q=80&w=300'
-  },
-  {
-    name: 'Siddharth & Tanya Verma',
-    role: 'Weddings Client',
-    quote: "Indira captured our wedding with a cinematic restrain that feels timeless. Every emotion, every whisper, every sacred moment was documented like poetry.",
-    sessionType: 'Weddings & Celebrations',
-    avatarUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=300'
-  }
-];
 
 export default function EditorialTestimonials() {
   const { config } = useSiteConfig();
@@ -82,7 +47,7 @@ export default function EditorialTestimonials() {
                 name: t.name || t.author || 'Valued Client',
                 role: t.role || '',
                 quote: t.content || t.quote || t.message || '',
-                sessionType: t.sessionType || t.role || '',
+                sessionType: t.role || '',
                 avatarUrl: t.image || t.avatarUrl || '',
               }))
               .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0);
@@ -106,19 +71,18 @@ export default function EditorialTestimonials() {
           name: t.name || t.author || t.clientName || 'Valued Client',
           role: t.role || t.sessionType || '',
           quote: t.quote || t.message || t.text || t.content || '',
-          sessionType: t.sessionType || t.role || '',
+          sessionType: t.role || t.sessionType || '',
           avatarUrl: t.avatarUrl || t.avatar?.url || t.image?.url || (typeof t.avatar === 'string' ? t.avatar : ''),
         }))
         .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0)
     : [];
 
-  // Combine DB & CMS testimonials, prioritizing DB if available, then CMS, then default fallback
   const combinedList = [...dbTestimonials, ...mappedCmsReviews].filter(
     (item, index, self) =>
       item.quote.trim().length > 0 && self.findIndex((o) => o.quote === item.quote) === index
   );
 
-  const reviewsList = (combinedList.length > 0 ? combinedList : defaultTestimonials).slice(0, 6);
+  const reviewsList = combinedList.slice(0, 6);
 
   useEffect(() => {
     if (reviewsList.length <= 1) return;
@@ -130,31 +94,34 @@ export default function EditorialTestimonials() {
 
   const current = reviewsList[activeIndex] || reviewsList[0];
 
-  // Root Cause Safeguard: Never render empty quote cards
   if (!current || !current.quote || current.quote.trim().length === 0) {
     return null;
   }
 
+  const displayCategory = cleanCategory(current.sessionType || current.role);
+
   return (
     <section className="py-16 md:py-24 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
       <div className="container-editorial max-w-4xl mx-auto text-center px-6">
-        {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
-            {testimonialsData.eyebrow || 'CLIENT PRAISE & REVIEWS'}
-          </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#2B2625] leading-tight">
-            {testimonialsData.heading || 'Words From The Heart'}
-          </h2>
+          {testimonialsData.eyebrow && (
+            <span className="font-mono text-[11px] text-[#C39E96] uppercase tracking-[0.35em] block mb-3 font-medium">
+              {testimonialsData.eyebrow}
+            </span>
+          )}
+          {testimonialsData.heading && (
+            <h2 className="font-serif text-3xl sm:text-4xl text-[#2B2625] leading-tight">
+              {testimonialsData.heading}
+            </h2>
+          )}
           <div className="w-12 h-px bg-[#C39E96]/40 mx-auto my-6" />
         </motion.div>
 
-        {/* Magazine Style Quote Feature */}
         <div className="relative min-h-[200px] flex items-center justify-center my-4">
           <AnimatePresence mode="wait">
             <motion.div
@@ -189,9 +156,9 @@ export default function EditorialTestimonials() {
                   <h3 className="font-sans text-sm md:text-base font-semibold text-[#2B2625] tracking-wide">
                     {current.name}
                   </h3>
-                  {formatTestimonialCategory(current.sessionType || current.role) && (
+                  {displayCategory && (
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C39E96]">
-                      {formatTestimonialCategory(current.sessionType || current.role)}
+                      {displayCategory}
                     </p>
                   )}
                 </div>
@@ -200,7 +167,6 @@ export default function EditorialTestimonials() {
           </AnimatePresence>
         </div>
 
-        {/* Navigation Dots */}
         {reviewsList.length > 1 && (
           <div className="flex items-center justify-center gap-3 mt-10">
             {reviewsList.map((_, idx) => (

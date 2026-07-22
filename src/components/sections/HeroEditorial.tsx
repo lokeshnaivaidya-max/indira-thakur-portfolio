@@ -12,20 +12,18 @@ export default function HeroEditorial() {
   const homeConfig = config?.home || (config as any)?.hero;
 
   const heroData = {
-    tagline: homeConfig?.tagline || 'INDIRA THAKUR · FINE ART PHOTOGRAPHY',
-    heading: homeConfig?.heading || 'CAPTURING LIFE IN ITS',
-    headingItalic: homeConfig?.headingItalic || 'Purest Emotion',
-    categories: homeConfig?.categories?.length
-      ? homeConfig.categories
-      : ['Newborn', 'Maternity', 'Family & Legacy', 'Fine Art Portraits'],
-    ctaText: homeConfig?.ctaText || 'Commission Session',
-    ctaLink: homeConfig?.ctaLink || '/contact',
-    secondaryCtaText: homeConfig?.secondaryCtaText || 'Explore Portfolio',
-    secondaryCtaLink: homeConfig?.secondaryCtaLink || '/gallery',
+    tagline: homeConfig?.tagline || '',
+    heading: homeConfig?.heading || '',
+    headingItalic: homeConfig?.headingItalic || '',
+    categories: homeConfig?.categories?.length ? homeConfig.categories : [],
+    ctaText: homeConfig?.ctaText || '',
+    ctaLink: homeConfig?.ctaLink || '',
+    secondaryCtaText: homeConfig?.secondaryCtaText || '',
+    secondaryCtaLink: homeConfig?.secondaryCtaLink || '',
   };
 
   const rawImages = homeConfig?.heroImages;
-  const filteredImages = Array.isArray(rawImages)
+  const images = Array.isArray(rawImages)
     ? rawImages.filter(
         (img: any) =>
           img &&
@@ -34,21 +32,6 @@ export default function HeroEditorial() {
           !img.url.toLowerCase().includes('logo')
       )
     : [];
-
-  const images = filteredImages.length > 0 ? filteredImages : [
-    {
-      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1600',
-      alt: 'Fine Art Newborn Storytelling'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1600',
-      alt: 'Luxury Maternity Photography'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1600',
-      alt: 'Warm Outdoor Family Storytelling'
-    }
-  ];
 
   const nextSlide = useCallback(() => {
     if (images.length <= 1) return;
@@ -61,7 +44,6 @@ export default function HeroEditorial() {
     return () => clearInterval(interval);
   }, [images.length, nextSlide]);
 
-  // Preload all slideshow images in memory for zero-lag slide transitions
   useEffect(() => {
     if (images && images.length > 0) {
       images.forEach((img: any) => {
@@ -77,7 +59,6 @@ export default function HeroEditorial() {
 
   return (
     <section className="relative h-screen w-full bg-[#151211] text-white overflow-hidden flex flex-col justify-between">
-      {/* 1. Full-Screen Cinematic Photograph Layer (Uncropped Composition) */}
       {currentImg ? (
         <AnimatePresence mode="wait">
           <motion.div
@@ -88,7 +69,6 @@ export default function HeroEditorial() {
             transition={{ duration: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
             className="absolute inset-0 w-full h-full overflow-hidden"
           >
-            {/* Ambient Lighting Backdrop Fill (Matches photo colors) */}
             <img
               src={currentImg.url}
               alt=""
@@ -96,7 +76,6 @@ export default function HeroEditorial() {
               referrerPolicy="no-referrer"
               className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-35 scale-110 pointer-events-none"
             />
-            {/* Complete Uncropped Main Photograph */}
             <img
               src={currentImg.url}
               alt={currentImg.alt || 'Indira Thakur Fine Art Photography'}
@@ -108,90 +87,98 @@ export default function HeroEditorial() {
           </motion.div>
         </AnimatePresence>
       ) : (
-        /* Studio Fallback Background when no images uploaded in CMS */
         <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#2B2422] via-[#1C1817] to-[#120F0E]" />
       )}
 
-      {/* 2. Soft Gradient Lighting Overlays (Protects Text Legibility without ruining the photo) */}
       <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-[#151211]/90 via-[#151211]/45 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#151211]/70 to-transparent pointer-events-none z-10" />
 
-      {/* 3. Elegantly Positioned Editorial Copy (Bottom-Left Unobtrusive Positioning) */}
-      <div className="relative z-20 mt-auto pb-10 sm:pb-14 md:pb-16 px-6 sm:px-12 lg:px-16 xl:px-20 max-w-4xl text-left">
-        <div className="space-y-4 sm:space-y-6">
-          {/* Eyebrow Tagline */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex items-center gap-3"
-          >
-            <span className="w-8 h-px bg-[#C39E96]" />
-            <p className="font-mono text-[10px] sm:text-[11px] text-[#C39E96] uppercase tracking-[0.35em] font-medium drop-shadow-sm">
-              {heroData.tagline}
-            </p>
-          </motion.div>
+      {(heroData.tagline || heroData.heading || heroData.headingItalic) && (
+        <div className="relative z-20 mt-auto pb-10 sm:pb-14 md:pb-16 px-6 sm:px-12 lg:px-16 xl:px-20 max-w-4xl text-left">
+          <div className="space-y-4 sm:space-y-6">
+            {heroData.tagline && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="flex items-center gap-3"
+              >
+                <span className="w-8 h-px bg-[#C39E96]" />
+                <p className="font-mono text-[10px] sm:text-[11px] text-[#C39E96] uppercase tracking-[0.35em] font-medium drop-shadow-sm">
+                  {heroData.tagline}
+                </p>
+              </motion.div>
+            )}
 
-          {/* Main Editorial Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal leading-[1.08] tracking-tight drop-shadow-md"
-          >
-            {heroData.heading}
-            <br />
-            <span className="italic font-light text-white/80 block mt-1">
-              {heroData.headingItalic}
-            </span>
-          </motion.h1>
+            {(heroData.heading || heroData.headingItalic) && (
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal leading-[1.08] tracking-tight drop-shadow-md"
+              >
+                {heroData.heading}
+                {heroData.headingItalic && (
+                  <>
+                    <br />
+                    <span className="italic font-light text-white/80 block mt-1">
+                      {heroData.headingItalic}
+                    </span>
+                  </>
+                )}
+              </motion.h1>
+            )}
 
-          {/* Category Badges */}
-          {heroData.categories && heroData.categories.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-wrap items-center gap-2 pt-1"
-            >
-              {heroData.categories.map((cat: string) => (
-                <span
-                  key={cat}
-                  className="inline-flex items-center gap-1.5 font-mono text-[9px] text-white/90 uppercase tracking-[0.25em] bg-black/30 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C39E96]" />
-                  {cat}
-                </span>
-              ))}
-            </motion.div>
-          )}
+            {heroData.categories && heroData.categories.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="flex flex-wrap items-center gap-2 pt-1"
+              >
+                {heroData.categories.map((cat: string) => (
+                  <span
+                    key={cat}
+                    className="inline-flex items-center gap-1.5 font-mono text-[9px] text-white/90 uppercase tracking-[0.25em] bg-black/30 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C39E96]" />
+                    {cat}
+                  </span>
+                ))}
+              </motion.div>
+            )}
 
-          {/* Action CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3"
-          >
-            <Link
-              href={heroData.ctaLink || '/contact'}
-              className="group inline-flex items-center justify-center px-8 py-4 bg-white text-[#2B2625] font-sans text-[11px] uppercase tracking-[0.22em] font-semibold transition-all duration-300 hover:bg-[#FAF6F3] shadow-lg hover:shadow-xl"
-            >
-              <span>{heroData.ctaText}</span>
-              <span className="ml-2.5 group-hover:translate-x-1 transition-transform duration-300">→</span>
-            </Link>
-            <Link
-              href={heroData.secondaryCtaLink || '/gallery'}
-              className="group inline-flex items-center gap-2 py-3.5 font-sans text-[11px] text-white/80 uppercase tracking-[0.22em] hover:text-white transition-colors duration-300"
-            >
-              <span className="w-6 h-px bg-white/40 group-hover:w-10 transition-all duration-300" />
-              <span>{heroData.secondaryCtaText}</span>
-            </Link>
-          </motion.div>
+            {(heroData.ctaText || heroData.secondaryCtaText) && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3"
+              >
+                {heroData.ctaText && (
+                  <Link
+                    href={heroData.ctaLink || '/contact'}
+                    className="group inline-flex items-center justify-center px-8 py-4 bg-white text-[#2B2625] font-sans text-[11px] uppercase tracking-[0.22em] font-semibold transition-all duration-300 hover:bg-[#FAF6F3] shadow-lg hover:shadow-xl"
+                  >
+                    <span>{heroData.ctaText}</span>
+                    <span className="ml-2.5 group-hover:translate-x-1 transition-transform duration-300">→</span>
+                  </Link>
+                )}
+                {heroData.secondaryCtaText && (
+                  <Link
+                    href={heroData.secondaryCtaLink || '/gallery'}
+                    className="group inline-flex items-center gap-2 py-3.5 font-sans text-[11px] text-white/80 uppercase tracking-[0.22em] hover:text-white transition-colors duration-300"
+                  >
+                    <span className="w-6 h-px bg-white/40 group-hover:w-10 transition-all duration-300" />
+                    <span>{heroData.secondaryCtaText}</span>
+                  </Link>
+                )}
+              </motion.div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 4. Minimalist Slide Navigation & Counter (Bottom Right) */}
       {images.length > 1 && (
         <div className="absolute bottom-10 right-6 sm:right-12 lg:right-16 z-20 flex items-center gap-4">
           <div className="flex items-center gap-2">
