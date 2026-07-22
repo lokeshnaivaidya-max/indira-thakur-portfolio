@@ -165,7 +165,7 @@ export default function LuxuryFooter() {
             &copy; {new Date().getFullYear()} Indira Thakur Photography. All rights reserved.
           </p>
           <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-            <span>Mumbai & Bangalore, India</span>
+            <span>Mumbai, India</span>
             <span>·</span>
             <Link href="/admin/login" className="hover:text-white/60 transition-colors">
               Client Portal / CMS

@@ -113,7 +113,7 @@ export function PolaroidImage({
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        fetchpriority={priority ? 'high' : undefined}
+        fetchPriority={priority ? 'high' : undefined}
         decoding={priority ? 'sync' : 'async'}
         referrerPolicy="no-referrer"
         onError={handleError}
