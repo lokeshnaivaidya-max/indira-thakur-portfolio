@@ -129,8 +129,8 @@ export function Services() {
       return;
     }
 
-    if (file.size > 20 * 1024 * 1024) {
-      setError('File size must be less than 20MB');
+    if (file.size > 100 * 1024 * 1024) {
+      setError('File size must be less than 100MB');
       return;
     }
 

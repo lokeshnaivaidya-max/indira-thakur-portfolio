@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
-import { useSiteConfig, SiteConfigData } from '@/hooks/useSiteConfig';
-
 interface GalleryImage {
   id?: string;
   _id?: string;
@@ -30,41 +28,17 @@ interface GalleryItem {
   aspectRatio: number;
 }
 
-const categories = [
-  { id: 'all', label: 'All' },
-  { id: 'newborn', label: 'Newborn' },
-  { id: 'maternity', label: 'Maternity' },
-  { id: 'portrait', label: 'Portrait' },
-  { id: 'events', label: 'Events' },
-];
-
-function mapSiteConfigImages(config: SiteConfigData | null): GalleryItem[] {
-  const featured = config?.galleryPreview?.featuredImages || [];
-  return featured
-    .filter((img) => img?.url)
-    .map((img: any, i) => ({
-      id: `sc-${i}`,
-      src: img.url,
-      alt: img.alt || '',
-      width: img.width || 1200,
-      height: img.height || 1600,
-      category: 'portrait',
-      title: img.caption,
-      caption: img.caption,
-      aspectRatio: (img.width || 1200) / (img.height || 1600),
-    }));
-}
 
 function mapGalleryImages(images: GalleryImage[]): GalleryItem[] {
   return images
-    .filter((img) => img?.src)
+    .filter((img) => img?.src && img?.category)
     .map((img) => ({
       id: img.id || img._id || `img-${img.src.split('/').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'unknown'}`,
       src: img.src,
       alt: img.alt || '',
       width: img.width || 800,
       height: img.height || 1000,
-      category: (img.category || 'portrait').toLowerCase(),
+      category: img.category.toLowerCase(),
       title: img.title,
       aspectRatio: (img.width || 800) / (img.height || 1000),
     }));
@@ -166,19 +140,11 @@ function GalleryImageCard({
 }
 
 export default function GalleryClient() {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
-  const [scImages, setScImages] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const { config } = useSiteConfig();
-
-  useEffect(() => {
-    const fromSc = mapSiteConfigImages(config);
-    setScImages(fromSc);
-  }, [config]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -191,6 +157,8 @@ export default function GalleryClient() {
         if (!cancelled) {
           const mapped = mapGalleryImages(data);
           setGalleryImages(mapped);
+          const cats = [...new Set(mapped.map((img) => img.category).filter(Boolean))];
+          if (cats.length > 0) setActiveCategory(cats[0]);
         }
       } catch {
         // silently fail
@@ -203,28 +171,18 @@ export default function GalleryClient() {
     return () => { cancelled = true; };
   }, []);
 
-  const allImages = useMemo(() => {
-    const ids = new Set<string>();
-    const merged: GalleryItem[] = [];
+  const allImages = useMemo(() => galleryImages, [galleryImages]);
 
-    for (const img of galleryImages) {
-      if (!ids.has(img.id)) {
-        ids.add(img.id);
-        merged.push(img);
-      }
-    }
-    for (const img of scImages) {
-      if (!ids.has(img.id)) {
-        ids.add(img.id);
-        merged.push(img);
-      }
-    }
-
-    return merged;
-  }, [galleryImages, scImages]);
+  const availableCategories = useMemo(() => {
+    const cats = new Set<string>();
+    galleryImages.forEach((img) => {
+      if (img.category) cats.add(img.category);
+    });
+    return Array.from(cats);
+  }, [galleryImages]);
 
   const filtered = useMemo(
-    () => (activeCategory === 'all' ? allImages : allImages.filter((img) => img.category === activeCategory)),
+    () => allImages.filter((img) => img.category === activeCategory),
     [allImages, activeCategory]
   );
 
@@ -287,23 +245,25 @@ export default function GalleryClient() {
         </div>
 
         {/* Category Filter */}
-        <div className="container-editorial mb-16">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-5 py-2.5 rounded-full font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 ${
-                  activeCategory === cat.id
-                    ? 'bg-rich-black text-white shadow-sm'
-                    : 'text-warm-gray/50 hover:text-rich-black hover:bg-beige/30'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+        {availableCategories.length > 0 && (
+          <div className="container-editorial mb-16">
+            <div className="flex flex-wrap gap-2">
+              {availableCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-5 py-2.5 rounded-full font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 ${
+                    activeCategory === cat
+                      ? 'bg-rich-black text-white shadow-sm'
+                      : 'text-warm-gray/50 hover:text-rich-black hover:bg-beige/30'
+                  }`}
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {loading ? (
           <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
@@ -364,7 +324,6 @@ export default function GalleryClient() {
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm scale-110"
                           loading="lazy"
-                          referrerPolicy="no-referrer"
                           style={{
                             animation: `heroBgDrift ${8 + i * 3}s ease-in-out ${i * 1.5}s infinite alternate`,
                           }}
@@ -608,11 +567,6 @@ export default function GalleryClient() {
               <HiXMark className="w-5 h-5" />
             </button>
 
-            {/* Premium, minimal image counter positioned elegantly in the top-right with spacious tracking */}
-            <div className="absolute top-[2.5rem] right-20 z-10 font-mono text-[11px] text-white/40 tracking-[0.25em] select-none uppercase">
-              {currentIndex + 1} / {filtered.length}
-            </div>
-
             <button
               onClick={goPrev}
               className="absolute left-4 md:left-6 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
@@ -643,41 +597,39 @@ export default function GalleryClient() {
                   <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    loading="eager"
-                    referrerPolicy="no-referrer"
                     className="max-h-[80vh] max-w-[90vw] w-auto mx-auto object-contain"
                   />
                 </motion.div>
               </AnimatePresence>
 
               <div className="mt-6 flex flex-col items-center gap-2">
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.3em]">
+                  {currentIndex + 1} / {filtered.length}
+                </span>
                 {(currentImage.caption || currentImage.title) && (
-                  <p className="font-sans text-[11px] text-white/50 text-center max-w-md tracking-wide">
+                  <p className="font-sans text-[11px] text-white/50 text-center max-w-md">
                     {currentImage.caption || currentImage.title}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Completely centered, independent, and minimal dot indicator */}
-            {filtered.length > 1 && (
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-                {filtered.length <= 15 ? (
-                  filtered.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentIndex(i)}
-                      className={`transition-all duration-300 rounded-full ${i === currentIndex ? 'w-5 h-1 bg-white' : 'w-1 h-1 bg-white/20 hover:bg-white/40'}`}
-                      aria-label={`Go to image ${i + 1}`}
-                    />
-                  ))
-                ) : (
-                  <span className="font-mono text-[10px] text-white/40 tracking-[0.1em]">
-                    {currentIndex + 1} of {filtered.length}
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+              {filtered.length > 15 ? (
+                <span className="font-sans text-[10px] text-white/50">
+                  {currentIndex + 1} of {filtered.length}
+                </span>
+              ) : (
+                filtered.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-2 h-2 rounded-full bg-white' : 'w-2 h-2 rounded-full bg-white/20'}`}
+                    aria-label={`Go to image ${i + 1}`}
+                  />
+                ))
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

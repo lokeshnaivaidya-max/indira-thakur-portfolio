@@ -372,9 +372,9 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
         eyebrow: { type: String, default: "Let's Create" },
         heading: { type: String, default: 'Begin Your Story' },
         description: { type: String, default: 'Every beautiful photograph begins with a conversation.' },
-        email: { type: String, default: 'hello@indirathakur.com' },
-        phone: { type: String, default: '+91 99999 99999' },
-        location: { type: String, default: 'Bangalore, India' },
+        email: { type: String, default: 'photography@indirathakur.com' },
+        phone: { type: String, default: '+91 9819620484' },
+        location: { type: String, default: 'Mumbai, India' },
         socialLinks: {
           type: [
             {
@@ -406,8 +406,8 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
           type: String,
           default: "Capturing life's most precious moments with warmth, artistry, and an unwavering attention to detail.",
         },
-        email: { type: String, default: 'hello@indirathakur.com' },
-        phone: { type: String, default: '+91 99999 99999' },
+        email: { type: String, default: 'photography@indirathakur.com' },
+        phone: { type: String, default: '+91 9819620484' },
         instagramUrl: { type: String, default: 'https://instagram.com' },
         facebookUrl: { type: String, default: '' },
         backgroundFooter: { type: SiteImageSchema, default: () => ({}) },
@@ -420,7 +420,7 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
         title: { type: String, default: 'Indira Thakur Photography | Capturing Life\'s Precious Moments' },
         description: {
           type: String,
-          default: 'Professional photographer specializing in newborn, maternity, portrait, and event photography. Based in Bangalore.',
+          default: 'Professional photographer specializing in newborn, maternity, portrait, and event photography. Based in Mumbai, India.',
         },
         keywords: {
           type: [String],

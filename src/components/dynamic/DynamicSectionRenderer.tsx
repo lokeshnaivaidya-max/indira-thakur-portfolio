@@ -518,6 +518,25 @@ function TimelineSection({ section }: { section: IDynamicSection }) {
 }
 
 function VideoSection({ section }: { section: IDynamicSection }) {
+  const hasFilm = section.body || section.primaryImage?.url;
+  if (!hasFilm) {
+    return (
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+        className={`${bgClasses[section.background] || 'bg-ivory'} ${spacingClasses[section.spacing] || spacingClasses.medium}`}
+      >
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="font-serif text-3xl md:text-4xl text-rich-black mb-6">Films Coming Soon</h2>
+          <p className="font-sans text-sm text-warm-gray/60 max-w-md mx-auto leading-relaxed">
+            Capturing beautiful moments is our passion. We are working on something special — stay tuned for our film portfolio.
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
   return (
     <motion.div
       initial="hidden"

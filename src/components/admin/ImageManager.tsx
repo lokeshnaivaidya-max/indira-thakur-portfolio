@@ -3,7 +3,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, HiClipboardDocument } from 'react-icons/hi2';
 import { formatBytes } from '@/lib/compressImage';
-import { uploadImageDirect } from '@/lib/uploadHelper';
+import { uploadToCloudinaryDirect } from '@/lib/directUpload';
+import { toast } from '@/lib/toast';
 
 interface SiteImage {
   url: string;
@@ -111,8 +112,8 @@ export default function ImageManager({
       });
     }
 
-    if (file.size > 50 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 50 MB.` }));
+    if (file.size > 100 * 1024 * 1024) {
+      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 100 MB.` }));
       return;
     }
 
@@ -130,23 +131,18 @@ export default function ImageManager({
       fileSize: file.size,
       fileType: file.type,
       previewUrl: localPreview,
-      uploadingText: 'Uploading original...',
+      uploadingText: 'Uploading to Cloudinary...',
     });
 
-    const progressInterval = setInterval(() => {
-      setUploadState(prev => {
-        if (prev.progress >= 85) return prev;
-        return { ...prev, progress: prev.progress + 8 };
-      });
-    }, 300);
-
     try {
-      // Use our direct upload helper with real progress tracking!
-      const result = await uploadImageDirect(file, folder, (percent) => {
-        setUploadState(prev => ({ ...prev, progress: percent }));
+      const result = await uploadToCloudinaryDirect(file, {
+        folder,
+        maxSizeMB: 50,
+        onProgress: (progress) => {
+          setUploadState(prev => ({ ...prev, progress }));
+        },
       });
 
-      clearInterval(progressInterval);
       URL.revokeObjectURL(localPreview);
 
       setUploadState(prev => ({
@@ -170,7 +166,18 @@ export default function ImageManager({
       }, 3000);
 
     } catch (err: any) {
-      clearInterval(progressInterval);
+      if (err.name === 'AbortError') {
+        setUploadState(prev => ({
+          ...prev,
+          uploading: false,
+          progress: 0,
+          error: 'Upload was cancelled',
+          warning: null,
+          previewUrl: null,
+        }));
+        URL.revokeObjectURL(localPreview);
+        return;
+      }
 
       const errorMessage = err.message || 'Upload failed. Please check your connection and try again.';
 
