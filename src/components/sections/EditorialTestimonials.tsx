@@ -14,7 +14,7 @@ interface TestimonialItem {
 }
 
 function formatTestimonialCategory(raw?: string): string {
-  if (!raw) return 'Fine Art Commission';
+  if (!raw) return '';
   const lower = raw.toLowerCase().trim();
   if (lower.includes('newborn')) return 'Newborn Storytelling';
   if (lower.includes('maternity')) return 'Maternity Portraiture';
@@ -23,7 +23,7 @@ function formatTestimonialCategory(raw?: string): string {
   if (lower.includes('portrait')) return 'Fine Art Portraiture';
   if (lower.includes('wedding')) return 'Weddings & Celebrations';
   if (lower.includes('event')) return 'Bespoke Events';
-  return raw.replace(/client|session/gi, '').trim() || 'Fine Art Commission';
+  return raw.replace(/client|session/gi, '').trim();
 }
 
 const defaultTestimonials: TestimonialItem[] = [
@@ -80,9 +80,9 @@ export default function EditorialTestimonials() {
               .map((t: any) => ({
                 id: t._id || t.id,
                 name: t.name || t.author || 'Valued Client',
-                role: t.role || 'Fine Art Client',
+                role: t.role || '',
                 quote: t.content || t.quote || t.message || '',
-                sessionType: t.sessionType || t.role || 'Fine Art Session',
+                sessionType: t.sessionType || t.role || '',
                 avatarUrl: t.image || t.avatarUrl || '',
               }))
               .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0);
@@ -104,9 +104,9 @@ export default function EditorialTestimonials() {
         .map((t: any) => ({
           id: t.id || t._id,
           name: t.name || t.author || t.clientName || 'Valued Client',
-          role: t.role || t.sessionType || 'Fine Art Commission',
+          role: t.role || t.sessionType || '',
           quote: t.quote || t.message || t.text || t.content || '',
-          sessionType: t.sessionType || t.role || 'Fine Art Client',
+          sessionType: t.sessionType || t.role || '',
           avatarUrl: t.avatarUrl || t.avatar?.url || t.image?.url || (typeof t.avatar === 'string' ? t.avatar : ''),
         }))
         .filter((t: TestimonialItem) => t.quote && t.quote.trim().length > 0)
@@ -189,9 +189,11 @@ export default function EditorialTestimonials() {
                   <h3 className="font-sans text-sm md:text-base font-semibold text-[#2B2625] tracking-wide">
                     {current.name}
                   </h3>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C39E96]">
-                    {formatTestimonialCategory(current.sessionType || current.role)}
-                  </p>
+                  {formatTestimonialCategory(current.sessionType || current.role) && (
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C39E96]">
+                      {formatTestimonialCategory(current.sessionType || current.role)}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.div>

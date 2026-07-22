@@ -103,8 +103,8 @@ export function PolaroidImage({
         src={src}
         alt=""
         aria-hidden="true"
-        decoding="async"
-        loading="lazy"
+        decoding={priority ? 'sync' : 'async'}
+        loading={priority ? 'eager' : 'lazy'}
         className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-110 pointer-events-none"
       />
       {/* Crisp Main Uncropped Photograph */}
@@ -113,7 +113,8 @@ export function PolaroidImage({
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
+        fetchpriority={priority ? 'high' : undefined}
+        decoding={priority ? 'sync' : 'async'}
         referrerPolicy="no-referrer"
         onError={handleError}
         onLoad={() => setIsLoaded(true)}
@@ -145,8 +146,8 @@ export function PolaroidImage({
         onClick={onClick}
       >
         {img}
-        {!isLoaded && (
-          <div className="absolute inset-0 bg-[#F4ECE8] flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
+        {!isLoaded && !priority && (
+          <div className="absolute inset-0 bg-ivory flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
             <svg
               className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
               fill="none"
@@ -179,8 +180,8 @@ export function PolaroidImage({
     >
       <div className="relative w-full h-full">
         {img}
-        {!isLoaded && (
-          <div className="absolute inset-0 bg-[#F4ECE8] flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
+        {!isLoaded && !priority && (
+          <div className="absolute inset-0 bg-ivory flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
             <svg
               className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
               fill="none"

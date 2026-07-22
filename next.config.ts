@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion'],
   },
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;

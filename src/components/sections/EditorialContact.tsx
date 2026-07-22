@@ -130,7 +130,7 @@ export default function EditorialContact() {
             ) : (
               <div className="mt-12 pt-8 border-t border-[#E7DDD2] space-y-4">
                 <p className="font-serif italic text-lg text-[#2B2625]/90 leading-relaxed">
-                  “To capture a moment is to hold a memory frozen in time, forever pristine.”
+                  “Photography for me is all about preserving emotions, celebrating families, documenting milestones, and creating timeless memories that people will treasure for generations.”
                 </p>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-px bg-[#C39E96]" />

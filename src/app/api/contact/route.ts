@@ -24,6 +24,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const errors: string[] = [];
+
     // 1. Primary Database Storage (Ensures inquiry is NEVER lost)
     try {
       await connectToDatabase();
@@ -36,13 +38,15 @@ export async function POST(request: Request) {
         read: false,
       });
     } catch (dbError) {
-      console.warn('Database contact storage warning:', dbError);
+      const msg = dbError instanceof Error ? dbError.message : 'Unknown database error';
+      console.error('Database contact storage error:', msg);
+      errors.push(`Database: ${msg}`);
     }
 
     // 2. Google Form Submission (Non-blocking fallback)
     try {
       const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd-LdjuiUE9RSb-rlFMKYj1nJ9az_SQ5RiDeBSTNMQVu5OFYw/formResponse';
-      
+
       const shootTypeMap: Record<string, string> = {
         newborn: 'Newborn',
         maternity: 'Maternity',
@@ -64,19 +68,40 @@ export async function POST(request: Request) {
 
       const googleResponse = await fetch(googleFormUrl, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
         body: params.toString(),
       });
 
-      console.log('Google Form response status:', googleResponse.status);
+      if (!googleResponse.ok) {
+        console.warn('Google Form responded with status:', googleResponse.status);
+        errors.push(`Google Form: HTTP ${googleResponse.status}`);
+      } else {
+        console.log('Google Form submission successful');
+      }
     } catch (googleError: any) {
-      console.warn('Google Form submission non-blocking error:', googleError?.message || googleError);
+      const msg = googleError?.message || 'Unknown Google Form error';
+      console.error('Google Form submission error:', msg);
+      errors.push(`Google Form: ${msg}`);
     }
 
-    // Always respond with success since message is stored securely
+    if (errors.length > 0 && !errors.some(e => e.startsWith('Database'))) {
+      return NextResponse.json(
+        { success: true, message: 'Thank you for your message! Indira will respond personally within 24 to 48 hours.', warnings: errors },
+        { status: 200 }
+      );
+    }
+
+    if (errors.length > 0) {
+      console.error('Contact form had issues:', errors);
+      return NextResponse.json(
+        { success: true, message: 'Thank you for your message! Indira will respond personally within 24 to 48 hours.', warnings: errors },
+        { status: 200 }
+      );
+    }
+
     return NextResponse.json(
       { success: true, message: 'Thank you for your message! Indira will respond personally within 24 to 48 hours.' },
       { status: 200 }

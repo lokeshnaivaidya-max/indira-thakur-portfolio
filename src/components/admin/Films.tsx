@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { HiPlus, HiTrash, HiPencil, HiVideoCamera, HiXMark, HiPhoto } from 'react-icons/hi2';
+import { HiPlus, HiTrash, HiPencil, HiVideoCamera, HiXMark, HiPhoto, HiExclamationCircle } from 'react-icons/hi2';
 import { uploadImageDirect } from '@/lib/uploadHelper';
+import { VIDEO_SPEC } from '@/lib/imageValidation';
 
 interface FilmItem {
   _id: string;
@@ -170,6 +171,14 @@ export function FilmsCMS() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="p-4 bg-ivory/50 border border-cream/60 rounded text-xs text-warm-gray/70 space-y-1">
+              <p className="font-medium text-warm-gray/80 uppercase tracking-wider text-[10px] mb-1">Video Specifications</p>
+              <p>Format: {VIDEO_SPEC.acceptedFormats}</p>
+              <p>Resolution: {VIDEO_SPEC.recommendedResolution} · Aspect Ratio: {VIDEO_SPEC.aspectRatio}</p>
+              <p>Frame Rate: {VIDEO_SPEC.frameRate} · Audio: {VIDEO_SPEC.audio}</p>
+              <p>Duration: {VIDEO_SPEC.recommendedDuration} (Max: {VIDEO_SPEC.maxDuration})</p>
+              <p>File Size: {VIDEO_SPEC.recommendedFileSize} (Max: {VIDEO_SPEC.maxFileSize})</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-warm-gray mb-2">Film Title *</label>

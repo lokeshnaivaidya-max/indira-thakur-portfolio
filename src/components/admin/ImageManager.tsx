@@ -5,6 +5,7 @@ import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, 
 import { formatBytes } from '@/lib/compressImage';
 import { uploadToCloudinaryDirect } from '@/lib/directUpload';
 import { toast } from '@/lib/toast';
+import { IMAGE_SPECS, validateImageFile } from '@/lib/imageValidation';
 
 interface SiteImage {
   url: string;
@@ -90,8 +91,10 @@ export default function ImageManager({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setUploadState(prev => ({ ...prev, error: 'Please select an image file (JPEG, PNG, WebP, GIF)' }));
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setUploadState(prev => ({ ...prev, error: validation.error! }));
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
@@ -110,11 +113,6 @@ export default function ImageManager({
         img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(); };
         img.src = objectUrl;
       });
-    }
-
-    if (file.size > 100 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: `File is too large (${formatFileSize(file.size)}). Maximum size is 100 MB.` }));
-      return;
     }
 
     const sizeWarning = file.size < 100 * 1024 ? 'This image may be low quality.' : null;
@@ -286,7 +284,7 @@ export default function ImageManager({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept={IMAGE_SPECS[imageType]?.accept || 'image/jpeg,image/png,image/webp'}
           onChange={handleFileSelect}
           className="hidden"
         />
@@ -331,15 +329,26 @@ export default function ImageManager({
           <div className="text-center p-4 z-10">
             <HiPhoto className="w-10 h-10 text-warm-gray/20 mx-auto mb-2" />
             <p className="font-sans text-xs text-warm-gray/50">Click to upload an image</p>
-            <p className="font-sans text-[10px] text-warm-gray/30 mt-1">
-              {imageType === 'hero' && 'Landscape photos work best · JPEG, PNG, WebP · up to 15 MB'}
-              {imageType === 'logo' && 'Transparent PNG or SVG recommended · up to 15 MB'}
-              {imageType === 'favicon' && 'Square image recommended · PNG, ICO, SVG · up to 15 MB'}
-              {imageType !== 'hero' && imageType !== 'logo' && imageType !== 'favicon' && 'JPEG, PNG, WebP, GIF · up to 15 MB · uploaded as-is'}
-            </p>
-            {imageType === 'hero' && (
-              <p className="font-sans text-[10px] text-warm-gray/30 mt-0.5">Recommended: landscape format (16:9 or wider)</p>
-            )}
+            <div className="mt-2 space-y-0.5">
+              {IMAGE_SPECS[imageType] && (
+                <>
+                  <p className="font-sans text-[10px] text-warm-gray/30">
+                    Recommended: {IMAGE_SPECS[imageType].recommendedResolution}
+                  </p>
+                  <p className="font-sans text-[10px] text-warm-gray/30">
+                    Aspect Ratio: {IMAGE_SPECS[imageType].aspectRatio}
+                  </p>
+                  <p className="font-sans text-[10px] text-warm-gray/30">
+                    Max {IMAGE_SPECS[imageType].maxSizeMB} MB · JPG, PNG, WebP
+                  </p>
+                </>
+              )}
+              {!IMAGE_SPECS[imageType] && (
+                <p className="font-sans text-[10px] text-warm-gray/30">
+                  Max 10 MB · JPG, PNG, WebP
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>
