@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { JWT_SECRET } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'indira-thakur-portfolio-secret-2024';
 
 function getTokenUser(request: Request) {
   const cookie = request.headers.get('cookie') || '';

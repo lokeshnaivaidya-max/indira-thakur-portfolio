@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'indira-thakur-portfolio-secret-2024';
+export const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export interface TokenUser {
   email: string;

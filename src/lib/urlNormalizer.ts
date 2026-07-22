@@ -124,13 +124,3 @@ export function normalizeAllSectionLinks(sections: any[]): any[] {
   return sections.map(normalizeSectionLinks);
 }
 
-/**
- * Hook for normalizing section links in CMS
- */
-export function useNormalizeLinks() {
-  const normalizeSection = (section: any) => normalizeSectionLinks(section);
-  const normalizeSections = (sections: any[]) => normalizeAllSectionLinks(sections);
-  const normalizeUrlFn = normalizeUrl;
-  
-  return { normalizeUrl: normalizeUrlFn, normalizeSection, normalizeSections };
-}

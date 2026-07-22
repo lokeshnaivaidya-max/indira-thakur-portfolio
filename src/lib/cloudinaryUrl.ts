@@ -48,9 +48,4 @@ export function getThumbnailUrl(src: string, publicId?: string): string {
   return src || '';
 }
 
-export function getPreviewUrl(src: string, publicId?: string, maxWidth = 1200): string {
-  if (publicId) {
-    return buildCloudinaryUrl(publicId, { width: maxWidth, quality: 'auto', format: 'auto' });
-  }
-  return src;
-}
+
