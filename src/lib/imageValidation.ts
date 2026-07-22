@@ -122,9 +122,6 @@ export function validateVideoFile(file: File): { valid: boolean; error: string |
   if (file.size > VIDEO_MAX_SIZE) {
     return { valid: false, error: `File too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum size is 200 MB.` };
   }
-  if (file.size > 150 * 1024 * 1024) {
-    return { valid: true, error: null, warning: `File is large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Recommended maximum is 150 MB.` };
-  }
   return { valid: true, error: null };
 }
 
