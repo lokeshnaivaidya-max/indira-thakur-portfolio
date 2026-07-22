@@ -2,23 +2,13 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { toast } from '@/lib/toast';
-
-interface DirectUploadResult {
-  url: string;
-  publicId: string;
-  width: number;
-  height: number;
-}
+import { MAX_IMAGE_UPLOAD_SIZE, MAX_IMAGE_UPLOAD_SIZE_MB, IMAGE_ALLOWED_TYPES } from '@/lib/uploadConstants';
 
 interface DirectUploadOptions {
   folder?: string;
-  maxSizeMB?: number;
   allowedTypes?: string[];
   onProgress?: (progress: number) => void;
 }
-
-const DEFAULT_MAX_SIZE_MB = 50;
-const DEFAULT_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export async function uploadToCloudinaryDirect(
   file: File,
@@ -31,23 +21,17 @@ export async function uploadToCloudinaryDirect(
 }> {
   const {
     folder = 'indira-thakur/gallery',
-    maxSizeMB = 50,
-    allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-    onProgress,
+    allowedTypes = IMAGE_ALLOWED_TYPES,
   } = options;
 
-  // Validate file type
   if (!allowedTypes.includes(file.type)) {
     throw new Error(`File type ${file.type} is not allowed. Allowed types: ${allowedTypes.join(', ')}`);
   }
 
-  // Validate file size
-  const maxSizeBytes = maxSizeMB * 1024 * 1024;
-  if (file.size > maxSizeBytes) {
-    throw new Error(`File size exceeds maximum allowed size of ${maxSizeMB}MB`);
+  if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
+    throw new Error(`File size exceeds maximum allowed size of ${MAX_IMAGE_UPLOAD_SIZE_MB} MB`);
   }
 
-  // Check Cloudinary config
   if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
     throw new Error('Cloudinary configuration missing. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET');
   }

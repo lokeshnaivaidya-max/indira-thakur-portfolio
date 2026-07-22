@@ -474,7 +474,7 @@ export function Services() {
                     />
                     <HiPhoto className="w-12 h-12 mx-auto text-warm-gray/40 mb-3" />
                     <p className="font-sans text-sm text-warm-gray/60">Click or drag to upload</p>
-                    <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP up to 10MB</p>
+                    <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP &middot; Max 50 MB</p>
                   </div>
                   {formData.heroImage && (
                     <div className="mt-4 p-3 bg-ivory rounded-lg flex items-center justify-between">

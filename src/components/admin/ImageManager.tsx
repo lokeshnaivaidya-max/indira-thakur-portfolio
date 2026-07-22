@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { HiPhoto, HiXMark, HiArrowDownTray, HiCheckCircle, HiExclamationCircle, HiClipboardDocument } from 'react-icons/hi2';
 import { formatBytes } from '@/lib/compressImage';
-import { uploadToCloudinaryDirect } from '@/lib/directUpload';
+import { uploadImageDirect } from '@/lib/uploadHelper';
 import { toast } from '@/lib/toast';
 import { IMAGE_SPECS, validateImageFile } from '@/lib/imageValidation';
 
@@ -133,13 +133,13 @@ export default function ImageManager({
     });
 
     try {
-      const result = await uploadToCloudinaryDirect(file, {
+      const result = await uploadImageDirect(
+        file,
         folder,
-        maxSizeMB: 50,
-        onProgress: (progress) => {
+        (progress) => {
           setUploadState(prev => ({ ...prev, progress }));
         },
-      });
+      );
 
       URL.revokeObjectURL(localPreview);
 
@@ -345,7 +345,7 @@ export default function ImageManager({
               )}
               {!IMAGE_SPECS[imageType] && (
                 <p className="font-sans text-[10px] text-warm-gray/30">
-                  Max 10 MB · JPG, PNG, WebP
+                  Max 50 MB · JPG, PNG, WebP
                 </p>
               )}
             </div>

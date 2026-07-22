@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
+import { MAX_IMAGE_UPLOAD_SIZE, IMAGE_ALLOWED_TYPES } from '@/lib/uploadConstants';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
-
-const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_SIZE = 50 * 1024 * 1024;
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
@@ -147,7 +145,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (file.size > MAX_SIZE) {
+    if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
       return jsonError(
         `File is too large (${sizeMB} MB). Maximum upload size is 50 MB.`,
@@ -162,7 +160,7 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const isImage = IMAGE_TYPES.includes(file.type);
+    const isImage = IMAGE_ALLOWED_TYPES.includes(file.type);
 
     if (isImage && process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
       try {

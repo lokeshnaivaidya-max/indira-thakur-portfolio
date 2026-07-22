@@ -1,4 +1,5 @@
 import { upload } from '@vercel/blob/client';
+import { MAX_IMAGE_UPLOAD_SIZE, MAX_IMAGE_UPLOAD_SIZE_MB, IMAGE_UPLOAD_ERROR } from '@/lib/uploadConstants';
 
 export interface UploadProgressCallback {
   (progress: number): void;
@@ -16,9 +17,8 @@ export async function uploadImageDirect(
   folder: string = 'gallery',
   onProgress?: UploadProgressCallback
 ): Promise<UploadResult> {
-  const maxSize = 50 * 1024 * 1024; // 50MB limit
-  if (file.size > maxSize) {
-    throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum upload size is 50 MB.`);
+  if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
+    throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum upload size is ${MAX_IMAGE_UPLOAD_SIZE_MB} MB.`);
   }
 
   // 1. Fetch server configuration and signature/token

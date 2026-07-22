@@ -7,6 +7,7 @@ import {
 } from 'react-icons/hi2';
 import { uploadImageDirect } from '@/lib/uploadHelper';
 import { getThumbnailUrl } from '@/lib/cloudinaryUrl';
+import { MAX_IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_ERROR } from '@/lib/uploadConstants';
 
 // ---- Types ----
 
@@ -330,8 +331,8 @@ export function Gallery() {
       return;
     }
 
-    if (file.size > 50 * 1024 * 1024) {
-      setError('File size must be less than 50MB');
+    if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
+      setError(IMAGE_UPLOAD_ERROR);
       return;
     }
 
@@ -600,7 +601,7 @@ export function Gallery() {
                   />
                   <HiPhoto className="w-12 h-12 mx-auto text-warm-gray/40 mb-3" />
                   <p className="font-sans text-sm text-warm-gray/60">Click or drag to upload</p>
-                  <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP up to 10MB</p>
+                  <p className="font-sans text-xs text-warm-gray/40 mt-1">JPG, PNG, WebP &middot; Max 50 MB</p>
                 </div>
                 {formData.src && (
                   <div className="mt-4 p-3 bg-ivory rounded-lg flex items-center justify-between">
