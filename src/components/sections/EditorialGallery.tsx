@@ -157,7 +157,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                 onClick={() => setSelectedImageIndex(idx)}
                 className="group relative cursor-pointer overflow-hidden rounded-sm bg-white border border-[#E7DDD2] shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-opacity duration-300"
               >
-                <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF6F3]">
+                <div className="relative aspect-[4/5] overflow-hidden bg-white">
                   <PolaroidImage
                     src={img.thumb}
                     srcSet={img.thumbSrcSet}

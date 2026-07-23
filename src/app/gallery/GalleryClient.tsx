@@ -63,28 +63,18 @@ function formatCategory(raw?: string): string {
 }
 
 function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: number; onClick: () => void }) {
-  const [loaded, setLoaded] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const loadedRef = useRef(false);
+  const [, forceRender] = useState(0);
 
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const imgEl = entry.target.querySelector('img');
-          if (imgEl) imgEl.loading = 'eager';
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+  const trigger = () => {
+    if (!loadedRef.current) {
+      loadedRef.current = true;
+      forceRender((n) => n + 1);
+    }
+  };
 
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -92,21 +82,18 @@ function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: nu
       onClick={onClick}
       className="cursor-pointer break-inside-avoid group"
     >
-      <div className="relative overflow-hidden bg-[#FAF6F3]">
-        {!loaded && (
-          <div className="absolute inset-0 bg-[#FAF6F3] z-10" style={{ aspectRatio: `${img.width} / ${img.height}` }} />
-        )}
-          <img
+      <div className="relative overflow-hidden bg-white">
+        <img
           src={toThumbUrl(img.src, 400)}
           srcSet={img.thumbSrcSet}
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           alt={img.alt || img.title || ''}
           loading="lazy"
           decoding="async"
-          onLoad={() => setLoaded(true)}
+          onLoad={trigger}
           className={cn(
-            'w-full h-auto transition-all duration-500 ease-out',
-            !loaded ? 'opacity-0' : 'opacity-100',
+            'w-full h-auto transition-opacity duration-100',
+            loadedRef.current ? 'opacity-100' : 'opacity-0',
             'group-hover:scale-[1.02]'
           )}
           style={{ aspectRatio: `${img.width} / ${img.height}` }}
