@@ -22,19 +22,12 @@ export default function Home() {
   return (
     <>
       <HeroEditorial />
-      <div className="h-16 md:h-24" />
       <EditorialAbout />
-      <div className="h-16 md:h-24" />
       <EditorialGallery isPreview />
-      <div className="h-16 md:h-24" />
       <EditorialServices />
-      <div className="h-16 md:h-24" />
       <EditorialFilms />
-      <div className="h-16 md:h-24" />
       <EditorialTestimonials />
-      <div className="h-16 md:h-24" />
       <EditorialFAQ />
-      <div className="h-16 md:h-24" />
       <EditorialContact />
     </>
   );
