@@ -55,7 +55,7 @@ export default function GoogleContact() {
   };
 
   return (
-    <section className="py-24 md:py-32 bg-ivory overflow-hidden">
+    <section className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="container-editorial">
         <div className="max-w-2xl mx-auto">
           <AnimatePresence mode="wait">

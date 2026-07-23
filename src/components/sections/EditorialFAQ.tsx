@@ -43,7 +43,7 @@ export default function EditorialFAQ() {
     : defaultFaqs;
 
   return (
-    <section id="faq" className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625]">
+    <section id="faq" className="py-24 md:py-36 bg-white text-[#2B2625]">
       <div className="container-editorial max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0.95 }}

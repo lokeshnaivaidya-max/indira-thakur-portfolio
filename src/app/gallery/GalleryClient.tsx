@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
-import { PolaroidImage } from '@/components/ui/PolaroidImage';
+import { cn } from '@/lib/imageUtils';
+import { toSrcSet, toThumbUrl } from '@/lib/imageUrl';
+
 interface GalleryImage {
   id?: string;
   _id?: string;
@@ -19,6 +21,7 @@ interface GalleryImage {
 interface GalleryItem {
   id: string;
   src: string;
+  thumbSrcSet: string;
   alt: string;
   width: number;
   height: number;
@@ -28,13 +31,13 @@ interface GalleryItem {
   aspectRatio: number;
 }
 
-
 function mapGalleryImages(images: GalleryImage[]): GalleryItem[] {
   return images
     .filter((img) => img?.src)
     .map((img) => ({
       id: img.id || img._id || `img-${img.src.split('/').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'unknown'}`,
       src: img.src,
+      thumbSrcSet: toSrcSet(img.src),
       alt: img.alt || '',
       width: img.width || 800,
       height: img.height || 1000,
@@ -44,97 +47,77 @@ function mapGalleryImages(images: GalleryImage[]): GalleryItem[] {
     }));
 }
 
-function pick(items: GalleryItem[], start: number, count: number): GalleryItem[] {
-  const result: GalleryItem[] = [];
-  for (let i = 0; i < count; i++) {
-    result.push(items[(start + i) % items.length]);
-  }
-  return result;
-}
-
-function distributeToSections(images: GalleryItem[]) {
-  const n = images.length;
-  if (n === 0) return { hero: [], editorial: [], circular: [], magazine: [], fullBleed: [], mixed: [], finale: [] };
-
-  const idx = (offset: number) => offset % n;
-
-  if (n < 4) {
-    return {
-      hero: [images[0]],
-      editorial: n > 1 ? [images[1]] : [],
-      circular: n > 2 ? [images[2]] : [],
-      magazine: [],
-      fullBleed: [],
-      mixed: [],
-      finale: [],
-    };
-  }
-
-  if (n < 8) {
-    return {
-      hero: [images[0]],
-      editorial: [images[1], images[2], images[3]],
-      circular: pick(images, 4, Math.min(4, n - 4)),
-      magazine: [],
-      fullBleed: [],
-      mixed: [],
-      finale: [],
-    };
-  }
-
-  return {
-    hero: [images[0]],
-    editorial: [images[1], images[2], images[3]],
-    circular: [images[4], images[5], images[6], images[7]],
-    magazine: pick(images, 8, 3),
-    fullBleed: pick(images, 11, 1),
-    mixed: pick(images, 12, 4),
-    finale: pick(images, 16, 2),
+function formatCategory(raw?: string): string {
+  if (!raw) return '';
+  const map: Record<string, string> = {
+    newborn: 'Newborn',
+    maternity: 'Maternity',
+    family: 'Family',
+    'brand collaboration': 'Brand',
+    portrait: 'Portrait',
+    wedding: 'Weddings',
+    events: 'Events',
+    couple: 'Couples',
   };
+  return map[raw] || raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number], delay: i * 0.1 },
-  }),
-};
+function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: number; onClick: () => void }) {
+  const [loaded, setLoaded] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-function GalleryImageCard({
-  img,
-  index,
-  rounded = 'rounded-xl',
-  onClick,
-}: {
-  img: GalleryItem;
-  index: number;
-  rounded?: string;
-  onClick: () => void;
-}) {
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const imgEl = entry.target.querySelector('img');
+          if (imgEl) imgEl.loading = 'eager';
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <motion.div
-      custom={index}
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.05 }}
       onClick={onClick}
-      className="cursor-pointer group"
+      className="cursor-pointer break-inside-avoid group"
     >
-      <div className={`relative overflow-hidden ${rounded}`}>
-        <PolaroidImage
-          src={img.src}
+      <div className="relative overflow-hidden bg-[#FAF6F3]">
+        {!loaded && (
+          <div className="absolute inset-0 bg-[#FAF6F3] z-10" style={{ aspectRatio: `${img.width} / ${img.height}` }} />
+        )}
+          <img
+          src={toThumbUrl(img.src, 400)}
+          srcSet={img.thumbSrcSet}
+          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           alt={img.alt || img.title || ''}
-          width={img.width}
-          height={img.height}
-          className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+          className={cn(
+            'w-full h-auto transition-all duration-500 ease-out',
+            !loaded ? 'opacity-0' : 'opacity-100',
+            'group-hover:scale-[1.02]'
+          )}
+          style={{ aspectRatio: `${img.width} / ${img.height}` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
-          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-white/90">View</span>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       </div>
+      {img.title && (
+        <div className="pt-2.5 pb-1">
+          <p className="font-serif text-[13px] text-rich-black/70 leading-snug">{img.title}</p>
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -148,7 +131,6 @@ export default function GalleryClient() {
 
   useEffect(() => {
     let cancelled = false;
-
     const fetchGallery = async () => {
       try {
         const res = await fetch('/api/gallery-images?page=1&limit=50');
@@ -167,27 +149,20 @@ export default function GalleryClient() {
         if (!cancelled) setLoading(false);
       }
     };
-
     fetchGallery();
     return () => { cancelled = true; };
   }, []);
 
-  const allImages = useMemo(() => galleryImages, [galleryImages]);
-
   const availableCategories = useMemo(() => {
     const cats = new Set<string>();
-    galleryImages.forEach((img) => {
-      if (img.category) cats.add(img.category);
-    });
+    galleryImages.forEach((img) => { if (img.category) cats.add(img.category); });
     return Array.from(cats);
   }, [galleryImages]);
 
   const filtered = useMemo(
-    () => allImages.filter((img) => img.category === activeCategory),
-    [allImages, activeCategory]
+    () => activeCategory ? galleryImages.filter((img) => img.category === activeCategory) : galleryImages,
+    [galleryImages, activeCategory]
   );
-
-  const sections = useMemo(() => distributeToSections(filtered), [filtered]);
 
   const openLightbox = useCallback((index: number) => {
     setCurrentIndex(index);
@@ -234,315 +209,77 @@ export default function GalleryClient() {
     }
   }, [goNext, goPrev]);
 
+  const skeletonColumns = useMemo(() => {
+    const widths = [3, 4, 3, 4, 3];
+    const heights = [4, 5, 4, 5, 4];
+    return Array.from({ length: 9 }, (_, i) => ({
+      aspect: `${widths[i % widths.length]} / ${heights[i % heights.length]}`,
+    }));
+  }, []);
+
   return (
     <>
-      <div className="pt-36 pb-20">
-        {/* Page Header */}
-        <div className="container-editorial mb-6">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-            <span className="font-mono text-[11px] text-magenta/60 uppercase tracking-[0.3em]">Portfolio</span>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-rich-black leading-[1.1] mt-3">The Gallery</h1>
-          </motion.div>
-        </div>
+      <div className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pt-36 pb-24">
+          {/* Header */}
+          <div className="mb-12 md:mb-16">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+              <span className="font-mono text-[11px] text-warm-gray/40 uppercase tracking-[0.3em] block mb-3">Portfolio</span>
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-rich-black leading-[1.15]">The Gallery</h1>
+            </motion.div>
+          </div>
 
-        {/* Category Filter */}
-        {availableCategories.length > 0 && (
-          <div className="container-editorial mb-16">
-            <div className="flex flex-wrap gap-2">
-              {availableCategories.map((cat) => (
+          {/* Category Filter */}
+          {availableCategories.length > 0 && (
+            <div className="mb-12 md:mb-14 overflow-x-auto">
+              <div className="flex gap-6 md:gap-8 pb-2">
                 <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 ${
-                    activeCategory === cat
-                      ? 'bg-rich-black text-white shadow-sm'
-                      : 'text-warm-gray/50 hover:text-rich-black hover:bg-beige/30'
+                  onClick={() => setActiveCategory('')}
+                  className={`font-mono text-[11px] uppercase tracking-[0.2em] whitespace-nowrap transition-colors duration-300 ${
+                    activeCategory === '' ? 'text-rich-black' : 'text-warm-gray/40 hover:text-rich-black'
                   }`}
                 >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  All
                 </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
-            {/* Hero skeleton */}
-            <div className="mb-16">
-              <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-cream/40 animate-pulse" style={{ aspectRatio: '16/9' }} />
-            </div>
-            {/* Grid skeleton */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              <div className="space-y-4 md:space-y-6">
-                <div className="bg-cream/40 animate-pulse rounded-2xl" style={{ aspectRatio: '3/4' }} />
-              </div>
-              <div className="space-y-4 md:space-y-6">
-                <div className="bg-cream/40 animate-pulse rounded-[2rem]" style={{ aspectRatio: '16/10' }} />
-                <div className="bg-cream/40 animate-pulse rounded-xl" style={{ aspectRatio: '16/10' }} />
-              </div>
-            </div>
-            {/* Circle skeleton */}
-            <div className="py-16 md:py-24">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto">
-                {[0,1,2,3].map(i => (
-                  <div key={i} className="bg-cream/40 animate-pulse rounded-full" style={{ aspectRatio: '1/1' }} />
+                {availableCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`font-mono text-[11px] uppercase tracking-[0.2em] whitespace-nowrap transition-colors duration-300 ${
+                      activeCategory === cat ? 'text-rich-black' : 'text-warm-gray/40 hover:text-rich-black'
+                    }`}
+                  >
+                    {formatCategory(cat) || cat}
+                  </button>
                 ))}
               </div>
             </div>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="container-editorial pt-20">
-            <p className="font-mono text-[10px] text-warm-gray/30 uppercase tracking-[0.25em] text-center">Gallery coming soon</p>
-          </div>
-        ) : (
-          <div className="px-4 md:px-8 lg:px-16 max-w-7xl mx-auto space-y-0">
+          )}
 
-            {/* Section 1: Hero Exhibition — animated background photos behind center image */}
-            {sections.hero.length > 0 && (
-              <section className="py-10 md:py-16">
-                <motion.div
-                  custom={0}
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: '-40px' }}
-                  className="cursor-pointer group relative max-w-5xl mx-auto"
-                  onClick={() => openLightbox(0)}
-                >
-                  <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-rich-black/5" style={{ aspectRatio: '16/10' }}>
-                    {/* Animated background photos */}
-                    {filtered.slice(1, 4).map((bgImg, i) => (
-                      <div
-                        key={bgImg.id}
-                        className="absolute inset-0"
-                        style={{
-                          animation: `heroBgFade ${6 + i * 2}s ease-in-out ${i * 2}s infinite`,
-                        }}
-                      >
-                        <img
-                          src={bgImg.src}
-                          alt=""
-                          className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm scale-110"
-                          loading="lazy"
-                          style={{
-                            animation: `heroBgDrift ${8 + i * 3}s ease-in-out ${i * 1.5}s infinite alternate`,
-                          }}
-                        />
-                      </div>
-                    ))}
-                    {/* Dark overlay for depth */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-rich-black/30 via-rich-black/10 to-rich-black/40" />
-                    {/* Center featured image */}
-                    <div className="absolute inset-0 flex items-center justify-center p-8 md:p-16">
-                      <PolaroidImage
-                        src={sections.hero[0].src}
-                        alt={sections.hero[0].alt || sections.hero[0].title || ''}
-                        width={sections.hero[0].width}
-                        height={sections.hero[0].height}
-                        objectFit="contain"
-                        bgColor="bg-transparent"
-                        className="transition-transform duration-700 ease-out group-hover:scale-[1.02] relative z-10 drop-shadow-2xl"
-                        containerClassName="max-w-full max-h-full"
-                        priority
-                      />
-                    </div>
-                    {/* Hover indicator */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8 z-20">
-                      <span className="font-sans text-[11px] uppercase tracking-[0.3em] text-white/90">View</span>
-                    </div>
-                  </div>
-                </motion.div>
-                {/* Add the keyframes via a style tag */}
-                <style dangerouslySetInnerHTML={{ __html: `
-                  @keyframes heroBgFade {
-                    0%, 100% { opacity: 0; }
-                    20%, 80% { opacity: 1; }
-                  }
-                  @keyframes heroBgDrift {
-                    0% { transform: scale(1.1) translateX(-2%); }
-                    100% { transform: scale(1.15) translateX(2%); }
-                  }
-                `}} />
-              </section>
-            )}
-
-            {/* Section 2: Editorial Grid — each image at its natural aspect ratio */}
-            {sections.editorial.length >= 2 && (
-              <section className="py-16 md:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
-                  <div>
-                    <GalleryImageCard
-                      img={sections.editorial[0]}
-                      index={0}
-                      rounded="rounded-2xl"
-                      onClick={() => openLightbox(filtered.indexOf(sections.editorial[0]))}
-                    />
-                  </div>
-                  <div className="space-y-4 md:space-y-6">
-                    {sections.editorial[1] && (
-                      <GalleryImageCard
-                        img={sections.editorial[1]}
-                        index={1}
-                        rounded="rounded-[2rem]"
-                        onClick={() => openLightbox(filtered.indexOf(sections.editorial[1]))}
-                      />
-                    )}
-                    {sections.editorial[2] && (
-                      <GalleryImageCard
-                        img={sections.editorial[2]}
-                        index={2}
-                        rounded="rounded-xl"
-                        onClick={() => openLightbox(filtered.indexOf(sections.editorial[2]))}
-                      />
-                    )}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Section 3: Circular Collection — entire image contained inside circle */}
-            {sections.circular.length > 0 && (
-              <section className="py-16 md:py-24 bg-cream/20">
-                <div className="py-12 md:py-20">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto">
-                    {sections.circular.map((img, i) => (
-                      <motion.div
-                        key={img.id}
-                        custom={i}
-                        variants={fadeUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-40px' }}
-                        onClick={() => openLightbox(filtered.indexOf(img))}
-                        className="cursor-pointer group"
-                      >
-                        <div className="relative rounded-full shadow-lg group-hover:shadow-xl transition-shadow duration-500 bg-cream/40"
-                          style={{ aspectRatio: '1 / 1' }}
-                        >
-                          <PolaroidImage
-                            src={img.src}
-                            alt={img.alt || img.title || ''}
-                            width={img.width}
-                            height={img.height}
-                            objectFit="contain"
-                            bgColor="bg-transparent"
-                            className="transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                          />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 rounded-full pointer-events-none" />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Section 4: Magazine Spread — natural aspect ratios */}
-            {sections.magazine.length >= 3 && (
-              <section className="py-16 md:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
-                  <div className="md:mt-12">
-                    <GalleryImageCard
-                      img={sections.magazine[0]}
-                      index={0}
-                      rounded="rounded-2xl"
-                      onClick={() => openLightbox(filtered.indexOf(sections.magazine[0]))}
-                    />
-                  </div>
-                  <div>
-                    <GalleryImageCard
-                      img={sections.magazine[1]}
-                      index={1}
-                      rounded="rounded-[2rem]"
-                      onClick={() => openLightbox(filtered.indexOf(sections.magazine[1]))}
-                    />
-                  </div>
-                  <div className="md:mt-20">
-                    <GalleryImageCard
-                      img={sections.magazine[2]}
-                      index={2}
-                      rounded="rounded-xl"
-                      onClick={() => openLightbox(filtered.indexOf(sections.magazine[2]))}
-                    />
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Section 5: Full Bleed — decorative, cover acceptable */}
-            {sections.fullBleed.length > 0 && (
-              <section className="py-16 md:py-24 bg-ivory">
-                <div className="py-12 md:py-20">
-                  <motion.div
-                    custom={0}
-                    variants={fadeUp}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: '-40px' }}
-                    onClick={() => openLightbox(filtered.indexOf(sections.fullBleed[0]))}
-                    className="cursor-pointer group relative max-w-6xl mx-auto"
-                  >
-                    <div className="relative overflow-hidden rounded-none md:rounded-2xl">
-                      <PolaroidImage
-                        src={sections.fullBleed[0].src}
-                        alt={sections.fullBleed[0].alt || sections.fullBleed[0].title || ''}
-                        width={sections.fullBleed[0].width}
-                        height={sections.fullBleed[0].height}
-                        className="transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="font-serif text-2xl md:text-4xl text-white/80 drop-shadow-lg italic">
-                          {sections.fullBleed[0].title || ''}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              </section>
-            )}
-
-            {/* Section 6: Mixed Grid — natural aspect ratios in masonry-like columns */}
-            {sections.mixed.length > 0 && (
-              <section className="py-16 md:py-24">
-                <div className="columns-2 md:columns-4 gap-3 md:gap-4 space-y-3 md:space-y-4">
-                  {sections.mixed.map((img, i) => {
-                    const roundedOptions = ['rounded-none', 'rounded-xl', 'rounded-2xl', 'rounded-[2rem]'];
-                    const rounded = roundedOptions[i % roundedOptions.length];
-
-                    return (
-                      <div key={img.id} className="break-inside-avoid">
-                        <GalleryImageCard
-                          img={img}
-                          index={i}
-                          rounded={rounded}
-                          onClick={() => openLightbox(filtered.indexOf(img))}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {/* Section 7: Finale — natural aspect ratios */}
-            {sections.finale.length >= 2 && (
-              <section className="py-16 md:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                  {sections.finale.map((img, i) => (
-                    <GalleryImageCard
-                      key={img.id}
-                      img={img}
-                      index={i}
-                      rounded="rounded-2xl"
-                      onClick={() => openLightbox(filtered.indexOf(img))}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        )}
+          {/* Content */}
+          {loading ? (
+            <div className="columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-5 space-y-4 md:space-y-5">
+              {skeletonColumns.map((item, i) => (
+                <div key={i} className="break-inside-avoid bg-[#FAF6F3] animate-pulse" style={{ aspectRatio: item.aspect }} />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="pt-16 text-center">
+              <p className="font-mono text-[11px] text-warm-gray/20 uppercase tracking-[0.25em]" />
+            </div>
+          ) : (
+            <div className="columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-5 space-y-4 md:space-y-5">
+              {filtered.map((img, idx) => (
+                <GalleryImageCard
+                  key={img.id}
+                  img={img}
+                  index={idx}
+                  onClick={() => openLightbox(idx)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Lightbox */}
@@ -552,84 +289,65 @@ export default function GalleryClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[70] bg-rich-black/98 flex items-center justify-center"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[70] bg-rich-black/98 flex items-center justify-center select-none"
             role="dialog"
             aria-modal="true"
-            aria-label="Gallery lightbox"
+            aria-label="Image lightbox"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
+            {/* Close */}
             <button
               onClick={closeLightbox}
-              className="absolute top-8 right-8 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
-              aria-label="Close lightbox"
+              className="absolute top-6 right-6 z-20 p-2 text-white/50 hover:text-white transition-colors"
+              aria-label="Close"
             >
               <HiXMark className="w-5 h-5" />
             </button>
 
+            {/* Previous */}
             <button
               onClick={goPrev}
-              className="absolute left-4 md:left-6 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
+              className="absolute left-4 md:left-8 z-20 p-2 text-white/40 hover:text-white transition-colors"
               aria-label="Previous image"
             >
               <HiArrowLeft className="w-5 h-5" />
             </button>
 
+            {/* Next */}
             <button
               onClick={goNext}
-              className="absolute right-4 md:right-6 z-10 p-3 min-h-[44px] min-w-[44px] text-white/60 hover:text-white transition-colors duration-300"
+              className="absolute right-4 md:right-8 z-20 p-2 text-white/40 hover:text-white transition-colors"
               aria-label="Next image"
             >
               <HiArrowRight className="w-5 h-5" />
             </button>
 
-            <div className="max-w-6xl w-full px-6 md:px-12">
-              <AnimatePresence mode="wait" onExitComplete={() => console.log('[GalleryLightbox] onExitComplete')}>
+            {/* Image */}
+            <div className="max-w-6xl w-full px-6 md:px-16">
+              <AnimatePresence mode="wait">
                 <motion.div
                   key={currentImage.id}
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
-                  onAnimationStart={() => console.log('[GalleryLightbox] exit animation start', currentImage?.id)}
-                  onAnimationComplete={() => console.log('[GalleryLightbox] exit animation complete', currentImage?.id)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
                   <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    className="max-h-[80vh] max-w-[90vw] w-auto mx-auto object-contain"
+                    className="max-h-[82vh] max-w-full w-auto h-auto mx-auto object-contain"
                   />
                 </motion.div>
               </AnimatePresence>
-
-              <div className="mt-6 flex flex-col items-center gap-2">
-                <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.3em]">
-                  {currentIndex + 1} / {filtered.length}
-                </span>
-                {(currentImage.caption || currentImage.title) && (
-                  <p className="font-sans text-[11px] text-white/50 text-center max-w-md">
-                    {currentImage.caption || currentImage.title}
-                  </p>
-                )}
-              </div>
             </div>
 
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
-              {filtered.length > 15 ? (
-                <span className="font-sans text-[10px] text-white/50">
-                  {currentIndex + 1} of {filtered.length}
-                </span>
-              ) : (
-                filtered.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    className={`min-h-[28px] min-w-[28px] flex items-center justify-center transition-all duration-500 ${i === currentIndex ? 'w-2 h-2 rounded-full bg-white' : 'w-2 h-2 rounded-full bg-white/20'}`}
-                    aria-label={`Go to image ${i + 1}`}
-                  />
-                ))
-              )}
+            {/* Counter */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+              <span className="font-mono text-[11px] text-white/30 tracking-[0.15em]">
+                {String(currentIndex + 1).padStart(2, '0')} / {String(filtered.length).padStart(2, '0')}
+              </span>
             </div>
           </motion.div>
         )}

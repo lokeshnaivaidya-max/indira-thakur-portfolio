@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       description: body.description || '',
       width: body.width || 800,
       height: body.height || 1000,
-      category: body.category || 'Portrait',
+      category: body.category || '',
       featured: !!body.featured,
       order: body.order ?? 0,
     });

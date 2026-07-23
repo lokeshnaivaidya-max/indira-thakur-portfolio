@@ -30,7 +30,7 @@ export default function EditorialServices() {
   if (!servicesList.length) return null;
 
   return (
-    <section className="py-28 bg-[#FAF6F3] text-[#2B2625]">
+    <section className="py-28 bg-white text-[#2B2625]">
       <div className="container-editorial mb-20 text-center max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 15 }}

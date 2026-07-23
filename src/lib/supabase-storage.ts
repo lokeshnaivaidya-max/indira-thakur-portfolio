@@ -63,3 +63,25 @@ export function getPublicUrl(path: string): string {
     .getPublicUrl(path);
   return data.publicUrl;
 }
+
+export function getTransformUrl(path: string, width: number, quality: number = 80): string {
+  const supabase = getSupabase();
+  const { data } = supabase.storage
+    .from(BUCKET)
+    .getPublicUrl(path, {
+      transform: {
+        width,
+        quality,
+        resize: 'cover',
+      },
+    });
+  return data.publicUrl;
+}
+
+export function isTransformUrl(url: string): boolean {
+  return url.includes('/render/image/');
+}
+
+export function getOriginalUrl(transformUrl: string): string {
+  return transformUrl.replace('/render/image/', '/object/').replace(/\?.*$/, '');
+}

@@ -88,7 +88,7 @@ export default function EditorialAbout() {
   }, [mainImageUrl, secondaryImageUrl]);
 
   return (
-    <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden">
+    <section className="py-24 md:py-36 bg-white text-[#2B2625] relative overflow-hidden">
       <div className="container-editorial">
         {/* Top Header */}
         <div className="max-w-3xl mb-16 md:mb-24">

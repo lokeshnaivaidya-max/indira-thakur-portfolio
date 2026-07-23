@@ -97,7 +97,7 @@ const GalleryCard = memo(function GalleryCard({
         )}
       </div>
       <div className="p-4">
-        <h4 className="font-serif text-base text-rich-black truncate">{item.title || 'Untitled'}</h4>
+        <h4 className="font-serif text-base text-rich-black truncate">{item.title || 'Gallery Image'}</h4>
         <div className="flex items-center gap-2 mt-2 text-xs">
           <span className="px-2 py-0.5 bg-cream text-warm-gray rounded">{item.category}</span>
           <span className="text-warm-gray/50">Order: {item.order}</span>
@@ -170,7 +170,7 @@ export function Gallery() {
     description: '',
     width: 1200,
     height: 1600,
-    category: 'Portrait',
+    category: '',
     featured: false,
     order: 0,
     uploadMethod: 'url' as 'url' | 'upload',
@@ -239,7 +239,7 @@ export function Gallery() {
   const resetForm = useCallback(() => {
     setFormData({
       id: '', src: '', publicId: '', alt: '', title: '', description: '',
-      width: 800, height: 1000, category: 'Portrait', featured: false, order: 0, uploadMethod: 'url',
+      width: 800, height: 1000, category: '', featured: false, order: 0, uploadMethod: 'url',
     });
     setEditingItem(null);
   }, []);
@@ -276,12 +276,12 @@ export function Gallery() {
       src: formData.src,
       thumbnail: formData.src,
       publicId: formData.publicId,
-      alt: formData.alt || formData.title || 'Gallery item',
-      title: formData.title || 'Untitled',
+      alt: formData.alt || formData.title || '',
+      title: formData.title || '',
       description: formData.description || '',
       width: submitData.width,
       height: submitData.height,
-      category: formData.category || 'Portrait',
+      category: formData.category || '',
       featured: submitData.featured,
       order: submitData.order,
       createdAt: isEdit ? editingItem.createdAt : new Date().toISOString(),
@@ -356,7 +356,7 @@ export function Gallery() {
         description: formData.description || '',
         width: result.width || 1200,
         height: result.height || 1600,
-        category: formData.category || 'Portrait',
+        category: formData.category || '',
         featured: formData.featured || false,
         order: formData.order || 0,
         createdAt: new Date().toISOString(),
@@ -409,7 +409,7 @@ export function Gallery() {
       id: item._id, src: item.src || '', publicId: item.publicId || '',
       alt: item.alt || '', title: item.title || '', description: item.description || '',
       width: item.width || 1200, height: item.height || 1600,
-      category: item.category || 'Portrait', featured: item.featured || false,
+      category: item.category || '', featured: item.featured || false,
       order: item.order || 0, uploadMethod: 'url',
     });
     setShowForm(true);

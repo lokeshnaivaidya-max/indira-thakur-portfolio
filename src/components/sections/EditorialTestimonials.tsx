@@ -100,7 +100,7 @@ export default function EditorialTestimonials() {
   const displayCategory = cleanCategory(current.sessionType || current.role);
 
   return (
-    <section className="py-16 md:py-24 bg-[#FAF6F3] text-[#2B2625] relative overflow-hidden border-t border-b border-[#E7DDD2]/60">
+    <section className="py-16 md:py-24 bg-white text-[#2B2625] relative overflow-hidden">
       <div className="container-editorial max-w-4xl mx-auto text-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 15 }}

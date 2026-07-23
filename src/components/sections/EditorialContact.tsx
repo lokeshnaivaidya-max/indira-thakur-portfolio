@@ -60,7 +60,7 @@ export default function EditorialContact() {
   const hasImage = (url?: string) => url && url.trim() !== '';
 
   return (
-    <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative">
+    <section className="py-24 md:py-36 bg-white text-[#2B2625] relative">
       <div className="container-editorial">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           {/* Left Column: Direct Info & Studio Atmosphere */}

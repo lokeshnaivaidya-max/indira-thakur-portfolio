@@ -6,6 +6,7 @@ import { cn } from '@/lib/imageUtils';
 interface PolaroidImageProps {
   src: string;
   alt: string;
+  srcSet?: string;
   width?: number;
   height?: number;
   className?: string;
@@ -35,6 +36,7 @@ const OBJECT_POSITION_CLASS: Record<string, string> = {
 export function PolaroidImage({
   src,
   alt,
+  srcSet,
   width = 800,
   height = 600,
   className,
@@ -72,8 +74,8 @@ export function PolaroidImage({
 
   const [skeletonTimeout, setSkeletonTimeout] = useState(false);
   useEffect(() => {
-    if (!isLoaded && !priority) {
-      const timer = setTimeout(() => setSkeletonTimeout(true), 15000);
+    if (!isLoaded) {
+      const timer = setTimeout(() => setSkeletonTimeout(true), 8000);
       return () => clearTimeout(timer);
     }
   }, [isLoaded, priority]);
@@ -106,19 +108,21 @@ export function PolaroidImage({
 
   const img = (
     <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
-      {/* Ambient Blurred Background to eliminate empty pillarbox/letterbox with soft matching photo hues */}
       <img
         src={src}
+        srcSet={srcSet}
+        sizes={sizes}
         alt=""
         aria-hidden="true"
         decoding={priority ? 'sync' : 'async'}
         loading={priority ? 'eager' : 'lazy'}
         className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-110 pointer-events-none"
       />
-      {/* Crisp Main Uncropped Photograph */}
       <img
         ref={imgRef}
         src={src}
+        srcSet={srcSet}
+        sizes={sizes}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : undefined}
@@ -127,8 +131,8 @@ export function PolaroidImage({
         onError={handleError}
         onLoad={() => setIsLoaded(true)}
         className={cn(
-          'relative z-10 w-full h-full transition-all duration-500 ease-out will-change-[opacity,transform]',
-          !isLoaded ? 'opacity-0 scale-98' : 'opacity-100 scale-100',
+          'relative z-10 w-full h-full transition-opacity duration-300 ease-out',
+          !isLoaded ? 'opacity-0' : 'opacity-100',
           objectFit === 'cover' ? 'object-cover' : 'object-contain',
           positionClass,
           className
@@ -155,7 +159,7 @@ export function PolaroidImage({
         onClick={onClick}
       >
         {img}
-        {!isLoaded && !priority && !skeletonTimeout && (
+        {!isLoaded && !skeletonTimeout && (
           <div className="absolute inset-0 bg-ivory z-10" />
         )}
       </div>
@@ -176,7 +180,7 @@ export function PolaroidImage({
     >
       <div className="relative w-full h-full">
         {img}
-        {!isLoaded && !priority && !skeletonTimeout && (
+        {!isLoaded && !skeletonTimeout && (
           <div className="absolute inset-0 bg-ivory z-10" />
         )}
       </div>

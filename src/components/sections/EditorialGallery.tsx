@@ -4,10 +4,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
+import { toThumbUrl, toSrcSet } from '@/lib/imageUrl';
 
 interface GalleryImageItem {
   id: string;
   src: string;
+  thumb: string;
+  thumbSrcSet: string;
   alt: string;
   category: string;
   title?: string;
@@ -15,7 +18,7 @@ interface GalleryImageItem {
 }
 
 interface PaginatedResponse {
-  items: GalleryImageItem[];
+  items: any[];
   total: number;
   page: number;
   totalPages: number;
@@ -44,44 +47,39 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function loadGallery() {
       try {
         const res = await fetch('/api/gallery-images?page=1&limit=50');
-        if (res.ok) {
-          const data: PaginatedResponse = await res.json();
-          const items = data.items || (Array.isArray(data) ? data : []);
-          if (items.length > 0) {
-            const mapped: GalleryImageItem[] = items.map((img: any, idx: number) => ({
-              id: img.id || img._id || `img-${idx}`,
-              src: img.src || img.url,
-              alt: img.alt || img.title || '',
-              category: (img.category || '').toLowerCase().trim(),
-              title: img.title || img.alt || 'Untitled',
-              caption: img.description || img.caption || ''
-            }));
-            setImages(mapped);
-            return;
-          }
+        if (!res.ok) return;
+        const data: PaginatedResponse = await res.json();
+        const items = data.items || (Array.isArray(data) ? data : []);
+        if (items.length === 0) return;
+        const seen = new Set<string>();
+        const mapped: GalleryImageItem[] = [];
+        for (const img of items as any[]) {
+          const src = img.src || '';
+          if (!src || seen.has(src)) continue;
+          seen.add(src);
+          mapped.push({
+            id: img.id || img._id || `img-${src.slice(-20)}`,
+            src,
+            thumb: toThumbUrl(src, 400),
+            thumbSrcSet: toSrcSet(src),
+            alt: img.alt || img.title || '',
+            category: (img.category || '').toLowerCase().trim(),
+            title: img.title || img.alt || '',
+            caption: img.description || img.caption || ''
+          });
         }
-      } catch (err) {
-        console.error('Failed to load gallery images:', err);
-      }
-
-      const configFeatured = config?.galleryPreview?.featuredImages;
-      if (Array.isArray(configFeatured) && configFeatured.length > 0) {
-        const mappedConfig: GalleryImageItem[] = configFeatured.map((img: any, idx: number) => ({
-          id: `cfg-${idx}`,
-          src: img.url,
-          alt: img.alt || '',
-          category: '',
-          title: img.caption || img.alt || 'Untitled',
-          caption: img.caption || ''
-        }));
-        setImages(mappedConfig);
+        if (!cancelled && mapped.length > 0) setImages(mapped);
+      } catch {
+        // silently fail
       }
     }
 
     loadGallery();
+    return () => { cancelled = true; };
   }, [config]);
 
   const categoryTabs = useMemo(() => {
@@ -112,24 +110,13 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
   const filteredImages = useMemo(() => {
     let list = images;
     if (activeCategory) {
-      list = images.filter((img) => img.category.includes(activeCategory.toLowerCase()));
+      list = images.filter((img) => img.category === activeCategory);
     }
     return isPreview ? list.slice(0, 6) : list;
   }, [images, activeCategory, isPreview]);
 
-  useEffect(() => {
-    if (filteredImages && filteredImages.length > 0) {
-      filteredImages.slice(0, 8).forEach((img) => {
-        if (img?.src) {
-          const preloader = new Image();
-          preloader.src = img.src;
-        }
-      });
-    }
-  }, [filteredImages]);
-
   return (
-    <section className="py-24 md:py-36 bg-[#FAF6F3] text-[#2B2625] relative">
+    <section className="py-24 md:py-36 bg-white text-[#2B2625] relative">
       <div className="container-editorial">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div>
@@ -161,9 +148,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
         </div>
 
         {filteredImages.length === 0 ? (
-          <div className="py-20 text-center font-sans text-sm text-[#7C706D]">
-            No photographs found in this collection category.
-          </div>
+          <div className="py-20 text-center font-mono text-[11px] text-[#7C706D]/30 uppercase tracking-[0.25em]" />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {filteredImages.map((img, idx) => (
@@ -174,10 +159,11 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
               >
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF6F3]">
                   <PolaroidImage
-                    src={img.src}
+                    src={img.thumb}
+                    srcSet={img.thumbSrcSet}
                     alt={img.alt}
                     fill
-                    priority={idx < 6}
+                    priority={idx < 3}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     objectFit="contain"
                     className="!w-full !h-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
