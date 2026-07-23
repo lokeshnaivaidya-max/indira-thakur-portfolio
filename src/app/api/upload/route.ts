@@ -11,6 +11,40 @@ function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
+// Diagnostic: check Supabase connection
+export async function GET() {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'NOT_SET';
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+    const { getSupabase } = await import('@/lib/supabase');
+    const supabase = getSupabase();
+
+    // Test 1: list buckets
+    const { data: buckets, error: bucketErr } = await supabase.storage.listBuckets();
+    const bucketNames = buckets?.map((b: any) => b.name) || [];
+
+    // Test 2: list files in images bucket
+    const { data: files, error: listErr } = await supabase.storage
+      .from('images')
+      .list('gallery');
+
+    const info = {
+      supabaseUrl: supabaseUrl.substring(0, 30) + '...',
+      anonKeySet: anonKey.length > 0,
+      serviceKeySet: serviceKey.length > 0,
+      buckets: bucketNames,
+      bucketListError: bucketErr?.message || null,
+      galleryFiles: files?.length || 0,
+      listError: listErr?.message || null,
+    };
+    return NextResponse.json(info);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const user = requireAuth(request);
