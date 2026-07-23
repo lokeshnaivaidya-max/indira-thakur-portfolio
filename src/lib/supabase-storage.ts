@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabase';
+import { getSupabase, getSupabaseAdmin } from '@/lib/supabase';
 
 const BUCKET = 'images';
 
@@ -18,9 +18,10 @@ function sanitizeFilename(name: string): string {
 
 export async function uploadFile(
   file: File,
-  folder: string = 'general'
+  folder: string = 'general',
+  useServiceRole: boolean = false
 ): Promise<UploadResult> {
-  const supabase = getSupabase();
+  const supabase = useServiceRole ? getSupabaseAdmin() : getSupabase();
   const filename = sanitizeFilename(file.name);
   const path = `${folder}/${filename}`;
 
