@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/mongodb';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -83,24 +83,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const GalleryImage = (await import('@/models/GalleryImage')).default;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-    if (!supabaseUrl || !supabaseKey) {
-      return jsonError('Supabase not configured', 500);
-    }
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false },
-    });
-
-    // Check that the images bucket exists
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-    if (bucketsError) {
-      return jsonError(`Cannot list buckets: ${bucketsError.message}`, 500);
-    }
-    const bucketExists = buckets?.some((b) => b.name === BUCKET);
-    if (!bucketExists) {
-      return jsonError(`Bucket '${BUCKET}' not found. Available: ${buckets?.map((b) => b.name).join(', ') || 'none'}`, 500);
-    }
+    const supabase = getSupabase();
 
     // Find next batch of Cloudinary records
     const toMigrate = await GalleryImage.find({
