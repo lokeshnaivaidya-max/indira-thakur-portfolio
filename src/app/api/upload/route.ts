@@ -21,25 +21,36 @@ export async function GET() {
     const { getSupabase } = await import('@/lib/supabase');
     const supabase = getSupabase();
 
-    // Test 1: list buckets
-    const { data: buckets, error: bucketErr } = await supabase.storage.listBuckets();
-    const bucketNames = buckets?.map((b: any) => b.name) || [];
+    // Test 1: list buckets via direct API (avoids SDK path issues)
+    const baseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+    const bucketRes = await fetch(`${baseUrl}/storage/v1/bucket`, {
+      headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+    });
+    const buckets = bucketRes.ok ? await bucketRes.json() : [];
+    const bucketNames = (Array.isArray(buckets) ? buckets : []).map((b: any) => b.name);
 
-    // Test 2: list files in images bucket
-    const { data: files, error: listErr } = await supabase.storage
-      .from('images')
-      .list('gallery');
+    // Try to create the images bucket if missing
+    let created = false;
+    if (!bucketNames.includes('images')) {
+      const createRes = await fetch(`${baseUrl}/storage/v1/bucket`, {
+        method: 'POST',
+        headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: 'images', name: 'images', public: true }),
+      });
+      created = createRes.ok;
+      if (!createRes.ok) {
+        const text = await createRes.text();
+        console.log('Bucket creation failed:', text);
+      }
+    }
 
     const info = {
-      supabaseUrl,
+      supabaseUrl: baseUrl,
       anonKeySet: anonKey.length > 0,
-      anonKeyPrefix: anonKey.substring(0, 15),
       serviceKeySet: serviceKey.length > 0,
-      serviceKeyPrefix: serviceKey.substring(0, 15),
       buckets: bucketNames,
-      bucketListError: bucketErr?.message || null,
-      galleryFiles: files?.length || 0,
-      listError: listErr?.message || null,
+      bucketCreated: created,
+      bucketCreateError: null,
     };
     return NextResponse.json(info);
   } catch (err: any) {
