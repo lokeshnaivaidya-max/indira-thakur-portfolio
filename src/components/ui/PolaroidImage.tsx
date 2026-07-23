@@ -70,6 +70,14 @@ export function PolaroidImage({
 
   const positionClass = OBJECT_POSITION_CLASS[objectPosition] ?? 'object-center';
 
+  const [skeletonTimeout, setSkeletonTimeout] = useState(false);
+  useEffect(() => {
+    if (!isLoaded && !priority) {
+      const timer = setTimeout(() => setSkeletonTimeout(true), 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, priority]);
+
   if (hasError) {
     return (
       <div
@@ -135,6 +143,7 @@ export function PolaroidImage({
       <div
         className={cn(
           'relative overflow-hidden',
+          fill && 'h-full',
           bgColor,
           containerClassName
         )}
@@ -146,22 +155,8 @@ export function PolaroidImage({
         onClick={onClick}
       >
         {img}
-        {!isLoaded && !priority && (
-          <div className="absolute inset-0 bg-ivory flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
-            <svg
-              className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
+        {!isLoaded && !priority && !skeletonTimeout && (
+          <div className="absolute inset-0 bg-ivory z-10" />
         )}
       </div>
     );
@@ -171,6 +166,7 @@ export function PolaroidImage({
     <figure
       className={cn(
         'group relative overflow-hidden',
+        fill && 'h-full',
         bgColor,
         onClick && 'cursor-pointer',
         containerClassName
@@ -180,22 +176,8 @@ export function PolaroidImage({
     >
       <div className="relative w-full h-full">
         {img}
-        {!isLoaded && !priority && (
-          <div className="absolute inset-0 bg-ivory flex items-center justify-center pointer-events-none transition-opacity duration-500 z-10">
-            <svg
-              className="h-8 w-8 text-[#7C706D]/30 animate-pulse"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
+        {!isLoaded && !priority && !skeletonTimeout && (
+          <div className="absolute inset-0 bg-ivory z-10" />
         )}
       </div>
       <figcaption className="px-3 py-2 bg-ivory border-t border-cream">

@@ -19,11 +19,10 @@ function cleanCategory(raw?: string): string {
   if (lower.includes('newborn')) return 'Newborn';
   if (lower.includes('maternity')) return 'Maternity';
   if (lower.includes('family')) return 'Family';
-  if (lower.includes('baby')) return 'Baby';
   if (lower.includes('portrait')) return 'Portrait';
   if (lower.includes('wedding')) return 'Wedding';
   if (lower.includes('event')) return 'Event';
-  if (lower.includes('brand')) return 'Brand';
+  if (lower.includes('brand')) return 'Brand Collaboration';
   if (lower.includes('couple')) return 'Couple';
   if (lower.includes('engagement')) return 'Engagement';
   return raw;

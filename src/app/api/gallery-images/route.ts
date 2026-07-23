@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import GalleryImage from '@/models/GalleryImage';
 import { requireAuth } from '@/lib/auth';
-import { getThumbnailUrl } from '@/lib/cloudinaryUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
     if (category) filter.category = category;
     if (featured === 'true') filter.featured = true;
 
-    const [total, rawItems] = await Promise.all([
+    const [total, items] = await Promise.all([
       GalleryImage.countDocuments(filter),
       GalleryImage.find(filter)
         .sort({ order: 1, createdAt: -1 })
@@ -29,18 +28,13 @@ export async function GET(request: NextRequest) {
         .lean(),
     ]);
 
-    const items = rawItems.map((item) => {
-      const doc = item as Record<string, unknown>;
-      const src = doc.src as string;
-      const publicId = doc.publicId as string;
-      return {
-        ...doc,
-        thumbnail: getThumbnailUrl(src, publicId),
-      };
-    });
+    const mapped = (items as any[]).map((item) => ({
+      ...item,
+      thumbnail: item.src,
+    }));
 
     return NextResponse.json({
-      items,
+      items: mapped,
       total,
       page,
       totalPages: Math.ceil(total / limit),

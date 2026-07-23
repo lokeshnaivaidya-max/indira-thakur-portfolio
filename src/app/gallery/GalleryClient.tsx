@@ -31,15 +31,15 @@ interface GalleryItem {
 
 function mapGalleryImages(images: GalleryImage[]): GalleryItem[] {
   return images
-    .filter((img) => img?.src && img?.category)
+    .filter((img) => img?.src)
     .map((img) => ({
       id: img.id || img._id || `img-${img.src.split('/').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'unknown'}`,
       src: img.src,
       alt: img.alt || '',
       width: img.width || 800,
       height: img.height || 1000,
-      category: img.category.toLowerCase(),
-      title: img.title,
+      category: (img.category || '').toLowerCase(),
+      title: img.title || img.alt || '',
       aspectRatio: (img.width || 800) / (img.height || 1000),
     }));
 }
@@ -151,9 +151,10 @@ export default function GalleryClient() {
 
     const fetchGallery = async () => {
       try {
-        const res = await fetch('/api/gallery-images');
+        const res = await fetch('/api/gallery-images?page=1&limit=50');
         if (!res.ok) return;
-        const data: GalleryImage[] = await res.json();
+        const json = await res.json();
+        const data: GalleryImage[] = json.items || (Array.isArray(json) ? json : []);
         if (!cancelled) {
           const mapped = mapGalleryImages(data);
           setGalleryImages(mapped);

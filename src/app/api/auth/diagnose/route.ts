@@ -9,9 +9,8 @@ export async function GET() {
     mongodb_uri_set: !!process.env.MONGODB_URI,
     mongodb_uri_prefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'NOT SET',
     node_env: process.env.NODE_ENV || 'NOT SET',
-    cloudinary_cloud_set: !!process.env.CLOUDINARY_CLOUD_NAME,
-    cloudinary_key_set: !!process.env.CLOUDINARY_API_KEY,
-    cloudinary_secret_set: !!process.env.CLOUDINARY_API_SECRET,
+    supabase_url_set: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabase_anon_key_set: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   };
 
   try {

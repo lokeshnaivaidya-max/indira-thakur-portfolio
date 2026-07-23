@@ -236,7 +236,7 @@ export function FilmsCMS() {
                   type="url"
                   value={formData.thumbnailUrl}
                   onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-                  placeholder="https://res.cloudinary.com/..."
+                  placeholder="https://abc.supabase.co/storage/v1/object/public/images/..."
                   className="flex-1 px-4 py-3 bg-white border border-cream rounded text-sm focus:outline-none focus:border-magenta"
                 />
                 <label className="px-4 py-3 bg-cream hover:bg-cream/80 text-rich-black text-xs uppercase tracking-wider rounded cursor-pointer flex items-center gap-2">

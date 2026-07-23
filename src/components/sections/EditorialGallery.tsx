@@ -21,41 +21,21 @@ interface PaginatedResponse {
   totalPages: number;
 }
 
-function cleanDisplayTitle(rawTitle?: string, alt?: string, category?: string): string {
-  if (!rawTitle) return alt && !isFileName(alt) ? alt : formatCategoryTitle(category);
-  if (isFileName(rawTitle)) {
-    if (alt && !isFileName(alt)) return alt;
-    return formatCategoryTitle(category);
-  }
-  return rawTitle;
-}
-
-function isFileName(str: string): boolean {
-  if (!str) return false;
-  const lower = str.toLowerCase().trim();
-  return (
-    /\.(jpg|jpeg|png|webp|gif|svg|avif)$/i.test(lower) ||
-    /^img[_-]?\d+/i.test(lower) ||
-    /^dsc[_-]?\d+/i.test(lower) ||
-    /^photo[_-]?\d+/i.test(lower)
-  );
-}
-
 function formatCategoryTitle(category?: string): string {
-  if (!category) return 'Fine Art Story';
+  if (!category) return '';
   const clean = category.toLowerCase().trim();
   const map: Record<string, string> = {
-    newborn: 'Newborn Storytelling',
-    maternity: 'Maternity Portraiture',
-    family: 'Family Legacy',
-    baby: 'Milestone Portrait',
-    portrait: 'Fine Art Portrait',
-    wedding: 'Weddings & Celebrations',
-    weddings: 'Weddings & Celebrations',
-    events: 'Bespoke Events',
-    couple: 'Couples & Romance',
+    newborn: 'Newborn',
+    maternity: 'Maternity',
+    family: 'Family',
+    'brand collaboration': 'Brand Collaboration',
+    portrait: 'Portrait',
+    wedding: 'Weddings',
+    weddings: 'Weddings',
+    events: 'Events',
+    couple: 'Couples',
   };
-  return map[clean] || `${clean.charAt(0).toUpperCase()}${clean.slice(1)} Story`;
+  return map[clean] || `${clean.charAt(0).toUpperCase()}${clean.slice(1)}`;
 }
 
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
@@ -74,9 +54,9 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
             const mapped: GalleryImageItem[] = items.map((img: any, idx: number) => ({
               id: img.id || img._id || `img-${idx}`,
               src: img.src || img.url,
-              alt: img.alt || img.title || 'Indira Thakur Photography',
-              category: (img.category || 'portrait').toLowerCase().trim(),
-              title: cleanDisplayTitle(img.title, img.alt, img.category),
+              alt: img.alt || img.title || '',
+              category: (img.category || '').toLowerCase().trim(),
+              title: img.title || img.alt || 'Untitled',
               caption: img.description || img.caption || ''
             }));
             setImages(mapped);
@@ -92,9 +72,9 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
         const mappedConfig: GalleryImageItem[] = configFeatured.map((img: any, idx: number) => ({
           id: `cfg-${idx}`,
           src: img.url,
-          alt: img.alt || 'Indira Thakur Fine Art',
-          category: 'portrait',
-          title: cleanDisplayTitle(img.caption, img.alt, 'portrait'),
+          alt: img.alt || '',
+          category: '',
+          title: img.caption || img.alt || 'Untitled',
           caption: img.caption || ''
         }));
         setImages(mappedConfig);
@@ -109,21 +89,9 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
       new Set(images.map((img) => img.category.toLowerCase().trim()))
     ).filter(Boolean);
 
-    const labelMap: Record<string, string> = {
-      newborn: 'Newborn',
-      maternity: 'Maternity',
-      family: 'Family',
-      baby: 'Baby',
-      portrait: 'Fine Art Portrait',
-      wedding: 'Weddings',
-      weddings: 'Weddings',
-      events: 'Events',
-      couple: 'Couples',
-    };
-
     return presentCategories.map((catKey) => ({
       id: catKey,
-      label: labelMap[catKey] || catKey.charAt(0).toUpperCase() + catKey.slice(1),
+      label: formatCategoryTitle(catKey) || catKey.charAt(0).toUpperCase() + catKey.slice(1),
     }));
   }, [images]);
 
@@ -220,10 +188,10 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                 <div className="p-5 flex items-center justify-between border-t border-[#E7DDD2]/50 bg-white">
                   <div>
                     <h4 className="font-serif text-lg text-[#2B2625] leading-snug font-medium group-hover:text-[#C39E96] transition-colors">
-                      {img.title || 'Untitled Story'}
+                      {img.title}
                     </h4>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#7C706D] mt-0.5">
-                      {img.category}
+                      {formatCategoryTitle(img.category) || img.category}
                     </p>
                   </div>
                   <span className="font-mono text-xs text-[#C39E96] group-hover:translate-x-1 transition-transform">
@@ -273,7 +241,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
                       {filteredImages[selectedImageIndex].category}
                     </span>
                     <h3 className="font-serif text-2xl text-white">
-                      {filteredImages[selectedImageIndex].title || 'Untitled Story'}
+                      {filteredImages[selectedImageIndex].title}
                     </h3>
                     {filteredImages[selectedImageIndex].caption && (
                       <p className="font-sans text-xs text-white/60 mt-4 leading-relaxed">

@@ -129,7 +129,7 @@ export default function ImageManager({
       fileSize: file.size,
       fileType: file.type,
       previewUrl: localPreview,
-      uploadingText: 'Uploading to Cloudinary...',
+      uploadingText: 'Uploading...',
     });
 
     try {

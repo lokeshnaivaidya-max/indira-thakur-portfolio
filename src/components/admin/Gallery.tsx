@@ -6,7 +6,6 @@ import {
   HiLink, HiXMark, HiEye, HiChevronLeft, HiChevronRight,
 } from 'react-icons/hi2';
 import { uploadImageDirect } from '@/lib/uploadHelper';
-import { getThumbnailUrl } from '@/lib/cloudinaryUrl';
 import { MAX_IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_ERROR } from '@/lib/uploadConstants';
 
 // ---- Types ----
@@ -35,7 +34,7 @@ interface PaginatedResponse {
   totalPages: number;
 }
 
-const CATEGORIES = ['Newborn', 'Maternity', 'Family', 'Baby', 'Portrait', 'Wedding', 'Events', 'Other'];
+const CATEGORIES = ['Newborn', 'Maternity', 'Family', 'Brand Collaboration', 'Portrait', 'Wedding', 'Events', 'Other'];
 const PAGE_LIMIT = 30;
 
 // ---- Helpers ----
@@ -311,7 +310,7 @@ export function Gallery() {
       if (!response.ok) throw new Error('Failed to save gallery item metadata');
       const savedRecord = await response.json();
 
-      setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: getThumbnailUrl(savedRecord.src, savedRecord.publicId) } : item));
+      setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: savedRecord.src } : item));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save metadata');
       if (isEdit) {
@@ -346,7 +345,7 @@ export function Gallery() {
 
       const tempId = `optimistic-${Date.now()}`;
       const titleFromFilename = file.name.replace(/\.[^/.]+$/, '');
-      const thumbnail = getThumbnailUrl(result.url, result.publicId);
+      const thumbnail = result.url;
       const optimisticItem: GalleryItem = {
         _id: tempId,
         src: result.url,
@@ -389,7 +388,7 @@ export function Gallery() {
 
           if (!response.ok) throw new Error('Failed to save background metadata');
           const savedRecord = await response.json();
-          setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: getThumbnailUrl(savedRecord.src, savedRecord.publicId) } : item));
+          setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: savedRecord.src } : item));
         } catch (err) {
           console.error('Background metadata save failed:', err);
           setError('Background save failed. Reverting item.');

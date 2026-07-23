@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
+import { getSupabase } from '@/lib/supabase';
+import { deleteFile, getPublicUrl } from '@/lib/supabase-storage';
 
 export const dynamic = 'force-dynamic';
+
+const BUCKET = 'images';
 
 export async function GET(request: Request) {
   try {
@@ -13,17 +17,6 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const folder = searchParams.get('folder') || 'uploads';
-
-    let blobFiles: { blobs: Array<{ url: string; pathname: string; size: number; uploadedAt: Date }> } = { blobs: [] };
-
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      try {
-        const { list } = await import('@vercel/blob');
-        blobFiles = await list({ prefix: folder + '/' });
-      } catch {
-        blobFiles = { blobs: [] };
-      }
-    }
 
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
@@ -47,20 +40,29 @@ export async function GET(request: Request) {
       });
     }
 
-    for (const blob of blobFiles.blobs) {
-      if (!fileMap.has(blob.url)) {
-        fileMap.set(blob.url, {
-          id: blob.pathname,
-          url: blob.url,
-          publicId: blob.pathname,
-          filename: blob.pathname.split('/').pop() || '',
-          originalName: blob.pathname.split('/').pop() || '',
-          size: blob.size,
-          type: 'application/octet-stream',
-          folder: folder,
-          createdAt: blob.uploadedAt,
-          updatedAt: blob.uploadedAt,
-        });
+    const supabase0 = getSupabase();
+    const { data: storageFiles, error } = await supabase0.storage
+      .from(BUCKET)
+      .list(folder, { limit: 200, sortBy: { column: 'created_at', order: 'desc' } });
+
+    if (!error && storageFiles) {
+      for (const item of storageFiles) {
+        const path = `${folder}/${item.name}`;
+        const url = getPublicUrl(path);
+        if (!fileMap.has(url)) {
+          fileMap.set(url, {
+            id: path,
+            url,
+            publicId: path,
+            filename: item.name,
+            originalName: item.name,
+            size: item.metadata?.size || 0,
+            type: item.metadata?.mimetype || 'application/octet-stream',
+            folder,
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
+          });
+        }
       }
     }
 
@@ -78,11 +80,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN not configured' }, { status: 500 });
-    }
-
-    const { put } = await import('@vercel/blob');
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const folder = (formData.get('folder') as string) || 'uploads';
@@ -91,30 +88,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const path = `${folder}/${timestamp}-${safeName}`;
 
-    const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const blob = await put(filename, buffer, {
-      access: 'public',
-      addRandomSuffix: true,
-    });
+    const supabase1 = getSupabase();
+    const { data, error } = await supabase1.storage
+      .from(BUCKET)
+      .upload(path, file, { cacheControl: '3600', upsert: false });
+
+    if (error) {
+      return NextResponse.json({ error: `Upload failed: ${error.message}` }, { status: 500 });
+    }
+
+    const url = getPublicUrl(data.path);
 
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
     await FileRecord.create({
-      url: blob.url,
-      publicId: blob.pathname,
-      filename: blob.pathname.split('/').pop(),
+      url,
+      publicId: data.path,
+      filename: safeName,
       originalName: file.name,
       size: file.size,
       type: file.type,
-      folder: folder,
+      folder,
     });
 
     return NextResponse.json({
-      url: blob.url,
-      publicId: blob.pathname,
+      url,
+      publicId: data.path,
       filename: file.name,
       size: file.size,
       type: file.type,
@@ -133,25 +136,17 @@ export async function DELETE(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const url = searchParams.get('url');
     const publicId = searchParams.get('publicId');
 
-    if (!url && !publicId) {
+    if (!publicId) {
       return NextResponse.json({ error: 'Missing file identifier' }, { status: 400 });
     }
 
-    if (url && process.env.BLOB_READ_WRITE_TOKEN) {
-      try {
-        const { del } = await import('@vercel/blob');
-        await del(url);
-      } catch {
-        // continue even if blob delete fails
-      }
-    }
+    await deleteFile(publicId);
 
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
-    await FileRecord.deleteOne({ $or: [{ url }, { publicId }] });
+    await FileRecord.deleteOne({ publicId });
 
     return NextResponse.json({ success: true });
   } catch (error) {
