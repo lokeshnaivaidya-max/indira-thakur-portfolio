@@ -31,16 +31,21 @@ export async function GET() {
 
     // Try to create the images bucket if missing
     let created = false;
+    let createErr: string | null = null;
     if (!bucketNames.includes('images')) {
+      // Try with service role key first
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+      const authHeader = serviceKey ? `Bearer ${serviceKey}` : `Bearer ${anonKey}`;
       const createRes = await fetch(`${baseUrl}/storage/v1/bucket`, {
         method: 'POST',
-        headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' },
+        headers: { apikey: anonKey, Authorization: authHeader, 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: 'images', name: 'images', public: true }),
       });
       created = createRes.ok;
       if (!createRes.ok) {
         const text = await createRes.text();
-        console.log('Bucket creation failed:', text);
+        // Try with SQL via PostgREST
+        createErr = text.slice(0, 200);
       }
     }
 
@@ -50,7 +55,7 @@ export async function GET() {
       serviceKeySet: serviceKey.length > 0,
       buckets: bucketNames,
       bucketCreated: created,
-      bucketCreateError: null,
+      bucketCreateError: createErr,
     };
     return NextResponse.json(info);
   } catch (err: any) {
