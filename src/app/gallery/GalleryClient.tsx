@@ -74,11 +74,7 @@ function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: nu
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94], delay: index * 0.05 }}
+    <div
       onClick={onClick}
       className="cursor-pointer break-inside-avoid group"
     >
@@ -105,7 +101,7 @@ function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: nu
           <p className="font-serif text-[13px] text-rich-black/70 leading-snug">{img.title}</p>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -115,6 +111,7 @@ export default function GalleryClient() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxLoading, setLightboxLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -125,10 +122,7 @@ export default function GalleryClient() {
         const json = await res.json();
         const data: GalleryImage[] = json.items || (Array.isArray(json) ? json : []);
         if (!cancelled) {
-          const mapped = mapGalleryImages(data);
-          setGalleryImages(mapped);
-          const cats = [...new Set(mapped.map((img) => img.category).filter(Boolean))];
-          if (cats.length > 0) setActiveCategory(cats[0]);
+          setGalleryImages(mapGalleryImages(data));
         }
       } catch {
         // silently fail
@@ -154,6 +148,7 @@ export default function GalleryClient() {
   const openLightbox = useCallback((index: number) => {
     setCurrentIndex(index);
     setLightboxOpen(true);
+    setLightboxLoading(true);
   }, []);
 
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
@@ -312,7 +307,7 @@ export default function GalleryClient() {
             </button>
 
             {/* Image */}
-            <div className="max-w-6xl w-full px-6 md:px-16">
+            <div className="max-w-6xl w-full px-6 md:px-16 relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentImage.id}
@@ -321,10 +316,17 @@ export default function GalleryClient() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
+                  {lightboxLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+                    </div>
+                  )}
                   <img
                     src={currentImage.src}
                     alt={currentImage.alt || currentImage.title || ''}
-                    className="max-h-[82vh] max-w-full w-auto h-auto mx-auto object-contain"
+                    loading="eager"
+                    onLoad={() => setLightboxLoading(false)}
+                    className={`max-h-[82vh] max-w-full w-auto h-auto mx-auto object-contain ${lightboxLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
                   />
                 </motion.div>
               </AnimatePresence>

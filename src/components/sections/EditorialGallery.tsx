@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
 import { toThumbUrl, toSrcSet } from '@/lib/imageUrl';
 
@@ -42,7 +41,6 @@ function formatCategoryTitle(category?: string): string {
 }
 
 export default function EditorialGallery({ isPreview = false }: { isPreview?: boolean }) {
-  const { config } = useSiteConfig();
   const [images, setImages] = useState<GalleryImageItem[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
@@ -80,7 +78,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
 
     loadGallery();
     return () => { cancelled = true; };
-  }, [config]);
+  }, []);
 
   const categoryTabs = useMemo(() => {
     const presentCategories = Array.from(
@@ -93,19 +91,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     }));
   }, [images]);
 
-  const cmsDefaultCategory = (config?.galleryPreview as any)?.defaultCategory?.toLowerCase()?.trim();
-  
   const [activeCategory, setActiveCategory] = useState<string>('');
-
-  useEffect(() => {
-    if (categoryTabs.length > 0) {
-      if (cmsDefaultCategory && categoryTabs.some((t) => t.id === cmsDefaultCategory)) {
-        setActiveCategory(cmsDefaultCategory);
-      } else {
-        setActiveCategory(categoryTabs[0].id);
-      }
-    }
-  }, [categoryTabs, cmsDefaultCategory]);
 
   const filteredImages = useMemo(() => {
     let list = images;
@@ -130,6 +116,16 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
 
           {!isPreview && categoryTabs.length > 0 && (
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <button
+                onClick={() => setActiveCategory('')}
+                className={`h-10 px-5 py-2.5 inline-flex items-center justify-center font-mono text-[11px] uppercase tracking-[0.2em] transition-all duration-300 rounded-full cursor-pointer whitespace-nowrap ${
+                  activeCategory === ''
+                    ? 'bg-[#2B2625] text-white shadow-sm border border-[#2B2625]'
+                    : 'bg-white text-[#7C706D] hover:text-[#2B2625] border border-[#E7DDD2]'
+                }`}
+              >
+                All
+              </button>
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
