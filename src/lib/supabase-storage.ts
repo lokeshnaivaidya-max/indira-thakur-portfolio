@@ -36,6 +36,7 @@ export async function uploadFile(
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${serviceKey}`,
+      'apikey': serviceKey,
       'Content-Type': file.type || 'application/octet-stream',
       'x-upsert': 'false',
     },
@@ -68,6 +69,7 @@ export async function deleteFile(publicId: string): Promise<void> {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${serviceKey}`,
+      'apikey': serviceKey,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ prefixes: [publicId] }),
