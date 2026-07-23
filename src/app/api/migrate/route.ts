@@ -20,10 +20,12 @@ function isAuthorized(request: NextRequest): boolean {
   if (user) return true;
   // Fallback: migration key passed as header or query param
   const migrationKey = process.env.MIGRATION_KEY || '';
-  if (!migrationKey) return false;
   const headerKey = request.headers.get('x-migration-key') || '';
   const queryKey = request.nextUrl.searchParams.get('key') || '';
-  return headerKey === migrationKey || queryKey === migrationKey;
+  const headerMatch = migrationKey && headerKey === migrationKey;
+  const queryMatch = migrationKey && queryKey === migrationKey;
+  console.log('[Migrate auth] hasMigrationKey:', !!migrationKey, 'headerMatch:', headerMatch, 'queryMatch:', queryMatch);
+  return headerMatch || queryMatch;
 }
 
 // ── Status endpoint ────────────────────────────────────────────────────────
