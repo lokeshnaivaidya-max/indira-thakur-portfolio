@@ -21,9 +21,8 @@ export async function uploadFile(
   folder: string = 'gallery'
 ): Promise<UploadResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!supabaseUrl || !serviceKey || !anonKey) {
+  if (!supabaseUrl || !anonKey) {
     throw new Error('Supabase not configured');
   }
 
@@ -36,8 +35,8 @@ export async function uploadFile(
   const response = await fetch(storageUrl, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${serviceKey}`,
       'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
       'Content-Type': file.type || 'application/octet-stream',
       'x-upsert': 'false',
     },
@@ -61,17 +60,16 @@ export async function uploadFile(
 
 export async function deleteFile(publicId: string): Promise<void> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!supabaseUrl || !serviceKey || !anonKey) return;
+  if (!supabaseUrl || !anonKey) return;
 
   const storageUrl = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/${BUCKET}`;
 
   const response = await fetch(storageUrl, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${serviceKey}`,
       'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ prefixes: [publicId] }),
