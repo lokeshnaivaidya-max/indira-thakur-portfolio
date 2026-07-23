@@ -5,7 +5,6 @@ import {
   HiPlus, HiTrash, HiPencil, HiPhoto, HiArrowDownTray, HiArrowUpTray,
   HiLink, HiXMark, HiEye, HiChevronLeft, HiChevronRight,
 } from 'react-icons/hi2';
-import { uploadImageDirect } from '@/lib/uploadHelper';
 import { MAX_IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_ERROR } from '@/lib/uploadConstants';
 
 // ---- Types ----
@@ -223,15 +222,45 @@ export function Gallery() {
 
   const handleImageUpload = useCallback(async (
     file: File,
+    category: string,
+    title: string,
+    alt: string,
     onProgress?: (percent: number) => void,
-  ): Promise<{ url: string; publicId: string; width: number; height: number }> => {
-    const data = await uploadImageDirect(file, 'gallery', onProgress);
-    return {
-      url: data.url,
-      publicId: data.publicId,
-      width: data.width || 1200,
-      height: data.height || 1600,
-    };
+  ): Promise<GalleryItem> => {
+    const body = new FormData();
+    body.append('file', file);
+    body.append('folder', 'gallery');
+    if (category) body.append('category', category);
+    if (title) body.append('title', title);
+    if (alt) body.append('alt', alt);
+
+    const xhr = new XMLHttpRequest();
+    const result = await new Promise<GalleryItem>((resolve, reject) => {
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      });
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const data = JSON.parse(xhr.responseText);
+          resolve({ ...data, thumbnail: data.src });
+        } else {
+          try {
+            const err = JSON.parse(xhr.responseText);
+            reject(new Error(err.error || `Upload failed (${xhr.status})`));
+          } catch {
+            reject(new Error(`Upload failed (${xhr.status})`));
+          }
+        }
+      });
+      xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+      xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+      xhr.open('POST', '/api/upload');
+      xhr.send(body);
+    });
+
+    return result;
   }, []);
 
   // ---- CRUD Handlers ----
@@ -339,69 +368,24 @@ export function Gallery() {
     setUploadProgress(0);
 
     try {
-      const result = await handleImageUpload(file, (percent) => {
-        setUploadProgress(percent);
-      });
+      const savedRecord = await handleImageUpload(
+        file,
+        formData.category,
+        formData.title,
+        formData.alt,
+        (percent) => { setUploadProgress(percent); },
+      );
 
-      const tempId = `optimistic-${Date.now()}`;
-      const titleFromFilename = file.name.replace(/\.[^/.]+$/, '');
-      const thumbnail = result.url;
-      const optimisticItem: GalleryItem = {
-        _id: tempId,
-        src: result.url,
-        thumbnail,
-        publicId: result.publicId,
-        alt: formData.alt || titleFromFilename,
-        title: formData.title || titleFromFilename,
-        description: formData.description || '',
-        width: result.width || 1200,
-        height: result.height || 1600,
-        category: formData.category || '',
-        featured: formData.featured || false,
-        order: formData.order || 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      setItems(prev => [optimisticItem, ...prev]);
+      setItems(prev => [savedRecord, ...prev]);
       setShowForm(false);
       resetForm();
-
-      (async () => {
-        try {
-          const response = await fetch('/api/gallery-images', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              src: optimisticItem.src,
-              publicId: optimisticItem.publicId,
-              alt: optimisticItem.alt,
-              title: optimisticItem.title,
-              description: optimisticItem.description,
-              width: optimisticItem.width,
-              height: optimisticItem.height,
-              category: optimisticItem.category,
-              featured: optimisticItem.featured,
-              order: optimisticItem.order,
-            }),
-          });
-
-          if (!response.ok) throw new Error('Failed to save background metadata');
-          const savedRecord = await response.json();
-          setItems(prev => prev.map(item => item._id === tempId ? { ...savedRecord, thumbnail: savedRecord.src } : item));
-        } catch (err) {
-          console.error('Background metadata save failed:', err);
-          setError('Background save failed. Reverting item.');
-          setItems(prev => prev.filter(item => item._id !== tempId));
-        }
-      })();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);
     }
-  }, [handleImageUpload, formData, resetForm]);
+  }, [handleImageUpload, formData, resetForm, fetchPage]);
 
   const handleEdit = useCallback((item: GalleryItem) => {
     setEditingItem(item);

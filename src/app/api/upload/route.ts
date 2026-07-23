@@ -1,17 +1,56 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { deleteFile } from '@/lib/supabase-storage';
+import { uploadFile, deleteFile } from '@/lib/supabase-storage';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
-export async function POST() {
-  return jsonError('Direct uploads are handled client-side via Supabase. Use the browser upload flow.', 400);
+export async function POST(request: NextRequest) {
+  try {
+    const user = requireAuth(request);
+    if (!user) return jsonError('Unauthorized', 401);
+
+    const formData = await request.formData();
+    const file = formData.get('file') as File | null;
+    if (!file) return jsonError('No file provided', 400);
+
+    const folder = (formData.get('folder') as string) || 'gallery';
+    const category = (formData.get('category') as string) || '';
+    const title = (formData.get('title') as string) || '';
+    const alt = (formData.get('alt') as string) || '';
+    const width = parseInt((formData.get('width') as string) || '0') || 1200;
+    const height = parseInt((formData.get('height') as string) || '0') || 1600;
+    const featured = formData.get('featured') === 'true';
+    const order = parseInt((formData.get('order') as string) || '0') || 0;
+
+    const result = await uploadFile(file, folder);
+
+    await connectToDatabase();
+    const GalleryImage = (await import('@/models/GalleryImage')).default;
+    const item = await GalleryImage.create({
+      src: result.url,
+      publicId: result.publicId,
+      alt: alt || title || '',
+      title: title || '',
+      description: (formData.get('description') as string) || '',
+      width,
+      height,
+      category: category || '',
+      featured,
+      order,
+    });
+
+    return NextResponse.json(item, { status: 201 });
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    return jsonError(`Upload failed: ${error.message || 'Unknown error'}`, 500);
+  }
 }
 
 export async function DELETE(request: Request) {
