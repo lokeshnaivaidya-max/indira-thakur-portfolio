@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
-import { getSupabase, getSupabaseAdmin } from '@/lib/supabase';
-import { deleteFile, getPublicUrl } from '@/lib/supabase-storage';
+import { getSupabase } from '@/lib/supabase';
+import { deleteFile, getPublicUrl, uploadFile } from '@/lib/supabase-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -88,27 +88,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const timestamp = Date.now();
-    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const path = `${folder}/${timestamp}-${safeName}`;
-
-    const supabase1 = getSupabaseAdmin();
-    const { data, error } = await supabase1.storage
-      .from(BUCKET)
-      .upload(path, file, { cacheControl: '3600', upsert: false });
-
-    if (error) {
-      return NextResponse.json({ error: `Upload failed: ${error.message}` }, { status: 500 });
-    }
-
-    const url = getPublicUrl(data.path);
+    const result = await uploadFile(file, folder);
+    const url = result.url;
 
     await connectToDatabase();
     const FileRecord = (await import('@/models/FileRecord')).default;
     await FileRecord.create({
       url,
-      publicId: data.path,
-      filename: safeName,
+      publicId: result.publicId,
+      filename: file.name.replace(/[^a-zA-Z0-9.-]/g, '_'),
       originalName: file.name,
       size: file.size,
       type: file.type,
@@ -117,7 +105,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       url,
-      publicId: data.path,
+      publicId: result.publicId,
       filename: file.name,
       size: file.size,
       type: file.type,

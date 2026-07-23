@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
         console.log(`[Migrate ${id.slice(-6)}] Uploading to Supabase...`);
 
-        const result = await uploadFile(file, 'gallery', true);
+        const result = await uploadFile(file, 'gallery');
 
         console.log(`[Migrate ${id.slice(-6)}] Verifying...`);
         const verifyRes = await fetch(result.url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
