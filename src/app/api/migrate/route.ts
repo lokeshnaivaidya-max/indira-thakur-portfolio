@@ -18,14 +18,13 @@ function isAuthorized(request: NextRequest): boolean {
   // Regular auth via cookie
   const user = getAuthUser(request);
   if (user) return true;
-  // Fallback: migration key passed as header or query param
+  // Fallback: migration key or Vercel OIDC token passed as header or query param
   const migrationKey = process.env.MIGRATION_KEY || '';
-  const headerKey = request.headers.get('x-migration-key') || '';
+  const oidcToken = process.env.VERCEL_OIDC_TOKEN || '';
+  const headerKey = request.headers.get('x-migration-key') || request.headers.get('authorization')?.replace('Bearer ', '') || '';
   const queryKey = request.nextUrl.searchParams.get('key') || '';
-  const headerMatch = migrationKey && headerKey === migrationKey;
-  const queryMatch = migrationKey && queryKey === migrationKey;
-  console.log('[Migrate auth] hasMigrationKey:', !!migrationKey, 'headerMatch:', headerMatch, 'queryMatch:', queryMatch);
-  return headerMatch || queryMatch;
+  const validKeys = [migrationKey, oidcToken].filter(Boolean);
+  return validKeys.length > 0 && (validKeys.includes(headerKey) || validKeys.includes(queryKey));
 }
 
 // ── Status endpoint ────────────────────────────────────────────────────────

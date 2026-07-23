@@ -1,7 +1,11 @@
-﻿import { NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
-export async function GET() {
+export async function GET(request: NextRequest) {
   const results: Record<string, unknown> = {};
+  results.migration_key_set = !!process.env.MIGRATION_KEY;
+  results.migration_key_length = (process.env.MIGRATION_KEY || "").length;
+  results.query_key_provided = !!request.nextUrl.searchParams.get("key");
+  results.query_key_matches = request.nextUrl.searchParams.get("key") === process.env.MIGRATION_KEY;
   try {
     const bcrypt = await import("bcryptjs");
     results.bcrypt_imported = true;
