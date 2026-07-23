@@ -6,6 +6,18 @@ import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
+function mapServiceToCategory(title: string): string {
+  const map: Record<string, string> = {
+    'newborn photography': 'newborn',
+    'maternity photography': 'maternity',
+    'portraits': 'portrait',
+    'wedding photography': 'wedding',
+    'events': 'events',
+    'brand collaboration': 'brand collaboration',
+  };
+  return map[title.toLowerCase()] || title.toLowerCase().replace(/\s+/g, '-');
+}
+
 export default function EditorialServices() {
   const { config } = useSiteConfig();
 
@@ -154,10 +166,10 @@ export default function EditorialServices() {
                     Inquire For Session
                   </Link>
                   <Link
-                    href="/gallery"
+                    href={`/gallery?category=${encodeURIComponent(mapServiceToCategory(service.title))}`}
                     className="font-sans text-[11px] text-[#C39E96] uppercase tracking-[0.25em] hover:text-[#2B2625] transition-colors"
                   >
-                    View Works →
+                    View Portfolio →
                   </Link>
                 </div>
               </div>

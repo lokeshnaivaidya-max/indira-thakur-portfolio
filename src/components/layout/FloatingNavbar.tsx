@@ -56,7 +56,6 @@ export default function FloatingNavbar() {
     { href: '/', label: 'Home' },
     { href: '/about', label: 'About' },
     { href: '/services', label: 'Services' },
-    { href: '/gallery', label: 'Gallery' },
     { href: '/films', label: 'Films' },
     { href: '/testimonials', label: 'Testimonials' },
     { href: '/contact', label: 'Contact' },

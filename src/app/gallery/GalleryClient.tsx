@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiXMark, HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { cn } from '@/lib/imageUtils';
@@ -106,7 +107,9 @@ function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: nu
 }
 
 export default function GalleryClient() {
-  const [activeCategory, setActiveCategory] = useState('');
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get('category') || '';
+  const [activeCategory, setActiveCategory] = useState(categoryParam.toLowerCase());
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
