@@ -117,7 +117,7 @@ export default function GalleryClient() {
     let cancelled = false;
     const fetchGallery = async () => {
       try {
-        const res = await fetch('/api/gallery-images?page=1&limit=50');
+        const res = await fetch('/api/gallery-images?page=1&limit=200');
         if (!res.ok) return;
         const json = await res.json();
         const data: GalleryImage[] = json.items || (Array.isArray(json) ? json : []);

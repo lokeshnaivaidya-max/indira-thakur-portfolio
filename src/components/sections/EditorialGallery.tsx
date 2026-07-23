@@ -48,7 +48,7 @@ export default function EditorialGallery({ isPreview = false }: { isPreview?: bo
     let cancelled = false;
     async function loadGallery() {
       try {
-        const res = await fetch('/api/gallery-images?page=1&limit=50');
+        const res = await fetch('/api/gallery-images?page=1&limit=200');
         if (!res.ok) return;
         const data: PaginatedResponse = await res.json();
         const items = data.items || (Array.isArray(data) ? data : []);
