@@ -66,7 +66,7 @@ function formatCategory(raw?: string): string {
 function ShimmerPlaceholder({ aspectRatio }: { aspectRatio: string }) {
   return (
     <div
-      className="break-inside-avoid bg-[#FAF6F3] overflow-hidden relative"
+      className="bg-[#FAF6F3] overflow-hidden relative"
       style={{ aspectRatio }}
     >
       <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_1.5s_infinite]" />
@@ -89,7 +89,7 @@ function GalleryImageCard({ img, index, onClick }: { img: GalleryItem; index: nu
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer break-inside-avoid group mb-4 md:mb-5"
+      className="cursor-pointer group"
     >
       <div className="relative overflow-hidden bg-[#FAF6F3] rounded-sm">
         <img
@@ -276,7 +276,7 @@ export default function GalleryClient() {
 
           {/* Content */}
           {loading ? (
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-5 space-y-4 md:space-y-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
               {skeletonAspects.map((aspect, i) => (
                 <ShimmerPlaceholder key={i} aspectRatio={aspect} />
               ))}
@@ -292,7 +292,7 @@ export default function GalleryClient() {
               </p>
             </div>
           ) : (
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
               {filtered.map((img, idx) => (
                 <GalleryImageCard
                   key={img.id}
