@@ -19,9 +19,11 @@ export async function GET(request: NextRequest) {
     if (category) filter.category = category;
     if (featured === 'true') filter.featured = true;
 
+    const projection = 'src width height category alt title order createdAt';
+
     const [total, items] = await Promise.all([
       GalleryImage.countDocuments(filter),
-      GalleryImage.find(filter)
+      GalleryImage.find(filter, projection)
         .sort({ order: 1, createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
