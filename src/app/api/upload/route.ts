@@ -31,9 +31,11 @@ export async function GET() {
       .list('gallery');
 
     const info = {
-      supabaseUrl: supabaseUrl.substring(0, 30) + '...',
+      supabaseUrl,
       anonKeySet: anonKey.length > 0,
+      anonKeyPrefix: anonKey.substring(0, 15),
       serviceKeySet: serviceKey.length > 0,
+      serviceKeyPrefix: serviceKey.substring(0, 15),
       buckets: bucketNames,
       bucketListError: bucketErr?.message || null,
       galleryFiles: files?.length || 0,
