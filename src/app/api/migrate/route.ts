@@ -27,6 +27,31 @@ function isAuthorized(request: NextRequest): boolean {
   return validKeys.length > 0 && (validKeys.includes(headerKey) || validKeys.includes(queryKey));
 }
 
+// ── Temporary: one-time reset of admin password for migration ───────────
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const resetSecret = 'indira-migrate-2026';
+    const body = await request.json();
+    if (body.secret !== resetSecret) return jsonError('Invalid secret', 403);
+
+    const { connectToDatabase } = await import('@/lib/mongodb');
+    await connectToDatabase();
+    const User = (await import('@/models/User')).default;
+    const bcrypt = await import('bcryptjs');
+
+    const admin = await User.findOne({ email: 'admin@indirathakur.com' });
+    if (!admin) return jsonError('Admin not found', 404);
+
+    admin.password = await bcrypt.default.hash(body.newPassword || 'Admin123*', 12);
+    await admin.save();
+
+    return NextResponse.json({ success: true, message: 'Password reset' });
+  } catch (error: any) {
+    return jsonError(error.message, 500);
+  }
+}
+
 // ── Status endpoint ────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
