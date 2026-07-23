@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/auth';
-import { getSupabase } from '@/lib/supabase';
+import { getSupabase, getSupabaseAdmin } from '@/lib/supabase';
 import { deleteFile, getPublicUrl } from '@/lib/supabase-storage';
 
 export const dynamic = 'force-dynamic';
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
     const path = `${folder}/${timestamp}-${safeName}`;
 
-    const supabase1 = getSupabase();
+    const supabase1 = getSupabaseAdmin();
     const { data, error } = await supabase1.storage
       .from(BUCKET)
       .upload(path, file, { cacheControl: '3600', upsert: false });
