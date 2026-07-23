@@ -19,6 +19,34 @@ function sanitizeFilename(name: string): string {
   return `${timestamp}-${base}.${ext}`;
 }
 
+async function ensureBucket(baseUrl: string): Promise<void> {
+  // Check if bucket exists
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const check = await fetch(`${baseUrl}/storage/v1/bucket/images`, {
+    headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+  });
+  if (check.ok) return;
+
+  // Try creating via Management API
+  const mgmtKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const projectRef = baseUrl.match(/https?:\/\/([^.]+)/)?.[1] || '';
+  if (mgmtKey && projectRef) {
+    const create = await fetch(`https://api.supabase.com/v1/projects/${projectRef}/storage/buckets`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${mgmtKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: 'images', name: 'images', public: true }),
+    });
+    if (create.ok) return;
+  }
+
+  // Last resort: try direct storage API with anon key
+  await fetch(`${baseUrl}/storage/v1/bucket`, {
+    method: 'POST',
+    headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: 'images', name: 'images', public: true }),
+  });
+}
+
 export async function uploadFile(
   file: File,
   folder: string = 'gallery'
@@ -26,6 +54,9 @@ export async function uploadFile(
   const baseUrl = getBaseUrl();
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   if (!baseUrl || !anonKey) throw new Error('Supabase not configured');
+
+  // Ensure bucket exists
+  await ensureBucket(baseUrl);
 
   const filename = sanitizeFilename(file.name);
   const path = `${folder}/${filename}`;
