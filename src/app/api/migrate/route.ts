@@ -88,7 +88,19 @@ export async function POST(request: NextRequest) {
     if (!supabaseUrl || !supabaseKey) {
       return jsonError('Supabase not configured', 500);
     }
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false },
+    });
+
+    // Check that the images bucket exists
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+    if (bucketsError) {
+      return jsonError(`Cannot list buckets: ${bucketsError.message}`, 500);
+    }
+    const bucketExists = buckets?.some((b) => b.name === BUCKET);
+    if (!bucketExists) {
+      return jsonError(`Bucket '${BUCKET}' not found. Available: ${buckets?.map((b) => b.name).join(', ') || 'none'}`, 500);
+    }
 
     // Find next batch of Cloudinary records
     const toMigrate = await GalleryImage.find({
@@ -123,7 +135,7 @@ export async function POST(request: NextRequest) {
         const base = rawName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 60);
         const path = `gallery/${Date.now()}-${base}.${ext}`;
 
-        console.log(`[Migrate ${id.slice(-6)}] Uploading to Supabase...`);
+        console.log(`[Migrate ${id.slice(-6)}] Uploading to Supabase... path=${path}`);
 
         // Upload to Supabase
         const blob = new Blob([buffer], { type: 'image/jpeg' });
