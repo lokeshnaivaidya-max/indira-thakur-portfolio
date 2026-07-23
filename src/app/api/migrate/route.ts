@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { getAuthUser } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { createClient } from '@supabase/supabase-js';
 
@@ -14,12 +14,23 @@ function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
+function isAuthorized(request: NextRequest): boolean {
+  // Regular auth via cookie
+  const user = getAuthUser(request);
+  if (user) return true;
+  // Fallback: migration key passed as header or query param
+  const migrationKey = process.env.MIGRATION_KEY || '';
+  if (!migrationKey) return false;
+  const headerKey = request.headers.get('x-migration-key') || '';
+  const queryKey = request.nextUrl.searchParams.get('key') || '';
+  return headerKey === migrationKey || queryKey === migrationKey;
+}
+
 // ── Status endpoint ────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
   try {
-    const user = requireAuth(request);
-    if (!user) return jsonError('Unauthorized', 401);
+    if (!isAuthorized(request)) return jsonError('Unauthorized', 401);
 
     await connectToDatabase();
     const GalleryImage = (await import('@/models/GalleryImage')).default;
@@ -41,8 +52,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = requireAuth(request);
-    if (!user) return jsonError('Unauthorized', 401);
+    if (!isAuthorized(request)) return jsonError('Unauthorized', 401);
 
     await connectToDatabase();
     const GalleryImage = (await import('@/models/GalleryImage')).default;
