@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -57,20 +57,27 @@ export default function EditorialServices() {
         </motion.div>
       </div>
 
-      <div className="space-y-16 md:space-y-28 max-w-[1500px] mx-auto px-6 md:px-12">
+      <div className="space-y-24 md:space-y-36 max-w-[1500px] mx-auto px-6 md:px-12">
         {servicesList.map((service: any, i: number) => {
           const isEven = i % 2 === 0;
           return (
-            <motion.div
-              key={service.title || i}
-              initial={{ opacity: 0.95 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center p-8 md:p-14 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_40px_rgba(0,0,0,0.02)] ${
-                isEven ? '' : 'lg:flex-row-reverse'
-              }`}
-            >
+            <div key={service.title || i}>
+              {i > 0 && (
+                <div className="flex items-center gap-4 mb-16 md:mb-24">
+                  <span className="flex-1 h-px bg-gradient-to-r from-transparent via-[#C39E96]/20 to-transparent" />
+                  <span className="font-mono text-[10px] text-[#C39E96]/40 uppercase tracking-[0.4em]">✦</span>
+                  <span className="flex-1 h-px bg-gradient-to-r from-transparent via-[#C39E96]/20 to-transparent" />
+                </div>
+              )}
+              <motion.div
+                initial={{ opacity: 0.95 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center p-10 md:p-16 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_40px_rgba(0,0,0,0.02)] ${
+                  isEven ? '' : 'lg:flex-row-reverse'
+                }`}
+              >
               <div className={`lg:col-span-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                 <div className="relative min-h-[380px] md:min-h-[520px] overflow-hidden rounded-sm group bg-[#FAF6F3]">
                   {hasImage(service.image?.url) ? (
@@ -155,6 +162,7 @@ export default function EditorialServices() {
                 </div>
               </div>
             </motion.div>
+            </div>
           );
         })}
       </div>
