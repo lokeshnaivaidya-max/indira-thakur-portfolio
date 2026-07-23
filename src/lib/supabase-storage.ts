@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 
 const BUCKET = 'images';
 
@@ -20,70 +20,54 @@ export async function uploadFile(
   file: File,
   folder: string = 'gallery'
 ): Promise<UploadResult> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!supabaseUrl || !anonKey) {
-    throw new Error('Supabase not configured');
-  }
-
+  const supabase = getSupabase();
   const filename = sanitizeFilename(file.name);
   const path = `${folder}/${filename}`;
-  const storageUrl = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/${BUCKET}/${path}`;
 
-  console.log(`[uploadFile] BUCKET=${BUCKET} path=${path} url=${storageUrl}`);
+  // Convert File to ArrayBuffer to bypass the FormData code path in the SDK
+  // (File extends Blob on Node 24, which triggers FormData upload that can fail
+  // with PGRST125 "Invalid path" on some Supabase projects)
+  const buffer = await file.arrayBuffer();
 
-  const response = await fetch(storageUrl, {
-    method: 'POST',
-    headers: {
-      'apikey': anonKey,
-      'Authorization': `Bearer ${anonKey}`,
-      'Content-Type': file.type || 'application/octet-stream',
-      'x-upsert': 'false',
-    },
-    body: file,
-  });
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, buffer, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || 'image/jpeg',
+    });
 
-  if (!response.ok) {
-    const text = await response.text();
-    console.error(`[uploadFile] FAILED status=${response.status} body=${text}`);
-    throw new Error(`Upload failed: ${text.slice(0, 200)}`);
+  if (error) {
+    throw new Error(`Upload failed: ${error.message}`);
   }
 
-  const baseUrl = supabaseUrl.replace(/\/$/, '');
-  const publicUrl = `${baseUrl}/storage/v1/object/public/${BUCKET}/${path}`;
+  const { data: urlData } = supabase.storage
+    .from(BUCKET)
+    .getPublicUrl(data.path);
 
   return {
-    url: publicUrl,
-    publicId: path,
+    url: urlData.publicUrl,
+    publicId: data.path,
   };
 }
 
 export async function deleteFile(publicId: string): Promise<void> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!supabaseUrl || !anonKey) return;
+  const supabase = getSupabase();
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .remove([publicId]);
 
-  const storageUrl = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/${BUCKET}`;
-
-  const response = await fetch(storageUrl, {
-    method: 'DELETE',
-    headers: {
-      'apikey': anonKey,
-      'Authorization': `Bearer ${anonKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ prefixes: [publicId] }),
-  });
-
-  if (!response.ok) {
-    console.error('[deleteFile] FAILED', await response.text());
+  if (error) {
+    console.error('[Supabase] Delete error:', error.message);
   }
 }
 
 export function getPublicUrl(path: string): string {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const baseUrl = supabaseUrl.replace(/\/$/, '');
-  return `${baseUrl}/storage/v1/object/public/${BUCKET}/${path}`;
+  const supabase = getSupabase();
+  const { data } = supabase.storage
+    .from(BUCKET)
+    .getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export function isTransformUrl(url: string): boolean {
