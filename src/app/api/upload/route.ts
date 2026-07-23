@@ -29,30 +29,38 @@ export async function GET() {
     const buckets = bucketRes.ok ? await bucketRes.json() : [];
     const bucketNames = (Array.isArray(buckets) ? buckets : []).map((b: any) => b.name);
 
+    const projectRef = baseUrl.match(/https?:\/\/([^.]+)/)?.[1] || '';
     // Try to create the images bucket if missing
     let created = false;
     let createErr: string | null = null;
-    if (!bucketNames.includes('images')) {
-      // Try with service role key first
-      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-      const authHeader = serviceKey ? `Bearer ${serviceKey}` : `Bearer ${anonKey}`;
-      const createRes = await fetch(`${baseUrl}/storage/v1/bucket`, {
+    const mgmtKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    if (!bucketNames.includes('images') && mgmtKey) {
+      // Try Management API
+      const createRes = await fetch(`https://api.supabase.com/v1/projects/${projectRef}/storage/buckets`, {
         method: 'POST',
-        headers: { apikey: anonKey, Authorization: authHeader, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${mgmtKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: 'images', name: 'images', public: true }),
       });
-      created = createRes.ok;
-      if (!createRes.ok) {
+      if (createRes.ok) {
+        created = true;
+      } else {
         const text = await createRes.text();
-        // Try with SQL via PostgREST
-        createErr = text.slice(0, 200);
+        // Fallback: try direct storage API with anon key
+        const createRes2 = await fetch(`${baseUrl}/storage/v1/bucket`, {
+          method: 'POST',
+          headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: 'images', name: 'images', public: true }),
+        });
+        created = createRes2.ok;
+        if (!createRes2.ok) createErr = (await createRes2.text()).slice(0, 200);
       }
     }
 
     const info = {
       supabaseUrl: baseUrl,
+      projectRef,
       anonKeySet: anonKey.length > 0,
-      serviceKeySet: serviceKey.length > 0,
+      mgmtKeySet: mgmtKey.length > 0,
       buckets: bucketNames,
       bucketCreated: created,
       bucketCreateError: createErr,
