@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -60,6 +60,15 @@ export default function FloatingNavbar() {
     { href: '/testimonials', label: 'Testimonials' },
     { href: '/contact', label: 'Contact' },
   ];
+
+  const scrollToContact = useCallback(() => {
+    const el = document.getElementById('contact');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.location.href = '/contact';
+    }
+  }, []);
 
   return (
     <>
@@ -154,16 +163,29 @@ export default function FloatingNavbar() {
 
             {/* Detached CTA & Mobile Toggle */}
             <div className="flex items-center justify-end gap-5 shrink-0">
-              <Link
-                href="/contact"
-                className={`desktop-cta hidden md:inline-flex items-center justify-center px-5 py-2.5 lg:px-7 lg:py-3 font-sans text-[10px] lg:text-[11px] uppercase tracking-[0.22em] transition-all duration-300 shadow-sm ${
-                  isDarkTop
-                    ? 'bg-white text-[#2B2625] hover:bg-[#FAF6F3] font-medium'
-                    : 'bg-[#2B2625] text-white hover:bg-[#3D3534] font-medium'
-                }`}
-              >
-                Inquire Date
-              </Link>
+              {isHome ? (
+                <button
+                  onClick={scrollToContact}
+                  className={`desktop-cta hidden md:inline-flex items-center justify-center px-5 py-2.5 lg:px-7 lg:py-3 font-sans text-[10px] lg:text-[11px] uppercase tracking-[0.22em] transition-all duration-300 shadow-sm ${
+                    isDarkTop
+                      ? 'bg-white text-[#2B2625] hover:bg-[#FAF6F3] font-medium'
+                      : 'bg-[#2B2625] text-white hover:bg-[#3D3534] font-medium'
+                  }`}
+                >
+                  Contact
+                </button>
+              ) : (
+                <Link
+                  href="/contact"
+                  className={`desktop-cta hidden md:inline-flex items-center justify-center px-5 py-2.5 lg:px-7 lg:py-3 font-sans text-[10px] lg:text-[11px] uppercase tracking-[0.22em] transition-all duration-300 shadow-sm ${
+                    isDarkTop
+                      ? 'bg-white text-[#2B2625] hover:bg-[#FAF6F3] font-medium'
+                      : 'bg-[#2B2625] text-white hover:bg-[#3D3534] font-medium'
+                  }`}
+                >
+                  Contact
+                </Link>
+              )}
 
               {/* Hamburger Button */}
               <button

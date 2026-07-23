@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
+import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
 
 export default function LuxuryFooter() {
   const { config } = useSiteConfig();
@@ -20,10 +21,22 @@ export default function LuxuryFooter() {
     logo: { url: '', alt: '' },
   };
 
-  const logoUrl = config?.brand?.logo?.url || footerData.logo?.url;
-  const logoAlt = config?.brand?.logo?.alt || footerData.logo?.alt || 'Indira Thakur Photography Logo';
+  const brandData: any = config?.brand || {};
+
+  const logoUrl = brandData?.logo?.url || footerData.logo?.url;
+  const logoAlt = brandData?.logo?.alt || footerData.logo?.alt || 'Indira Thakur Photography Logo';
+
+  const instagramUrl = brandData?.instagramUrl || footerData.instagramUrl || 'https://www.instagram.com/indirathakurphotography/';
+  const facebookUrl = brandData?.facebookUrl || footerData.facebookUrl || '';
+  const linkedinUrl = brandData?.linkedinUrl || '';
 
   const hasImage = (url?: string) => url && url.trim() !== '';
+
+  const socialLinks = [
+    { url: instagramUrl, icon: FaInstagram, label: 'Instagram' },
+    ...(facebookUrl ? [{ url: facebookUrl, icon: FaFacebookF, label: 'Facebook' }] : []),
+    ...(linkedinUrl ? [{ url: linkedinUrl, icon: FaLinkedinIn, label: 'LinkedIn' }] : []),
+  ];
 
   return (
     <footer className="relative bg-[#2B2625] text-white/70 overflow-hidden border-t border-white/5">
@@ -59,10 +72,10 @@ export default function LuxuryFooter() {
               ) : (
                 <div className="flex flex-col">
                   <span className="font-serif text-3xl text-white tracking-tight">
-                    {config?.brand?.siteName || 'Indira Thakur'}
+                    {brandData?.siteName || 'Indira Thakur'}
                   </span>
                   <span className="font-mono text-[9px] text-[#C39E96] uppercase tracking-[0.35em] mt-1">
-                    {config?.brand?.tagline || 'FINE ART PHOTOGRAPHY'}
+                    {brandData?.tagline || 'FINE ART PHOTOGRAPHY'}
                   </span>
                 </div>
               )}
@@ -127,30 +140,22 @@ export default function LuxuryFooter() {
                   {footerData.phone}
                 </a>
               </li>
-              {(footerData.instagramUrl || footerData.facebookUrl) && (
+              {socialLinks.length > 0 && (
                 <li className="pt-2">
-                  <span className="block text-[10px] uppercase font-mono text-white/30 tracking-[0.2em] mb-2">Social Journal</span>
-                  <div className="flex gap-4">
-                    {footerData.instagramUrl && (
+                  <span className="block text-[10px] uppercase font-mono text-white/30 tracking-[0.2em] mb-3">Social Journal</span>
+                  <div className="flex items-center gap-3">
+                    {socialLinks.map((social) => (
                       <a
-                        href={footerData.instagramUrl}
+                        key={social.label}
+                        href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-white/70 hover:text-[#C39E96] transition-colors duration-300"
+                        aria-label={social.label}
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-[#C39E96]/60 hover:bg-[#C39E96]/10 transition-all duration-300 group"
                       >
-                        Instagram ↗
+                        <social.icon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
                       </a>
-                    )}
-                    {footerData.facebookUrl && (
-                      <a
-                        href={footerData.facebookUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-white/70 hover:text-[#C39E96] transition-colors duration-300"
-                      >
-                        Facebook ↗
-                      </a>
-                    )}
+                    ))}
                   </div>
                 </li>
               )}

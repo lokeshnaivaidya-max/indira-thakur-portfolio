@@ -1,51 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSd-LdjuiUE9RSb-rlFMKYj1nJ9az_SQ5RiDeBSTNMQVu5OFYw/viewform';
+
 export default function EditorialContact() {
   const { config } = useSiteConfig();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [service, setService] = useState('Newborn Storytelling');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-
-  const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!name.trim()) { setError('Please provide your name.'); return; }
-    if (!email.trim()) { setError('Please provide your email.'); return; }
-    if (!validateEmail(email)) { setError('Please enter a valid email address.'); return; }
-
-    setSubmitting(true);
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, service, message }),
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Submission failed. Please try again.');
-      }
-      setSubmitted(true);
-      setName(''); setEmail(''); setPhone(''); setMessage('');
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const contactData: any = config?.contact || {
     eyebrow: "COMMISSION INQUIRIES",
@@ -60,7 +22,7 @@ export default function EditorialContact() {
   const hasImage = (url?: string) => url && url.trim() !== '';
 
   return (
-    <section className="py-24 md:py-36 bg-white text-[#2B2625] relative">
+    <section id="contact" className="py-24 md:py-36 bg-white text-[#2B2625] relative">
       <div className="container-editorial">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           {/* Left Column: Direct Info & Studio Atmosphere */}
@@ -134,7 +96,7 @@ export default function EditorialContact() {
             ) : (
               <div className="mt-12 pt-8 border-t border-[#E7DDD2] space-y-4">
                 <p className="font-serif italic text-lg text-[#2B2625]/90 leading-relaxed">
-                  “Photography for me is all about preserving emotions, celebrating families, documenting milestones, and creating timeless memories that people will treasure for generations.”
+                  "Photography for me is all about preserving emotions, celebrating families, documenting milestones, and creating timeless memories that people will treasure for generations."
                 </p>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-px bg-[#C39E96]" />
@@ -146,7 +108,7 @@ export default function EditorialContact() {
             )}
           </div>
 
-          {/* Right Column: Bespoke Inquiry Form */}
+          {/* Right Column: Google Form Redirect */}
           <div className="lg:col-span-7 bg-white p-8 md:p-14 border border-[#E7DDD2] shadow-[0_10px_40px_rgba(0,0,0,0.02)] rounded-sm">
             <h3 className="font-serif text-2xl text-[#2B2625] mb-2">
               Send a Private Message
@@ -155,117 +117,23 @@ export default function EditorialContact() {
               Please share a few details regarding your desired session date and vision.
             </p>
 
-            <AnimatePresence mode="wait">
-              {submitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="p-8 bg-[#FAF6F3] border border-[#C39E96]/30 text-center rounded-sm my-8"
-                >
-                  <span className="font-serif text-3xl text-[#2B2625] block mb-2">Thank You</span>
-                  <p className="font-sans text-sm text-[#7C706D] leading-relaxed">
-                    Your inquiry has been gracefully received. Indira will respond personally within 24 to 48 hours.
-                  </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="mt-6 px-6 py-2.5 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.2em]"
-                  >
-                    Send Another Note
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {error && (
-                    <div className="p-4 bg-red-50 border border-red-200 text-red-700 font-sans text-xs">
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
-                        Your Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g. Ananya Sharma"
-                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="ananya@example.com"
-                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 98765 43210"
-                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
-                        Commission Category
-                      </label>
-                      <select
-                        value={service}
-                        onChange={(e) => setService(e.target.value)}
-                        className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors"
-                      >
-                        <option value="Newborn Storytelling">Newborn Storytelling</option>
-                        <option value="Maternity Portraits">Maternity Portraits</option>
-                        <option value="Fine Art Portraiture">Fine Art Portraiture</option>
-                        <option value="Events & Collaborations">Events & Collaborations</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D] mb-2">
-                      Your Vision / Session Details
-                    </label>
-                    <textarea
-                      rows={5}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Share estimated dates, locations, or special moments you wish to capture..."
-                      className="w-full px-5 py-3.5 bg-[#FAF6F3] border border-[#E7DDD2] font-sans text-sm text-[#2B2625] focus:outline-none focus:border-[#C39E96] transition-colors resize-y"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-4 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.25em] font-medium hover:bg-[#3D3534] transition-all duration-500 shadow-md cursor-pointer disabled:opacity-50"
-                  >
-                    {submitting ? 'Transmitting Note...' : 'Submit Private Inquiry'}
-                  </button>
-                </form>
-              )}
-            </AnimatePresence>
+            <div className="flex flex-col items-center justify-center p-8 md:p-12 bg-[#FAF6F3] border border-[#E7DDD2] rounded-sm my-8 text-center">
+              <span className="font-serif text-3xl text-[#2B2625] block mb-3">We'd Love to Hear From You</span>
+              <p className="font-sans text-sm text-[#7C706D] leading-relaxed max-w-md mx-auto mb-8">
+                Click below to open our inquiry form. It will open in a new tab, and we'll get back to you promptly.
+              </p>
+              <a
+                href={GOOGLE_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-10 py-4 bg-[#2B2625] text-white font-sans text-xs uppercase tracking-[0.25em] font-medium hover:bg-[#3D3534] transition-all duration-500 shadow-md"
+              >
+                Open Inquiry Form
+              </a>
+              <p className="font-mono text-[9px] text-[#7C706D]/50 uppercase tracking-[0.25em] mt-4">
+                Powered by Google Forms
+              </p>
+            </div>
           </div>
         </div>
       </div>

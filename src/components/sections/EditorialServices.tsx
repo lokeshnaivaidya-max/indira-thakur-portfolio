@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { PolaroidImage } from '@/components/ui/PolaroidImage';
 
 function mapServiceToCategory(title: string): string {
   const map: Record<string, string> = {
@@ -42,8 +41,8 @@ export default function EditorialServices() {
   if (!servicesList.length) return null;
 
   return (
-    <section className="py-28 bg-white text-[#2B2625]">
-      <div className="container-editorial mb-20 text-center max-w-3xl mx-auto">
+    <section className="py-28 md:py-40 bg-white text-[#2B2625]">
+      <div className="container-editorial mb-14 md:mb-20 text-center max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,121 +61,94 @@ export default function EditorialServices() {
           )}
           <div className="w-8 h-px bg-[#C39E96]/30 mx-auto my-6" />
           {servicesData.description && (
-            <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
+            <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed max-w-2xl mx-auto">
               {servicesData.description}
             </p>
           )}
         </motion.div>
       </div>
 
-      <div className="space-y-24 md:space-y-36 max-w-[1500px] mx-auto px-6 md:px-12">
-        {servicesList.map((service: any, i: number) => {
-          const isEven = i % 2 === 0;
-          return (
-            <div key={service.title || i}>
-              {i > 0 && (
-                <div className="flex items-center gap-4 mb-16 md:mb-24">
-                  <span className="flex-1 h-px bg-gradient-to-r from-transparent via-[#C39E96]/20 to-transparent" />
-                  <span className="font-mono text-[10px] text-[#C39E96]/40 uppercase tracking-[0.4em]">✦</span>
-                  <span className="flex-1 h-px bg-gradient-to-r from-transparent via-[#C39E96]/20 to-transparent" />
-                </div>
-              )}
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10 lg:px-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 lg:gap-8">
+          {servicesList.map((service: any, i: number) => {
+            const category = mapServiceToCategory(service.title);
+            return (
               <motion.div
-                initial={{ opacity: 0.95 }}
-                whileInView={{ opacity: 1 }}
+                key={service.title || i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center p-10 md:p-16 bg-white border border-[#E7DDD2]/60 shadow-[0_10px_40px_rgba(0,0,0,0.02)] ${
-                  isEven ? '' : 'lg:flex-row-reverse'
-                }`}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="group relative overflow-hidden bg-[#1C1817]"
               >
-              <div className={`lg:col-span-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
-                <div className="relative min-h-[380px] md:min-h-[520px] overflow-hidden rounded-sm group bg-[#FAF6F3]">
+                <Link
+                  href={`/gallery?category=${encodeURIComponent(category)}`}
+                  className="block relative aspect-[3/4] md:aspect-[4/5] overflow-hidden"
+                >
                   {hasImage(service.image?.url) ? (
-                    <PolaroidImage
-                      src={service.image.url}
-                      alt={service.image.alt || service.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      objectFit="contain"
-                      className="!w-full !h-full transition-transform duration-1000 group-hover:scale-[1.02]"
-                      containerClassName="!w-full !h-full"
-                    />
+                    <>
+                      <img
+                        src={service.image.url}
+                        alt={service.image.alt || service.title}
+                        loading={i < 2 ? 'eager' : 'lazy'}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10 transition-opacity duration-500 group-hover:opacity-90" />
+                      <div className="absolute inset-0 bg-black/10 transition-opacity duration-500 group-hover:opacity-0" />
+                    </>
                   ) : (
-                    <div className={`w-full h-full bg-gradient-to-br ${service.gradient || 'from-[#2C1810] to-[#1A1110]'} flex items-center justify-center p-8 relative`}>
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="relative z-10 text-center">
+                    <div className={`w-full h-full bg-gradient-to-br ${service.gradient || 'from-[#2C1810] to-[#1A1110]'} flex items-center justify-center`}>
+                      <div className="text-center">
                         <span className="font-serif text-5xl md:text-7xl text-white/20 block font-normal">
                           0{i + 1}
                         </span>
-                        <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/60 block mt-2">
-                          Indira Thakur Portfolio
+                        <span className="font-serif text-lg md:text-xl text-white/40 block mt-2">
+                          {service.title}
                         </span>
                       </div>
                     </div>
                   )}
-                </div>
-              </div>
 
-              <div className={`lg:col-span-6 ${isEven ? 'lg:order-2' : 'lg:order-1'} flex flex-col justify-center`}>
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs text-[#C39E96] uppercase tracking-[0.3em] font-medium">
-                    0{i + 1} / Bespoke Feature
-                  </span>
-                  <span className="w-6 h-px bg-[#C39E96]/30" />
-                </div>
-
-                <h3 className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#2B2625] mt-3 leading-[1.1]">
-                  {service.title}
-                </h3>
-
-                {service.tagline && (
-                  <p className="font-serif italic text-lg text-[#7C706D] mt-2">
-                    {service.tagline}
-                  </p>
-                )}
-
-                <div className="w-8 h-px bg-[#C39E96]/30 my-5" />
-
-                <p className="font-sans text-sm md:text-base text-[#7C706D] leading-relaxed">
-                  {service.description || ''}
-                </p>
-
-                {service.features && service.features.length > 0 && (
-                  <div className="mt-6 pt-6 border-t border-[#E7DDD2]">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#7C706D]/60 mb-3">
-                      Experience Highlights
-                    </p>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {service.features.map((feat: string, idx: number) => (
-                        <li key={idx} className="flex items-center gap-2 font-sans text-xs text-[#2B2625]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#C39E96] flex-shrink-0" />
-                          <span>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-7 md:p-8 lg:p-10 text-white">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="font-mono text-[10px] text-white/50 uppercase tracking-[0.3em]">
+                        0{i + 1}
+                      </span>
+                      <span className="w-6 h-px bg-white/20" />
+                    </div>
+                    <h3 className="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white leading-[1.15] mb-2">
+                      {service.title}
+                    </h3>
+                    <div className="flex items-center gap-3 mt-3">
+                      <span className="font-sans text-[10px] text-white/60 uppercase tracking-[0.2em] group-hover:text-[#C39E96] transition-colors duration-300">
+                        View Portfolio
+                      </span>
+                      <span className="text-white/40 group-hover:text-[#C39E96] transition-all duration-300 group-hover:translate-x-1">
+                        →
+                      </span>
+                    </div>
                   </div>
-                )}
+                </Link>
 
-                <div className="mt-8 flex items-center gap-6">
-                  <Link
-                    href={`/contact?service=${encodeURIComponent(service.title.toLowerCase())}`}
-                    className="inline-flex items-center justify-center px-8 py-3.5 bg-[#2B2625] text-white font-sans text-[11px] uppercase tracking-[0.25em] font-medium hover:bg-[#3D3534] transition-all duration-500 shadow-sm"
-                  >
-                    Inquire For Session
-                  </Link>
-                  <Link
-                    href={`/gallery?category=${encodeURIComponent(mapServiceToCategory(service.title))}`}
-                    className="font-sans text-[11px] text-[#C39E96] uppercase tracking-[0.25em] hover:text-[#2B2625] transition-colors"
-                  >
-                    View Portfolio →
-                  </Link>
+                <div className="p-5 sm:p-6 md:p-7 bg-white border-x border-b border-[#E7DDD2]/60">
+                  <div className="flex items-center justify-between gap-4">
+                    <Link
+                      href={`/contact?service=${encodeURIComponent(service.title.toLowerCase())}`}
+                      className="font-sans text-[11px] text-[#2B2625] uppercase tracking-[0.25em] hover:text-[#C39E96] transition-colors duration-300 font-medium"
+                    >
+                      Inquire →
+                    </Link>
+                    {service.tagline && (
+                      <span className="font-serif italic text-xs text-[#7C706D] hidden sm:block">
+                        {service.tagline}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-            </div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
