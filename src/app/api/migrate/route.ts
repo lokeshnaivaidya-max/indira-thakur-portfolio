@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/mongodb';
-import { getSupabase } from '@/lib/supabase';
+import { uploadFile } from '@/lib/supabase-storage';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const BUCKET = 'images';
 const BATCH_SIZE = 3;
 
 function jsonError(message: string, status: number) {
@@ -83,8 +82,6 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const GalleryImage = (await import('@/models/GalleryImage')).default;
 
-    const supabase = getSupabase();
-
     // Find next batch of Cloudinary records
     const toMigrate = await GalleryImage.find({
       src: /res\.cloudinary\.com/,
@@ -109,38 +106,19 @@ export async function POST(request: NextRequest) {
         // Download from Cloudinary
         const response = await fetch(originalSrc, { signal: AbortSignal.timeout(30_000) });
         if (!response.ok) throw new Error(`Download failed: ${response.status}`);
-        const buffer = await response.arrayBuffer();
+        const blob = await response.blob();
+        const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
 
-        // Sanitize filename
-        const parts = originalSrc.split('/');
-        const rawName = parts[parts.length - 1]?.split('?')[0] || 'image.jpg';
-        const ext = rawName.split('.').pop() || 'jpg';
-        const base = rawName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 60);
-        const path = `gallery/${Date.now()}-${base}.${ext}`;
+        console.log(`[Migrate ${id.slice(-6)}] Uploading to Supabase...`);
 
-        console.log(`[Migrate ${id.slice(-6)}] Uploading to Supabase... path=${path}`);
-
-        // Upload to Supabase
-        const blob = new Blob([buffer], { type: 'image/jpeg' });
-        const { data, error: uploadError } = await supabase.storage
-          .from(BUCKET)
-          .upload(path, blob, { cacheControl: '3600', upsert: false, contentType: 'image/jpeg' });
-
-        if (uploadError) throw new Error(`Supabase upload: ${uploadError.message}`);
-
-        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
-        const newUrl: string = urlData.publicUrl;
+        const result = await uploadFile(file, 'gallery');
 
         console.log(`[Migrate ${id.slice(-6)}] Verifying...`);
-
-        // Verify
-        const verifyRes = await fetch(newUrl, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
-        if (!verifyRes.ok) throw new Error('Verification failed — URL not accessible');
+        const verifyRes = await fetch(result.url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
+        if (!verifyRes.ok) throw new Error('Verification failed');
 
         console.log(`[Migrate ${id.slice(-6)}] Updating MongoDB...`);
-
-        // Update MongoDB
-        await GalleryImage.findByIdAndUpdate(id, { src: newUrl, publicId: data.path });
+        await GalleryImage.findByIdAndUpdate(id, { src: result.url, publicId: result.publicId });
 
         results.push({ id, status: 'success' });
         console.log(`[Migrate ${id.slice(-6)}] SUCCESS`);
